@@ -5,64 +5,15 @@
         <i class="fa fa-arrow-left" />
       </div>
       <div class="title common" style="align-items:center;">{{ msg }}</div>
-      <div class="more common" v-if="!isaddAddmin">
-        <i class="fa fa-plus" @click="addAddmin" />
-      </div>
-      <div class="more common" v-if="isaddAddmin">
-        <i class="fa fa-floppy-o" @click="saveAddmin" />
+      <div class="more common">
+        <i class="fa fa-plus" @click="showEditGroup(newAttendanceGroup)" />
       </div>
     </div>
-    <div class="contentbody" v-if="isaddAddmin">
-      <div class="commonpiece" @click="showInputModal('attendname')">
-        <div class="titlehead" style="display: inline-flex; width:100%;">
-          <div class="titles">
-            <span>考勤组名称</span>
-          </div>
-          <div class="descrip" style="display: inline-flex;">
-            <span class="spanstyle">{{ newAttendanceGroup.name }}</span>
-          </div>
-          <i class="fa fastyle fa-angle-right" />
-        </div>
-      </div>
-      <div class="commonpiece" @click="showSearchModal('attendrange')">
-        <div class="titlehead" style="display: inline-flex; width:100%;">
-          <div class="titles">
-            <span>考勤组范围</span>
-          </div>
-          <div class="descrip">
-            <span class="spanstyle" v-for="(item, index) in newAttendanceGroup.department" :key="index" >{{ item.name }}</span>
-          </div>
-          <i class="fa fastyle fa-angle-right" />
-        </div>
-      </div>
-      <div class="commonpiece" @click="showSearchModal('attendpeople')">
-        <div class="titlehead" style="display: inline-flex; width:100%;">
-          <div class="titles">
-            <span>考勤组管理员</span>
-          </div>
-          <div class="descrip">
-            <span class="spanstyle" v-for="(item, index) in newAttendanceGroup.people" :key="index" >{{ item.name }}</span>
-          </div>
-          <i class="fa fastyle fa-angle-right" />
-        </div>
-      </div>
-      <div class="commonpiece" @click="showInputModal('attenddes')">
-        <div class="titlehead" style="display: inline-flex; width:100%;">
-          <div class="titles">
-            <span>描述</span>
-          </div>
-          <div class="descrip" style="display: inline-flex;">
-            <span class="spanstyle">{{ newAttendanceGroup.des }}</span>
-          </div>
-          <i class="fa fastyle fa-angle-right" />
-        </div>
-      </div>
-    </div>
-    <div class="contentbody" v-if="attendanceList.length !== 0 && !isaddAddmin">
-      <div class="uncommonpiece" v-for="item in attendanceList" :key="item.id">
+    <div class="contentbody">
+      <div class="uncommonpiece" v-for="(item, index) in attendanceList" :key="index" @click="showEditGroup(item)">
         <div class="rulecotent">
-          <span class="contentspan">{{ item.name }}</span>
-          <span class="contentspan secondspan">管理员：{{ item.people.name }}</span>
+          <span class="contentspan">{{ item.gName }}</span>
+          <span class="contentspan secondspan">管理员：{{ item.admins[0].name }}</span>
         </div>
         <div class="rightside">
           <i class="fa fastyle fa-angle-right" />
@@ -87,15 +38,13 @@
         <span>设置</span>
       </button>
     </div>
-    <input-modal v-if="showInput" :titlename="'请输入'" :inputtxt="inputTxt" @getinput="getInput" v-on:closeinput="closeInput"></input-modal>
-    <search-modal v-if="showSearch" :titlename="'添加'" :showAdd="isexist" :existlist="existList" @getsearch="getSearch" v-on:closesearch="closeSearch"></search-modal>
+    <edit-group v-if="isEdit" :existdate="editGroupData" :isEditGroup="needEdit" @getedit="getEdit" v-on:closeedit="closeEdit"></edit-group>
   </div>
 </template>
 
 <script>
 
-import searchModal from '../components/searchModal'
-import inputModal from '../components/inputModal'
+import editGroup from '../components/editGroup'
 
 export default {
   name: 'addadmin',
@@ -110,11 +59,14 @@ export default {
       isexist: false,
       showSearch: false,
       showInput: false,
+      isEdit: false,
+      needEdit: false,
       marktype: '',
       inputTxt: '',
       existList: [],
       user: {},
       isaddAddmin: false,
+      editGroupData: {},
       newAttendanceGroup: {
         name: '',
         people: [],
@@ -131,43 +83,19 @@ export default {
     }
   },
   components: {
-    inputModal,
-    searchModal
+    editGroup
   },
   methods: {
     getAttendce () {
-      this.attendanceList = [
-        {
-          id: 1,
-          name: '考情组一',
-          people: {
-            name: '赵一'
-          }
-        },
-        {
-          id: 2,
-          name: '考情组二',
-          people: {
-            name: '钱二'
-          }
-        },
-        {
-          id: 3,
-          name: '考情组三',
-          people: {
-            name: '孙三'
-          }
+      this.$axios.get('/groupApi/group/groupAndDepart/').then(res => {
+        if (res.data.flag) {
+          this.attendanceList = res.data.data.allGroup
         }
-      ]
+        console.log(res)
+      })
     },
     goBackThing () {
       window.history.go(-1)
-    },
-    addAddmin () {
-      this.isaddAddmin = !this.isaddAddmin
-    },
-    saveAddmin () {
-      this.isaddAddmin = !this.isaddAddmin
     },
     gocheck () {
       this.$router.push('/check')
@@ -184,52 +112,15 @@ export default {
     gosetting () {
       this.$router.push('/addadmin')
     },
-    showInputModal (mark) {
-      this.marktype = mark
-      if (mark === 'attendname') {
-        this.inputTxt = this.newAttendanceGroup.name
-      }
-      if (mark === 'attenddes') {
-        this.inputTxt = this.newAttendanceGroup.des
-      }
-      this.showInput = !this.showInput
+    showEditGroup (item) {
+      this.editGroupData = item
+      this.isEdit = !this.isEdit
     },
-    getInput (msg) {
-      if (this.marktype === 'attendname') {
-        this.newAttendanceGroup.name = msg
-      }
-      if (this.marktype === 'attenddes') {
-        this.newAttendanceGroup.des = msg
-      }
+    getEdit (msg) {
+      this.editGroupData = msg
     },
-    closeInput () {
-      this.showInput = !this.showInput
-    },
-    showSearchModal (mark) {
-      this.marktype = mark
-      if (mark === 'attendrange') {
-        this.existList = JSON.parse(JSON.stringify(this.newAttendanceGroup.department))
-      }
-      if (mark === 'attendpeople') {
-        this.existList = JSON.parse(JSON.stringify(this.newAttendanceGroup.people))
-      }
-      if (this.existList.length === 0) {
-        this.isexist = true
-      } else {
-        this.isexist = false
-      }
-      this.showSearch = !this.showSearch
-    },
-    getSearch (msg) {
-      if (this.marktype === 'attendrange') {
-        this.newAttendanceGroup.department = JSON.parse(JSON.stringify(msg))
-      }
-      if (this.marktype === 'attendpeople') {
-        this.newAttendanceGroup.people = JSON.parse(JSON.stringify(msg))
-      }
-    },
-    closeSearch () {
-      this.showSearch = !this.showSearch
+    closeEdit () {
+      this.isEdit = !this.isEdit
     }
   }
 }
