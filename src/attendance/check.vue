@@ -44,7 +44,7 @@
         </button>
       </div>
       <div class="operate" v-if="showworkcheck">
-        <div class="showmpa">判断时候在打卡范围</div>
+        <div class="showmpa"><img class="map" :src="showMapImg" /></div>
         <div class="checkbutton">
           <div class="buttonline">
             <button class="workbutton" @click="checkOntime">
@@ -55,7 +55,7 @@
         <div class="massege">人员信息</div>
       </div>
       <div class="operate" v-if="showoutcheck">
-        <div class="showmpa">显示打卡地址</div>
+        <div class="showmpa"><img class="map" :src="showMapImg" /></div>
         <div class="checkbutton">
           <div class="buttonline">
             <button class="workbutton">
@@ -86,8 +86,8 @@
     </div>
   </div>
 </template>
-
 <script>
+
 export default {
   name: 'check',
   data () {
@@ -103,6 +103,7 @@ export default {
       showstatistics: true,
       showrule: true,
       showsetting: true,
+      showMapImg: '',
       resultData: {
         userId: '',
         username: '',
@@ -154,7 +155,16 @@ export default {
     },
     gosetting () {
       this.$router.push('/addadmin')
+    },
+    getMyLocation () {
+      var geolocation = new qq.maps.Geolocation('5YSBZ-W75KG-VLGQC-I24FQ-GT4A7-O4FBE', 'attendance')
+      geolocation.getLocation(position => {
+        this.showMapImg = 'https://apis.map.qq.com/ws/staticmap/v2/?center=' + position.lat + ',' + position.lng + '&zoom=18&size=500*300&maptype=roadmap&scale=2&markers=size:large|color:red|' + position.lat + ',' + position.lng + '&key=5YSBZ-W75KG-VLGQC-I24FQ-GT4A7-O4FBE'
+      }, null)
     }
+  },
+  mounted () {
+    this.getMyLocation()
   }
 }
 </script>
@@ -318,5 +328,9 @@ export default {
   }
   .massege{
     width:100%;
+  }
+  .map{
+    width: 100%;
+    height: 100%;
   }
 </style>
