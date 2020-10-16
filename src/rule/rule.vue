@@ -14,9 +14,11 @@
     </div>
     <div class="uncommonpiece" v-for="item in ruledata" :key="item.id">
       <div class="rulecotent">
-        <span class="contentspan">{{ item.name }}</span>
-        <span class="contentspan secondspan">时间 {{ item.reachtime }} ~ {{ item.leavetime }}</span>
-        <span class="contentspan secondspan">位置 {{ item.placeName }}</span>
+        <span class="contentspan">{{ item.ruleName }}</span>
+        <span class="contentspan secondspan" v-if="item.ruleType === '固定上下班'">时间 {{ item.attendceTime.workTime[0].startTime }} ~ {{ item.attendceTime.workTime[0].endtime }}</span>
+        <span class="contentspan secondspan" v-if="item.ruleType === '按班次上下班'">班次 {{ item.attendceTime.shiftList[0].startTime }} ~ {{ item.attendceTime.shiftList[0].endtime }}</span>
+        <span class="contentspan secondspan" v-if="item.ruleType === '自由上下班'">工作日 {{ item.attendceTime.weekDay }} ~ {{ item.leavetime.weekDay }}</span>
+        <span class="contentspan secondspan">位置 {{ item.attendceTime.position[0].name }}</span>
       </div>
       <div class="rightside">
         <i class="fa fastyle fa-angle-right" />
@@ -83,11 +85,10 @@ export default {
       this.$router.push('/addadmin')
     },
     getInit () {
-      this.$axios.get('/api/rule/e/1234567').then(res => {
+      this.$axios.get('/api/rule/').then(res => {
         if (res.data.flag) {
           this.ruledata = res.data.data
         }
-        console.log('222222222')
         console.log(res)
       })
     }

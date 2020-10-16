@@ -12,11 +12,11 @@
       </div>
       <div class="modal-body">
         <div class="timeChoice">
-          <div>
+          <!-- <div>
             <basic-select :values="daytype" @select="getDayValue"></basic-select>
-          </div>
+          </div> -->
           <div class="timeChoice">
-            <basic-select :values="hourList" @select="getHourValue"></basic-select>
+            <basic-select :values="hourList" :evalue="hour" @select="getHourValue"></basic-select>
             <span style="margin: auto;">:</span>
             <basic-select :values="minuteList" @select="getMinuteValue"></basic-select>
           </div>
@@ -60,10 +60,29 @@ export default {
       minute: this.minuteInfo
     }
   },
+  created: function () {
+    this.getList()
+  },
   components: {
     basicSelect
   },
   methods: {
+    getList () {
+      let index = this.hourList.indexOf(this.hour)
+      let tepmvalues = []
+      let tempvalues = []
+      if (index !== 0) {
+        tepmvalues = this.hourList.slice(0, index)
+        tempvalues = this.hourList.slice(index)
+        this.hourList = tempvalues.concat(tepmvalues)
+      }
+      index = this.minuteList.indexOf(this.minute)
+      if (index !== 0) {
+        tepmvalues = this.minuteList.slice(0, index)
+        tempvalues = this.minuteList.slice(index)
+        this.minuteList = tempvalues.concat(tepmvalues)
+      }
+    },
     closeSelf () {
       this.$emit('closepicker')
     },

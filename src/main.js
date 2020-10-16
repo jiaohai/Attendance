@@ -5,7 +5,6 @@ import App from './App'
 import router from './router'
 import VueTouch from 'vue-touch'
 import Axios from 'axios'
-
 import 'font-awesome/css/font-awesome.css'
 
 Vue.config.productionTip = false
