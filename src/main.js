@@ -7,6 +7,12 @@ import VueTouch from 'vue-touch'
 import Axios from 'axios'
 import 'font-awesome/css/font-awesome.css'
 
+import ElementUI from 'element-ui'
+import echarts from 'echarts'
+import 'element-ui/lib/theme-chalk/index.css'
+Vue.use(ElementUI)
+Vue.prototype.$echarts = echarts
+
 Vue.config.productionTip = false
 Vue.use(VueTouch, {name: 'v-touch'})
 Vue.prototype.$axios = Axios

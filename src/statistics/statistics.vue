@@ -13,6 +13,17 @@
     <div class="statisticspiece">
       <span class="stcspan">上下班统计</span>
       <div class="cotentinfo">
+        <el-row>
+          <div class="vol-data">
+            <div id="myChart" :style="{width:'100%',height:'300px'}">
+            </div>
+          </div>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="8"><div class="grid-content bg-purple"></div>正常:<span style="color: #06b11c">{{normal}}</span></el-col>
+          <el-col :span="8"><div class="grid-content bg-purple"></div>异常:<span style="color: red">{{error}}</span></el-col>
+          <el-col :span="8"><div class="grid-content bg-purple"></div>缺勤:<span style="color: gold">{{absence}}</span></el-col>
+        </el-row>
       </div>
     </div>
     <div class="statisticspiece">
@@ -43,6 +54,9 @@
 
 <script>
 import Calendar from '../components/calendar'
+import {
+  getRecordByDate
+} from '../api/record/record'
 
 export default {
   name: 'statistics',
@@ -52,13 +66,112 @@ export default {
       showcheck: true,
       showstatistics: true,
       showrule: true,
-      showsetting: true
+      showsetting: true,
+      normal: 0,
+      error: 0,
+      absence: 0,
+      recordDate: '2020-10-12',
+      recordDataList: [],
+      statusArr: ['正常', '异常', '缺勤']
     }
   },
   components: {
     Calendar
   },
+  mounted () {
+    this.getData()
+  },
   methods: {
+    drawLine (){
+      console.log(this.recordDataList)
+      let myChart = this.$echarts.init(document.getElementById('myChart'))
+      let option = {
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b}: {c} ({d}%)'
+        },
+        legend: {
+          orient: 'vertical',
+          left: 10,
+          data: ['正常', '异常', '缺勤']
+        },
+        // 设置饼状图每个颜色块的颜色
+        color : [ 'red', 'green', 'yellow' ],
+        series: [
+          {
+            name: '上下班统计',
+            type: 'pie',
+            radius: ['50%', '70%'],
+            avoidLabelOverlap: false,
+            label: {
+              show: false,
+              position: 'center'
+            },
+            emphasis: {
+              label: {
+                show: true,
+                fontSize: '30',
+                fontWeight: 'bold'
+              }
+            },
+            labelLine: {
+              show: false
+            },
+            data: this.recordDataList
+          }
+        ]
+      }
+      myChart.setOption(option)
+    },
+    checkData (recordDataList){
+      if (!this.inArray(recordDataList, '正常')){
+        const obj = {}
+        obj.value = 0
+        obj.name = '正常'
+        this.recordDataList.push(obj)
+      }
+      if (!this.inArray(recordDataList, '异常')){
+        const obj = {}
+        obj.value = 0
+        obj.name = '异常'
+        this.recordDataList.push(obj)
+      }
+      if (!this.inArray(recordDataList, '缺勤')){
+        const obj = {}
+        obj.value = 0
+        obj.name = '缺勤'
+        this.recordDataList.push(obj)
+      }
+      this.drawLine()
+    },
+    getData (){
+      getRecordByDate(this.recordDate).then(res => {
+        const list = []
+        for (let item in res.data.data){
+          const obj = {}
+          if (res.data.data[item].status === '正常'){
+            this.normal = res.data.data[item].count
+          } else if (res.data.data[item].status === '异常'){
+            this.error = res.data.data[item].count
+          } else {
+            this.absence = res.data.data[item].count
+          }
+          obj.value = res.data.data[item].count
+          obj.name = res.data.data[item].status
+          list.push(obj)
+        }
+        this.recordDataList = list
+        this.checkData(this.recordDataList)
+      })
+    },
+    inArray (array, search) {
+      for (let i in array) {
+        if (array[i].name === search) {
+          return true
+        }
+      }
+      return false
+    },
     goBackThing () {
       window.history.go(-1)
     },
