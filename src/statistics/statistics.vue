@@ -96,7 +96,7 @@ export default {
           data: ['正常', '异常', '缺勤']
         },
         // 设置饼状图每个颜色块的颜色
-        color : [ 'red', 'green', 'yellow' ],
+        // color : [ 'red', 'green', 'yellow' ],
         series: [
           {
             name: '上下班统计',
@@ -126,22 +126,33 @@ export default {
     checkData (recordDataList){
       if (!this.inArray(recordDataList, '正常')){
         const obj = {}
+        const itemStyle = {}
         obj.value = 0
         obj.name = '正常'
+        itemStyle.color = 'green'
+        obj.itemStyle = itemStyle
         this.recordDataList.push(obj)
       }
       if (!this.inArray(recordDataList, '异常')){
         const obj = {}
+        const itemStyle = {}
         obj.value = 0
         obj.name = '异常'
+        itemStyle.color = 'red'
+        obj.itemStyle = itemStyle
         this.recordDataList.push(obj)
       }
       if (!this.inArray(recordDataList, '缺勤')){
         const obj = {}
+        const itemStyle = {}
         obj.value = 0
         obj.name = '缺勤'
+        itemStyle.color = 'yellow'
+        obj.itemStyle = itemStyle
         this.recordDataList.push(obj)
       }
+      // 设置recordList颜色
+
       this.drawLine()
     },
     getData (){
@@ -149,15 +160,20 @@ export default {
         const list = []
         for (let item in res.data.data){
           const obj = {}
+          const itemStyle = {}
           if (res.data.data[item].status === '正常'){
             this.normal = res.data.data[item].count
+            itemStyle.color = 'green'
           } else if (res.data.data[item].status === '异常'){
             this.error = res.data.data[item].count
+            itemStyle.color = 'red'
           } else {
             this.absence = res.data.data[item].count
+            itemStyle.color = 'yellow'
           }
           obj.value = res.data.data[item].count
           obj.name = res.data.data[item].status
+          obj.itemStyle = itemStyle
           list.push(obj)
         }
         this.recordDataList = list
