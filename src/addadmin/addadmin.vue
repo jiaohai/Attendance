@@ -1,19 +1,20 @@
 <template>
-  <div class="attendance">
+  <div class="attendance" style="height: 100%">
     <div class="heading">
       <div class="black common" @click="goBackThing">
         <i class="fa fa-arrow-left" />
       </div>
       <div class="title common" style="align-items:center;">{{ msg }}</div>
       <div class="more common">
-        <i class="fa fa-plus" @click="showEditGroup(newAttendanceGroup)" />
+        <i class="fa fa-plus" @click="showEditGroup(newAttendanceGroup, 'new')" />
       </div>
     </div>
-    <div class="contentbody">
-      <div class="uncommonpiece" v-for="(item, index) in attendanceList" :key="index" @click="showEditGroup(item)">
+    <div class="contentbody" style="height: calc(100% - 86px);">
+      <div class="uncommonpiece" v-for="(item, index) in attendanceList" :key="index" @click="showEditGroup(item, 'edit')">
         <div class="rulecotent">
-          <span class="contentspan">{{ item.gName }}</span>
-          <span class="contentspan secondspan">管理员：{{ item.admins[0].name }}</span>
+          <span class="contentspan">{{ item.name }}</span>
+          <span class="contentspan secondspan" v-if="item.admins.length === 0" >管理员：</span>
+          <span class="contentspan secondspan" v-for="(citem, cindex) in item.admins" :key="'a' + cindex">管理员：{{ citem.name }}</span>
         </div>
         <div class="rightside">
           <i class="fa fastyle fa-angle-right" />
@@ -69,9 +70,10 @@ export default {
       editGroupData: {},
       newAttendanceGroup: {
         name: '',
-        people: [],
-        department: [],
-        des: ''
+        admins: [],
+        departs: [],
+        users: [],
+        descrise: ''
       }
     }
   },
@@ -112,15 +114,22 @@ export default {
     gosetting () {
       this.$router.push('/addadmin')
     },
-    showEditGroup (item) {
+    showEditGroup (item, type) {
+      console.log(type)
       this.editGroupData = item
+      if (type === 'edit') { this.needEdit = true }
       this.isEdit = !this.isEdit
     },
     getEdit (msg) {
       this.editGroupData = msg
+      if (!this.needEdit) {
+        this.attendanceList.push(msg)
+      }
+      this.needEdit = false
     },
     closeEdit () {
       this.isEdit = !this.isEdit
+      this.needEdit = false
     }
   }
 }
@@ -141,7 +150,7 @@ export default {
 
   .contentbody{
     width: 100%;
-    height: calc(100% - 85px);
+    height: calc(100% - 45px);
     overflow-y: scroll;
     overflow-x: hidden;
     /* position: relative; */

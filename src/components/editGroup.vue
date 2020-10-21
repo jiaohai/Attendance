@@ -28,7 +28,8 @@
               <span>考勤组范围</span>
             </div>
             <div class="descrip">
-              <span class="spanstyle" v-for="(item, index) in newGroup.department" :key="index" >{{ item.name }}</span>
+              <span class="spanstyle" v-for="(item, index) in newGroup.departs" :key="'d' + index" >{{ item.name }}</span>
+              <span class="spanstyle" v-for="(item, index) in newGroup.users" :key="'u' + index" >{{ item.name }}</span>
             </div>
             <i class="fa fastyle fa-angle-right" />
           </div>
@@ -39,7 +40,7 @@
               <span>考勤组管理员</span>
             </div>
             <div class="descrip">
-              <span class="spanstyle" v-for="(item, index) in newGroup.people" :key="index" >{{ item.name }}</span>
+              <span class="spanstyle" v-for="(item, index) in newGroup.admins" :key="'a' + index" >{{ item.name }}</span>
             </div>
             <i class="fa fastyle fa-angle-right" />
           </div>
@@ -50,12 +51,12 @@
               <span>描述</span>
             </div>
             <div class="descrip" style="display: inline-flex;">
-              <span class="spanstyle">{{ newGroup.des }}</span>
+              <span class="spanstyle">{{ newGroup.descrise }}</span>
             </div>
             <i class="fa fastyle fa-angle-right" />
           </div>
         </div>
-        <div class="commonpiece" @click="delGruop" v-if="isEditGroup">
+        <div class="commonpiece" @click="delGroup" v-if="isEditGroup">
           <div class="titlehead" style="display: inline-flex; width:100%;">
             <div class="titles" style="text_agin: center">
               <span>删除</span>
@@ -64,7 +65,7 @@
         </div>
       </div>
       <input-modal v-if="showInput" :titlename="'请输入'" :inputtxt="inputTxt" @getinput="getInput" v-on:closeinput="closeInput"></input-modal>
-      <search-modal v-if="showSearch" :titlename="'添加'" :showAdd="isexist" :existlist="existList" @getsearch="getSearch" v-on:closesearch="closeSearch"></search-modal>
+      <search-modal v-if="showSearch" :titlename="'编辑'" :existlist="existList" @getsearch="getSearch" v-on:closesearch="closeSearch"></search-modal>
     </div>
   </div>
 </template>
@@ -92,9 +93,13 @@ export default {
       isexist: false,
       showSearch: false,
       showInput: false,
+      onlyUser: false,
       marktype: '',
       inputTxt: '',
-      existList: [],
+      existList: {
+        departs: [],
+        users: []
+      },
       user: {},
       newGroup: this.existdate
     }
@@ -110,8 +115,9 @@ export default {
       this.$emit('closeedit')
     },
     saveGrup () {
-      this.$emit('getedit', this.newGroup)
-      this.closeSelf()
+      this.updateGroup()
+      // this.$emit('getedit', this.newGroup)
+      // this.closeSelf()
     },
     showInputModal (mark) {
       this.marktype = mark
@@ -128,7 +134,7 @@ export default {
         this.newGroup.name = msg
       }
       if (this.marktype === 'attenddes') {
-        this.newGroup.des = msg
+        this.newGroup.descrise = msg
       }
     },
     closeInput () {
@@ -137,10 +143,13 @@ export default {
     showSearchModal (mark) {
       this.marktype = mark
       if (mark === 'attendrange') {
-        this.existList = this.newGroup.department
+        this.existList.departs = this.newGroup.departs
+        this.existList.users = this.newGroup.users
       }
       if (mark === 'attendpeople') {
-        this.existList = this.newGroup.people
+        this.onlyUser = true
+        this.existList.departs = []
+        this.existList.users = this.newGroup.admins
       }
       if (this.existList.length === 0) {
         this.isexist = true
@@ -151,14 +160,99 @@ export default {
     },
     getSearch (msg) {
       if (this.marktype === 'attendrange') {
-        this.newGroup.department = msg
+        this.newGroup.departs = msg.departs
+        this.newGroup.users = msg.users
       }
       if (this.marktype === 'attendpeople') {
-        this.newGroup.people = msg
+        this.onlyUser = false
+        this.newGroup.admins = msg.users
       }
     },
     closeSearch () {
       this.showSearch = !this.showSearch
+    },
+    getAdminId () {
+      var adminId = []
+      for (var index in this.newGroup.admins) {
+        adminId.push(this.newGroup.admins[index].employeeId)
+      }
+      return adminId.toString()
+    },
+    getDepartId () {
+      var adminId = []
+      for (var index in this.newGroup.departs) {
+        adminId.push(this.newGroup.departs[index].departmentId)
+      }
+      return adminId.toString()
+    },
+    getUserId () {
+      var adminId = []
+      for (var index in this.newGroup.users) {
+        adminId.push(this.newGroup.users[index].employeeId)
+      }
+      return adminId.toString()
+    },
+    updateGroup () {
+      console.log('111111111')
+      var groupparam = {
+        group: {
+          id: this.newGroup.id,
+          groupName: this.newGroup.name,
+          administratorsId: this.getAdminId(),
+          descrise: this.newGroup.descrise
+        },
+        departs: this.getDepartId(),
+        users: this.getUserId()
+      }
+      console.log(groupparam)
+      if (this.isEditGroup) {
+        console.log('update group')
+        this.$axios.put('/groupApi/group/update/', {
+          group: {
+            id: this.newGroup.id,
+            groupName: this.newGroup.name,
+            administratorsId: this.getAdminId(),
+            descrise: this.newGroup.descrise
+          },
+          departs: this.getDepartId(),
+          users: this.getUserId()
+        }).then(res => {
+          if (res.data.flag) {
+            alert('修改成功')
+            this.$router.go(0)
+            // this.$router.push('/addadmin')
+          }
+          console.log(res)
+        })
+      } else {
+        console.log('create group')
+        this.$axios.post('/groupApi/group/add/', {
+          group: {
+            groupName: this.newGroup.name,
+            administratorsId: this.getAdminId(),
+            descrise: this.newGroup.descrise
+          },
+          departs: this.getDepartId(),
+          users: this.getUserId()
+        }).then(res => {
+          if (res.data.flag) {
+            alert('创建成功')
+            this.$router.go(0)
+            // this.$router.push('/addadmin')
+          }
+          console.log(res)
+        })
+      }
+    },
+    delGroup () {
+      console.log('delete group')
+      this.$axios.delete('/groupApi/group/delete/' + this.newGroup.id).then(res => {
+        if (res.data.flag) {
+          alert('删除成功')
+          this.$router.go(0)
+        }
+        console.log(res)
+      })
     }
   }
 }

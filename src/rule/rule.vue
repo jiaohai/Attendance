@@ -1,25 +1,29 @@
 <template>
-  <div class="attendance">
+  <div class="attendance" style="height: 100%">
     <div class="heading">
       <div class="black common" @click="goBackThing">
         <i class="fa fa-arrow-left" />
       </div>
       <div class="title common" style="align-items:center;">{{ msg }}</div>
       <div class="more common">
-        <i class="fa fa-plus" @click="goAddRule" />
+        <i class="fa fa-plus" @click="goAddRule(newData)" />
       </div>
     </div>
     <div v-if="ruledata.length === 0">
       <span>没有打卡规则，请添加打卡规则</span>
     </div>
-    <div class="uncommonpiece" v-for="item in ruledata" :key="item.id">
-      <div class="rulecotent">
-        <span class="contentspan">{{ item.name }}</span>
-        <span class="contentspan secondspan">时间 {{ item.reachtime }} ~ {{ item.leavetime }}</span>
-        <span class="contentspan secondspan">位置 {{ item.placeName }}</span>
-      </div>
-      <div class="rightside">
-        <i class="fa fastyle fa-angle-right" />
+    <div class="contentbody" style="height: calc(100% - 86px);">
+      <div class="uncommonpiece" v-for="item in ruledata" :key="item.id" @click="goAddRule(item)">
+        <div class="rulecotent">
+          <span class="contentspan">{{ item.ruleName }}</span>
+          <span class="contentspan secondspan" v-if="item.ruleType === '固定上下班'">时间 {{ item.attendceTime.workTime[0].startTime }} ~ {{ item.attendceTime.workTime[0].endtime }}</span>
+          <span class="contentspan secondspan" v-if="item.ruleType === '按班次上下班'">班次 {{ item.attendceTime.shiftList[0].startTime }} ~ {{ item.attendceTime.shiftList[0].endtime }}</span>
+          <span class="contentspan secondspan" v-if="item.ruleType === '自由上下班'">工作日 {{ item.attendceTime.weekDay }}</span>
+          <span class="contentspan secondspan">位置 {{ item.attendceTime.position[0].name }}</span>
+        </div>
+        <div class="rightside">
+          <i class="fa fastyle fa-angle-right" />
+        </div>
       </div>
     </div>
     <div class="bottoming">
@@ -53,11 +57,7 @@ export default {
       showstatistics: true,
       showrule: true,
       showsetting: true,
-      ruledata: [
-        // {ruleID: 1, rulename: '打卡规则一', checktime: '周一到周五 ', place: '地点一'},
-        // {ruleID: 2, rulename: '打卡规则二', checktime: '白班，夜班', place: '地点二'},
-        // {ruleID: 3, rulename: '打卡规则三', checktime: '周一到周五', place: '地点三'}
-      ]
+      ruledata: []
     }
   },
   created: function () {
@@ -67,8 +67,13 @@ export default {
     goBackThing () {
       window.history.go(-1)
     },
-    goAddRule () {
-      this.$router.push('/addrule')
+    goAddRule (item) {
+      this.$router.push({
+        name: 'addrule',
+        params: {
+          editData: item
+        }
+      })
     },
     gocheck () {
       this.$router.push('/check')
@@ -83,11 +88,10 @@ export default {
       this.$router.push('/addadmin')
     },
     getInit () {
-      this.$axios.get('/api/rule/e/1234567').then(res => {
+      this.$axios.get('/api/rule/findAll').then(res => {
         if (res.data.flag) {
           this.ruledata = res.data.data
         }
-        console.log('222222222')
         console.log(res)
       })
     }
@@ -136,6 +140,13 @@ export default {
     outline: none;
   }
 
+  .contentbody{
+    width: 100%;
+    height: calc(100% - 45px);
+    overflow-y: scroll;
+    overflow-x: hidden;
+    /* position: relative; */
+  }
   .uncommonpiece{
     display:inline-flex;
     width: 100%;
@@ -156,7 +167,7 @@ export default {
     text-align: right;
   }
   .fastyle{
-    margin-top:50%;
+    margin-top:53%;
     margin-right: 10px;
   }
   .contentspan{

@@ -17,7 +17,7 @@
           </div>
           <div class="descrip">
             <div v-for="(item, index) in tempexist.reportTo" :key="index">
-              <span class="spanstyle" v-if="item.ischeck" >{{ item.dayname }}</span>
+              <span class="spanstyle">{{ item.name }}</span>
             </div>
             <span class="spanstyle" v-if="tempexist.reportTo.length === 0">未设置</span>
           </div>
