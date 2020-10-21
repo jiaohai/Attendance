@@ -15,7 +15,7 @@
           <span>规则类型</span>
         </div>
         <div class="descrip">
-          <span class="spanstyle">{{ ruletpye }}</span>
+          <span class="spanstyle">{{ ruleData.ruleType }}</span>
         </div>
         <i class="fa fastyle fa-angle-right" />
       </div>
@@ -29,7 +29,7 @@
           <span>规则名称</span>
         </div>
         <div class="descrip">
-          <span class="spanstyle">{{ rulename }}</span>
+          <span class="spanstyle">{{ ruleData.ruleName }}</span>
         </div>
         <i class="fa fastyle fa-angle-right" />
       </div>
@@ -40,7 +40,7 @@
           <span>打卡人员</span>
         </div>
         <div class="descrip">
-          <span class="spanstyle" v-for="(item, index) in existlist" :key="index" >{{ item.name }}</span>
+          <span class="spanstyle" v-for="(item, index) in ruleData.DepartmentAndUser" :key="index" >{{ item.name }}</span>
         </div>
         <i class="fa fastyle fa-angle-right" />
       </div>
@@ -50,8 +50,11 @@
         <div class="titles">
           <span>打卡时间</span>
         </div>
-        <div class="descrip">
-          <span class="spanstyle">工作日 {{ workTime[0].starttime }}~{{ workTime[0].endtime }}</span>
+        <div class="descrip" style="display: inline-flex; text-overflow: unset; overflow-x: scroll;">
+          <!-- <span class="spanstyle">工作日 {{ workTime[0].starttime }}~{{ workTime[0].endtime }}</span> -->
+          <div v-for="(item, index) in ruleData.attendceTime.workTime" :key="index">
+            <span class="spanstyle">工作日 {{ item.starttime }}~{{ item.endtime }}</span>
+          </div>
         </div>
         <i class="fa fastyle fa-angle-right" />
       </div>
@@ -62,9 +65,10 @@
           <span>工作日</span>
         </div>
         <div class="descrip" style="display: inline-flex; text-overflow: unset; overflow-x: scroll;" >
-          <div v-for="(item, index) in workDay" :key="index">
+          <span class="spanstyle" >{{ ruleData.attendceTime.weekDay }}</span>
+          <!-- <div v-for="(item, index) in workDay" :key="index">
             <span class="spanstyle" v-if="item.ischeck" >{{ item.dayname }}</span>
-          </div>
+          </div> -->
         </div>
         <i class="fa fastyle fa-angle-right" />
       </div>
@@ -74,10 +78,10 @@
         <div class="titles">
           <span>排班设置</span>
         </div>
-        <div class="descrip" v-if="shiftList.length > 0">
-          <span class="spanstyle" v-for="(item, index) in shiftList" :key="index" >{{ item.name }}</span>
+        <div class="descrip" v-if="ruleData.attendceTime.shiftList.length > 0">
+          <span class="spanstyle" v-for="(item, index) in ruleData.attendceTime.shiftList" :key="index" >{{ item.name }}</span>
         </div>
-        <div class="descrip" v-if="shiftList.length === 0">
+        <div class="descrip" v-if="ruleData.attendceTime.shiftList.length === 0">
           <span class="spanstyle">未设置</span>
         </div>
         <!-- <div class="descrip">
@@ -92,9 +96,9 @@
           <span>打卡位置</span>
         </div>
         <div class="descrip" style="display: inline-flex;">
-          <span class="spanstyle" v-if="workPlace.length === 0">未设置</span>
-          <span class="spanstyle" v-if="workPlace.length === 1">{{ workPlace[0].name }}</span>
-          <span class="spanstyle" v-if="workPlace.length > 1">{{ workPlace[0].name }}等{{ workPlace.length }}个地点</span>
+          <span class="spanstyle" v-if="ruleData.attendceTime.position.length === 0">未设置</span>
+          <span class="spanstyle" v-if="ruleData.attendceTime.position.length === 1">{{ ruleData.attendceTime.position[0].name }}</span>
+          <span class="spanstyle" v-if="ruleData.attendceTime.position.length > 1">{{ ruleData.attendceTime.position[0].name }}等{{ ruleData.attendceTime.position.length }}个地点</span>
         </div>
         <i class="fa fastyle fa-angle-right" />
       </div>
@@ -105,7 +109,7 @@
           <span>加班规则</span>
         </div>
         <div class="descrip" style="display: inline-flex;">
-          <span class="spanstyle">{{ overTime.type }}</span>
+          <span class="spanstyle">{{ ruleData.attendceTime.overTime.type }}</span>
         </div>
         <i class="fa fastyle fa-angle-right" />
       </div>
@@ -357,10 +361,12 @@ export default {
       shiftCycle: [],
       shiftRule: [],
       shiftCont: {},
-      rulePosition: []
+      rulePosition: [],
+      ruleData: {}
     }
   },
   created: function () {
+    this.initData()
   },
   components: {
     selectModal,
@@ -375,6 +381,10 @@ export default {
     moreSetting
   },
   methods: {
+    initData () {
+      this.ruleData = this.$route.params.editData
+      this.ruletpye = this.ruleData.ruleType
+    },
     goBackThing () {
       this.$router.push('/rule')
     },
@@ -512,10 +522,11 @@ export default {
       this.showOver = !this.showOver
     },
     moreSet () {
+      this.moreFactor = this.ruleData.moreFactor
       this.showMoreset = !this.showMoreset
     },
     getMoreset (msg) {
-      this.moreFactor = msg
+      this.ruleData.moreFactor = msg
     },
     closeMore () {
       this.showMoreset = !this.showMoreset

@@ -12,10 +12,17 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/api': {
-        target: 'http://62.234.0.5:12002/',
+        target: 'http://118.24.111.58:12002/',
         changeOrigin: true,
         pathRewrite: {
           '^/api': ''
+        }
+      },
+      '/groupApi': {
+        target: 'http://118.24.111.58:12001/',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/groupApi': ''
         }
       }
     },
@@ -58,7 +65,7 @@ module.exports = {
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/',
+    assetsPublicPath: './',
 
     /**
      * Source Maps

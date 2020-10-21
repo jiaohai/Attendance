@@ -16,7 +16,7 @@
       <div class="commonpiece" v-if="showadd">
         <div class="titlehead" style="display: inline-flex; width:100%;" v-if="issearch">
           <div style="width: 100%; display: inline-flex;">
-            <input id="focusinput" checked autocomplete="off" v-model="inputvlue" placeholder="搜索" v-on:input="searchDate"/>
+            <input id="focusinput" checked autocomplete="off" v-model="inputvlue" placeholder="搜索" v-on:input="getSearchOptions"/>
             <i class="fa fa-close fastyle" v-if="inputvlue" @click="clearSearch" />
           </div>
           <span style="margin: auto 10px auto auto; white-space: nowrap;" @click="goSearch">取消</span>
@@ -27,25 +27,38 @@
       </div>
       <div class="optioncont" v-if="showadd">
         <div class="depatment">
-          <span v-for="(item, index) in depatmentlist" :key="index" @click="getDepartment(item)">
-            {{ item.name }}
-            <i class="fa fa-angle-right" v-if="depatmentlist.length !== index + 1" />
+          <span v-for="(iteml, indexl) in depatmentlist" :key="indexl" @click="getDepartment(iteml)">
+            {{ iteml.name }}
+            <i class="fa fa-angle-right" v-if="depatmentlist.length !== indexl + 1" />
           </span>
         </div>
         <div class="options">
-          <div class="alloption" v-for="(item, index) in datalist" :key="index">
-            <i class="fa fa-circle-o circle" v-if="!item.ischecked" @click="changeCheck(item)"/>
-            <i class="fa fa-check-circle circle " v-if="item.ischecked" @click="changeCheck(item)"/>
-            <div class="user" @click="getNextLevel(item)">
+          <div class="alloption" v-for="(itemd, indexd) in optionData.departs" :key="'fitst' + indexd">
+            <i class="fa fa-circle-o circle" v-if="deparstId.indexOf(itemd.departmentId) === -1 && !parentChecked && !onlyUser" @click="changeCheck(itemd, 'depart')"/>
+            <i class="fa fa-check-circle circle " v-if="deparstId.indexOf(itemd.departmentId) > -1 && !parentChecked  && !onlyUser" @click="changeCheckDel(itemd, 'depart')"/>
+            <i class="fa fa-check-circle circle " v-if="parentChecked  && !onlyUser" />
+            <div class="user" @click="getNextLevel(itemd)">
               <div >
-                <img :src="item.avatarurl" v-if="!item.isdepantment" width="30" height="30" />
-                <i class="fa fa-folder fa-2x" v-if="item.isdepantment" style="width: 30px; height: 30px;" />
+                <i class="fa fa-folder fa-2x" style="width: 30px; height: 30px;" />
               </div>
               <div style="margin: 5px auto auto 0px;">
-                <span style="padding-left: 10px;margin-top: 5px;">{{ item.name }}</span>
+                <span style="padding-left: 10px;margin-top: 5px;">{{ itemd.name }}</span>
               </div>
-              <div v-if="item.isdepantment" style="margin: 5px 10px 5px 5px;">
+              <div style="margin: 5px 10px 5px 5px;">
                 <i class="fa fa-angle-right" />
+              </div>
+            </div>
+          </div>
+          <div class="alloption" v-for="(itemo, indexo) in optionData.users" :key="'second' + indexo">
+            <i class="fa fa-circle-o circle" v-if="usersId.indexOf(itemo.employeeId) === -1 && !parentChecked" @click="changeCheck(itemo, 'user')"/>
+            <i class="fa fa-check-circle circle " v-if="usersId.indexOf(itemo.employeeId) > -1 && !parentChecked" @click="changeCheckDel(itemo, 'user')"/>
+            <i class="fa fa-check-circle circle " v-if="parentChecked  && !onlyUser" />
+            <div class="user">
+              <div >
+                <img :src="itemo.avatarurl" width="30" height="30" />
+              </div>
+              <div style="margin: 5px auto auto 0px;">
+                <span style="padding-left: 10px;margin-top: 5px;">{{ itemo.name }}</span>
               </div>
             </div>
           </div>
@@ -53,15 +66,17 @@
       </div>
       <div class="bottoming" v-if="showadd">
         <div class="checkedlist">
-          <div v-for="(item, index) in existlist" :key="index" style="margin: auto 0px auto 5px;">
-            <div class="checker" v-if="!item.isdepantment" >
-              <img :src="item.avatarurl" v-if="!item.isdepantment" width="30" height="30" />
-            </div>
-            <div class="checker" v-if="item.isdepantment" >
+          <div v-for="(itemi, indexi) in tempexist.departs" :key="'third' + indexi" style="margin: auto 0px auto 5px;">
+            <div class="checker">
               <div style="padding: 5px;">
-                <i class="fa fa-folder fa-1x" v-if="item.isdepantment" />
-                {{ item.name }}
+                <i class="fa fa-folder fa-1x" />
+                {{ itemi.name }}
               </div>
+            </div>
+          </div>
+          <div v-for="(itemu, indexu) in tempexist.users" :key="'foutth' + indexu" style="margin: auto 0px auto 5px;">
+            <div class="checker">
+              <img :src="itemu.avatarurl" width="30" height="30" />
             </div>
           </div>
         </div>
@@ -77,16 +92,28 @@
           </div>
         </div>
         <div class="options">
-          <div class="alloption" v-for="(item, index) in tempexist" :key="index">
+          <div class="alloption" v-for="(iteme, indexe) in tempexist.departs" :key="'fivth' + indexe">
             <div class="user">
               <div >
-                <img :src="item.avatarurl" v-if="!item.isdepantment" width="30" height="30" />
-                <i class="fa fa-folder fa-2x" v-if="item.isdepantment" style="width: 30px; height: 30px;" />
+                <i class="fa fa-folder fa-2x" v-if="!onlyUser" style="width: 30px; height: 30px;" />
               </div>
               <div style="margin: 5px auto auto 0px;">
-                <span style="padding-left: 10px;margin-top: 5px;">{{ item.name }}</span>
+                <span style="padding-left: 10px;margin-top: 5px;">{{ iteme.name }}</span>
               </div>
-              <div v-if="isedit" style="margin: 5px 10px 5px 5px;" @click="delDate(item)">
+              <div v-if="isedit" style="margin: 5px 10px 5px 5px;" @click="delDate(iteme, 'depart')">
+                <i class="fa fa-close" />
+              </div>
+            </div>
+          </div>
+          <div class="alloption" v-for="(itemr, indexr) in tempexist.users" :key="'sixth' + indexr">
+            <div class="user">
+              <div >
+                <img :src="itemr.avatarurl" width="30" height="30" />
+              </div>
+              <div style="margin: 5px auto auto 0px;">
+                <span style="padding-left: 10px;margin-top: 5px;">{{ itemr.name }}</span>
+              </div>
+              <div v-if="isedit" style="margin: 5px 10px 5px 5px;" @click="delDate(itemr, 'user')">
                 <i class="fa fa-close" />
               </div>
             </div>
@@ -102,12 +129,16 @@ export default {
   name: 'searchModal',
   props: {
     existlist: {
-      type: Array,
-      default: () => []
+      type: Object,
+      default: () => {}
     },
     titlename: {
       type: String,
-      default: `0`
+      default: ''
+    },
+    onlyUser: {
+      type: Boolean,
+      default: false
     },
     showAdd: {
       type: Boolean,
@@ -156,18 +187,40 @@ export default {
       isedit: false,
       showDel: false,
       issearch: false,
-      showadd: this.showAdd,
-      isshowExist: !this.showAdd,
-      tempexist: this.existlist
+      showadd: true,
+      isshowExist: false,
+      parentChecked: false,
+      parentCheckedID: [],
+      tempexist: this.existlist,
+      departAndUser: [],
+      optionData: {},
+      deparstId: [],
+      usersId: []
     }
   },
   created: function () {
+    this.initData()
   },
   // computed: {
   // },
   // mounted () {
   // },
   methods: {
+    initData () {
+      for (let i = 0; i < this.existlist.departs.length; i++) {
+        this.deparstId.push(this.existlist.departs[i].departmentId)
+        this.departAndUser.push(this.existlist.departs[i])
+      }
+      for (let i = 0; i < this.existlist.users.length; i++) {
+        this.usersId.push(this.existlist.users[i].employeeId)
+        this.departAndUser.push(this.existlist.users[i])
+      }
+      if (this.departAndUser.length > 0) {
+        this.isshowExist = true
+        this.showadd = false
+      }
+      this.getOptions('')
+    },
     closeSelf () {
       this.$emit('closesearch')
     },
@@ -186,33 +239,42 @@ export default {
     saveSearch (iskeyinput) {
       this.isedit = !this.isedit
       this.existlist = this.tempexist
-      // if (this.inputvlue) {
-      //   this.$emit('getsearch', this.inputvlue)
-      // } else {
-      //   if (iskeyinput) {
-      //     return
-      //   }
-      //   this.$emit('getsearch', this.inputtxt)
-      // }
-      // this.closeSelf()
     },
-    searchDate () {
-      // const temppartlist = this.depatmentlist[0]
-      // this.depatmentlist = temppartlist
-      this.datalist = [
-        {
-          name: '部门一',
-          isdepantment: true,
-          ischecked: false,
-          id: 11
-        },
-        {
-          name: '员工一',
-          isdepantment: false,
-          ischecked: false,
-          di: 13
+    getSearchOptions (item) {
+      this.$axios.get('/groupApi/depart/userAndDepart/Search/', {
+        params: {
+          searchKey: '',
+          type: 'group'
         }
-      ]
+      }).then(res => {
+        if (res.data.flag) {
+          this.optionData = res.data.data
+        }
+        console.log(res)
+      })
+    },
+    getOptions (item) {
+      let paramsData
+      if (item === '') {
+        paramsData = {
+          departOnly: false,
+          type: 'group'
+        }
+      } else {
+        paramsData = {
+          departOnly: false,
+          parentId: item,
+          type: 'group'
+        }
+      }
+      this.$axios.get('/groupApi/depart/findNextDepAndEmp/', {
+        params: paramsData
+      }).then(res => {
+        if (res.data.flag) {
+          this.optionData = res.data.data
+        }
+        console.log(res)
+      })
     },
     editList () {
       this.isedit = !this.isedit
@@ -225,78 +287,60 @@ export default {
       const temppartlist = []
       for (let i = 0; i < this.depatmentlist.length; i++) {
         if (this.depatmentlist[i].id === item.id) {
+          temppartlist.push(this.depatmentlist[i])
           break
         }
         temppartlist.push(this.depatmentlist[i])
       }
       this.depatmentlist = temppartlist
-      this.getNextLevel(item)
+      this.getOptions(item.id)
     },
     getNextLevel (item) {
-      if (!item.isdepantment) {
-        return
-      }
-      this.depatmentlist.push(item)
-      if (item.id === 0) {
-        this.datalist = [
-          {
-            name: '部门一',
-            isdepantment: true,
-            ischecked: false,
-            id: 1
-          },
-          {
-            name: '部门二',
-            isdepantment: true,
-            ischecked: false,
-            id: 2
-          },
-          {
-            name: '员工一',
-            isdepantment: false,
-            ischecked: false,
-            di: 3
-          },
-          {
-            name: '员工二',
-            isdepantment: false,
-            ischecked: false,
-            id: 4
-          }
-        ]
-      } else {
-        this.datalist = [
-          {
-            name: '部门一',
-            isdepantment: true,
-            ischecked: false,
-            id: 11
-          },
-          {
-            name: '员工一',
-            isdepantment: false,
-            ischecked: false,
-            di: 13
-          }
-        ]
-      }
-    },
-    changeCheck (item) {
       console.log(item)
-      console.log(this.showAdd)
-      for (let i = 0; i < this.datalist.length; i++) {
-        if (this.datalist[i].name === item.name) {
-          this.datalist[i].ischecked = !this.datalist[i].ischecked
-          if (this.datalist[i].ischecked) {
-            this.existlist.push(this.datalist[i])
-          } else {
-            this.existlist.splice(this.existlist.indexOf(this.datalist[i], 1))
-          }
+      if (item === 0) {
+        console.log('11111111111')
+        this.parentChecked = false
+        this.parentCheckedID = []
+        this.getOptions('')
+      } else {
+        if (this.parentChecked) {
+          this.parentCheckedID.push(item.departmentId)
         }
+        if (this.deparstId.indexOf(item.departmentId) > -1) {
+          this.parentCheckedID.push(item.departmentId)
+          this.parentChecked = true
+        }
+        if (this.parentCheckedID.indexOf(item.departmentId) === -1 && this.parentChecked) {
+          this.parentChecked = true
+        }
+        this.depatmentlist.push(item)
+        this.getOptions(item.departmentId)
       }
     },
-    delDate (item) {
-      this.existlist.splice(this.existlist.indexOf(item, 1))
+    changeCheckDel (item, type) {
+      if (type === 'depart') {
+        this.tempexist.departs.splice(this.tempexist.departs.indexOf(item, 1))
+        this.deparstId.splice(this.deparstId.indexOf(item.departmentId, 1))
+      } else {
+        this.tempexist.users.splice(this.tempexist.users.indexOf(item, 1))
+        this.usersId.splice(this.usersId.indexOf(item.employeeId, 1))
+      }
+    },
+    changeCheck (item, type) {
+      if (type === 'depart') {
+        this.tempexist.departs.push(item)
+        this.deparstId.push(item.departmentId)
+      } else {
+        this.tempexist.users.push(item)
+        this.usersId.push(item.employeeId)
+      }
+    },
+    delDate (item, type) {
+      if (type === 'depart') {
+        this.tempexist.departs.splice(this.tempexist.departs.indexOf(item.departmentId, 1))
+      } else {
+        this.tempexist.users.splice(this.tempexist.users.indexOf(item.employeeId, 1))
+      }
     }
   }
 }
