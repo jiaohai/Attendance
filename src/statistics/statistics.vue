@@ -20,9 +20,9 @@
           </div>
         </el-row>
         <el-row :gutter="20">
-          <el-col :span="8"><div class="grid-content bg-purple"></div>正常:<span style="color: #06b11c">{{normal}}</span></el-col>
-          <el-col :span="8"><div class="grid-content bg-purple"></div>异常:<span style="color: red">{{error}}</span></el-col>
-          <el-col :span="8"><div class="grid-content bg-purple"></div>缺勤:<span style="color: gold">{{absence}}</span></el-col>
+          <el-col :span="8"><div class="grid-content bg-purple"></div>正常:<span style="color: #67C23A">{{normal}}</span></el-col>
+          <el-col :span="8"><div class="grid-content bg-purple"></div>异常:<span style="color: #F56C6C">{{error}}</span></el-col>
+          <el-col :span="8"><div class="grid-content bg-purple"></div>缺勤:<span style="color: #E6A23C">{{absence}}</span></el-col>
         </el-row>
       </div>
     </div>
@@ -129,7 +129,7 @@ export default {
         const itemStyle = {}
         obj.value = 0
         obj.name = '正常'
-        itemStyle.color = 'green'
+        itemStyle.color = '#67C23A'
         obj.itemStyle = itemStyle
         this.recordDataList.push(obj)
       }
@@ -138,7 +138,7 @@ export default {
         const itemStyle = {}
         obj.value = 0
         obj.name = '异常'
-        itemStyle.color = 'red'
+        itemStyle.color = '#F56C6C'
         obj.itemStyle = itemStyle
         this.recordDataList.push(obj)
       }
@@ -147,7 +147,7 @@ export default {
         const itemStyle = {}
         obj.value = 0
         obj.name = '缺勤'
-        itemStyle.color = 'yellow'
+        itemStyle.color = '#E6A23C'
         obj.itemStyle = itemStyle
         this.recordDataList.push(obj)
       }
