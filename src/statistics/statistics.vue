@@ -29,6 +29,20 @@
     <div class="statisticspiece">
       <span class="stcspan">外出统计</span>
       <div class="cotentinfo">
+        <template>
+          <el-row :gutter="40">
+            <el-col :span="4" :offset = "2" v-for="item in recordOutList" :key="item.name">
+              <div class="grid-content">
+                <div style="text-align: center">
+                  <el-avatar :src=item.avatar></el-avatar>
+                </div>
+                <div style="text-align: center">
+                  {{item.name}}
+                </div>
+              </div>
+            </el-col>
+          </el-row>
+        </template>
       </div>
     </div>
     <div class="bottoming">
@@ -55,7 +69,8 @@
 <script>
 import Calendar from '../components/calendar'
 import {
-  getRecordByDate
+  getRecordByDate,
+  getRecordOutByTime
 } from '../api/record/record'
 
 export default {
@@ -72,7 +87,12 @@ export default {
       absence: 0,
       recordDate: '2020-10-12',
       recordDataList: [],
-      statusArr: ['正常', '异常', '缺勤']
+      statusArr: ['正常', '异常', '缺勤'],
+      items:[
+        {message: 'Foo', url : 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'},
+        {message: 'Bar', url : 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'}
+      ],
+      recordOutList:[]
     }
   },
   components: {
@@ -80,6 +100,7 @@ export default {
   },
   mounted () {
     this.getData()
+    this.getRecordOutData()
   },
   methods: {
     drawLine (){
@@ -151,10 +172,10 @@ export default {
         obj.itemStyle = itemStyle
         this.recordDataList.push(obj)
       }
-      // 设置recordList颜色
-
+      // 绘制echarts
       this.drawLine()
     },
+    // 获取上下班统计
     getData (){
       getRecordByDate(this.recordDate).then(res => {
         const list = []
@@ -180,6 +201,13 @@ export default {
         this.checkData(this.recordDataList)
       })
     },
+    // 获取外出统计
+    getRecordOutData (){
+      getRecordOutByTime('2020-10-22').then(res => {
+        this.recordOutList = res.data.data
+      })
+    },
+    // 判断数组中的元素是否包含search
     inArray (array, search) {
       for (let i in array) {
         if (array[i].name === search) {
@@ -291,5 +319,31 @@ export default {
   }
   .colorcommon{
     color: rgb(170, 170, 170);
+  }
+  .el-row {
+    margin-bottom: 20px;
+    /*&:last-child {*/
+     /*margin-bottom: 0;*/
+   /*}*/
+  }
+  .el-col {
+    border-radius: 4px;
+  }
+  .bg-purple-dark {
+    background: #99a9bf;
+  }
+  /*.bg-purple {
+    background: #d3dce6;
+  }*/
+  .bg-purple-light {
+    background: #e5e9f2;
+  }
+  .grid-content {
+    border-radius: 4px;
+    min-height: 36px;
+  }
+  .row-bg {
+    padding: 10px 0;
+    background-color: #f9fafc;
   }
 </style>
