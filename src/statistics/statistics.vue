@@ -184,13 +184,13 @@ export default {
           const itemStyle = {}
           if (res.data.data[item].status === '正常'){
             this.normal = res.data.data[item].count
-            itemStyle.color = 'green'
+            itemStyle.color = '#67C23A'
           } else if (res.data.data[item].status === '异常'){
             this.error = res.data.data[item].count
-            itemStyle.color = 'red'
+            itemStyle.color = '#F56C6C'
           } else {
             this.absence = res.data.data[item].count
-            itemStyle.color = 'yellow'
+            itemStyle.color = '#E6A23C'
           }
           obj.value = res.data.data[item].count
           obj.name = res.data.data[item].status
