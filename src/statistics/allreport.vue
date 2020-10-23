@@ -20,9 +20,9 @@
           </div>
         </el-row>
         <el-row :gutter="20">
-          <el-col :span="8"><div class="grid-content bg-purple"></div>正常:<span style="color: #67C23A">{{normal}}</span></el-col>
-          <el-col :span="8"><div class="grid-content bg-purple"></div>异常:<span style="color: #F56C6C">{{error}}</span></el-col>
-          <el-col :span="8"><div class="grid-content bg-purple"></div>缺勤:<span style="color: #E6A23C">{{absence}}</span></el-col>
+          <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>正常:<span style="color: #67C23A">{{normal}}</span></el-col>
+          <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>异常:<span style="color: #F56C6C">{{error}}</span></el-col>
+          <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>缺勤:<span style="color: #E6A23C">{{absence}}</span></el-col>
         </el-row>
       </div>
     </div>
@@ -40,9 +40,7 @@
 </template>
 
 <script>
-  import {
-    getRecordCountByTime
-  } from '../api/record/record'
+import { getRecordCountByTime } from '../api/record/record'
 
 export default {
   name: 'allreport',
@@ -106,7 +104,7 @@ export default {
       }
       myChart.setOption(option)
     },
-    getRecordCountByTime(){
+    getRecordCountByTime (){
       getRecordCountByTime(this.date).then(res => {
         const list = []
         for (let item in res.data.data){
