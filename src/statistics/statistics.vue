@@ -9,7 +9,7 @@
         月报
       </div>
     </div>
-    <Calendar></Calendar>
+    <Calendar @transferDay="getSelectDate"></Calendar>
     <div class="statisticspiece">
       <span class="stcspan">上下班统计</span>
       <div class="cotentinfo">
@@ -85,7 +85,7 @@ export default {
       normal: 0,
       error: 0,
       absence: 0,
-      recordDate: '2020-10-12',
+      recordDate: new Date(),
       recordDataList: [],
       statusArr: ['正常', '异常', '缺勤'],
       items:[
@@ -203,7 +203,7 @@ export default {
     },
     // 获取外出统计
     getRecordOutData (){
-      getRecordOutByTime('2020-10-22').then(res => {
+      getRecordOutByTime(this.recordDate).then(res => {
         this.recordOutList = res.data.data
       })
     },
@@ -215,6 +215,12 @@ export default {
         }
       }
       return false
+    },
+    getSelectDate (msg) {
+      this.recordDate = msg.date
+      // 重新加载数据
+      this.getData()
+      this.getRecordOutData()
     },
     goBackThing () {
       window.history.go(-1)
