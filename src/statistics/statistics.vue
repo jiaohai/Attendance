@@ -9,15 +9,40 @@
         月报
       </div>
     </div>
-    <Calendar></Calendar>
+    <Calendar @transferDay="getSelectDate"></Calendar>
     <div class="statisticspiece">
       <span class="stcspan">上下班统计</span>
       <div class="cotentinfo">
+        <el-row>
+          <div class="vol-data">
+            <div id="myChart" :style="{width:'100%',height:'300px'}">
+            </div>
+          </div>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="6" :offset = "2"><div class="grid-content bg-purple"></div>正常:<span style="color: #67C23A">{{normal}}</span></el-col>
+          <el-col :span="6" :offset = "2"><div class="grid-content bg-purple"></div>异常:<span style="color: #F56C6C">{{error}}</span></el-col>
+          <el-col :span="6" :offset = "2"><div class="grid-content bg-purple"></div>缺勤:<span style="color: #E6A23C">{{absence}}</span></el-col>
+        </el-row>
       </div>
     </div>
     <div class="statisticspiece">
       <span class="stcspan">外出统计</span>
       <div class="cotentinfo">
+        <template>
+          <el-row :gutter="40">
+            <el-col :span="4" :offset = "2" v-for="item in recordOutList" :key="item.name">
+              <div class="grid-content">
+                <div style="text-align: center">
+                  <el-avatar :src=item.avatar></el-avatar>
+                </div>
+                <div style="text-align: center">
+                  {{item.name}}
+                </div>
+              </div>
+            </el-col>
+          </el-row>
+        </template>
       </div>
     </div>
     <div class="bottoming">
@@ -43,6 +68,10 @@
 
 <script>
 import Calendar from '../components/calendar'
+import {
+  getRecordByDate,
+  getRecordOutByTime
+} from '../api/record/record'
 
 export default {
   name: 'statistics',
@@ -52,13 +81,147 @@ export default {
       showcheck: true,
       showstatistics: true,
       showrule: true,
-      showsetting: true
+      showsetting: true,
+      normal: 0,
+      error: 0,
+      absence: 0,
+      recordDate: new Date(),
+      recordDataList: [],
+      statusArr: ['正常', '异常', '缺勤'],
+      items:[
+        {message: 'Foo', url : 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'},
+        {message: 'Bar', url : 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'}
+      ],
+      recordOutList:[]
     }
   },
   components: {
     Calendar
   },
+  mounted () {
+    this.getData()
+    this.getRecordOutData()
+  },
   methods: {
+    drawLine (){
+      console.log(this.recordDataList)
+      let myChart = this.$echarts.init(document.getElementById('myChart'))
+      let option = {
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b}: {c} ({d}%)'
+        },
+        legend: {
+          orient: 'vertical',
+          left: 10,
+          data: ['正常', '异常', '缺勤']
+        },
+        // 设置饼状图每个颜色块的颜色
+        // color : [ 'red', 'green', 'yellow' ],
+        series: [
+          {
+            name: '上下班统计',
+            type: 'pie',
+            radius: ['50%', '70%'],
+            avoidLabelOverlap: false,
+            label: {
+              show: false,
+              position: 'center'
+            },
+            emphasis: {
+              label: {
+                show: true,
+                fontSize: '30',
+                fontWeight: 'bold'
+              }
+            },
+            labelLine: {
+              show: false
+            },
+            data: this.recordDataList
+          }
+        ]
+      }
+      myChart.setOption(option)
+    },
+    checkData (recordDataList){
+      if (!this.inArray(recordDataList, '正常')){
+        const obj = {}
+        const itemStyle = {}
+        obj.value = 0
+        obj.name = '正常'
+        itemStyle.color = '#67C23A'
+        obj.itemStyle = itemStyle
+        this.recordDataList.push(obj)
+      }
+      if (!this.inArray(recordDataList, '异常')){
+        const obj = {}
+        const itemStyle = {}
+        obj.value = 0
+        obj.name = '异常'
+        itemStyle.color = '#F56C6C'
+        obj.itemStyle = itemStyle
+        this.recordDataList.push(obj)
+      }
+      if (!this.inArray(recordDataList, '缺勤')){
+        const obj = {}
+        const itemStyle = {}
+        obj.value = 0
+        obj.name = '缺勤'
+        itemStyle.color = '#E6A23C'
+        obj.itemStyle = itemStyle
+        this.recordDataList.push(obj)
+      }
+      // 绘制echarts
+      this.drawLine()
+    },
+    // 获取上下班统计
+    getData (){
+      getRecordByDate(this.recordDate).then(res => {
+        const list = []
+        for (let item in res.data.data){
+          const obj = {}
+          const itemStyle = {}
+          if (res.data.data[item].status === '正常'){
+            this.normal = res.data.data[item].count
+            itemStyle.color = '#67C23A'
+          } else if (res.data.data[item].status === '异常'){
+            this.error = res.data.data[item].count
+            itemStyle.color = '#F56C6C'
+          } else {
+            this.absence = res.data.data[item].count
+            itemStyle.color = '#E6A23C'
+          }
+          obj.value = res.data.data[item].count
+          obj.name = res.data.data[item].status
+          obj.itemStyle = itemStyle
+          list.push(obj)
+        }
+        this.recordDataList = list
+        this.checkData(this.recordDataList)
+      })
+    },
+    // 获取外出统计
+    getRecordOutData (){
+      getRecordOutByTime(this.recordDate).then(res => {
+        this.recordOutList = res.data.data
+      })
+    },
+    // 判断数组中的元素是否包含search
+    inArray (array, search) {
+      for (let i in array) {
+        if (array[i].name === search) {
+          return true
+        }
+      }
+      return false
+    },
+    getSelectDate (msg) {
+      this.recordDate = msg.date
+      // 重新加载数据
+      this.getData()
+      this.getRecordOutData()
+    },
     goBackThing () {
       window.history.go(-1)
     },
@@ -162,5 +325,31 @@ export default {
   }
   .colorcommon{
     color: rgb(170, 170, 170);
+  }
+  .el-row {
+    margin-bottom: 20px;
+    /*&:last-child {*/
+     /*margin-bottom: 0;*/
+   /*}*/
+  }
+  .el-col {
+    border-radius: 4px;
+  }
+  .bg-purple-dark {
+    background: #99a9bf;
+  }
+  /*.bg-purple {
+    background: #d3dce6;
+  }*/
+  .bg-purple-light {
+    background: #e5e9f2;
+  }
+  .grid-content {
+    border-radius: 4px;
+    min-height: 36px;
+  }
+  .row-bg {
+    padding: 10px 0;
+    background-color: #f9fafc;
   }
 </style>
