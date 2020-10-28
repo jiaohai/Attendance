@@ -218,6 +218,9 @@ export default {
     },
     getSelectDate (msg) {
       this.recordDate = msg.date
+      this.normal = 0
+      this.error = 0
+      this.absence = 0
       // 重新加载数据
       this.getData()
       this.getRecordOutData()
