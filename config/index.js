@@ -10,9 +10,6 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-<<<<<<< HEAD
-    proxyTable: {},
-=======
     proxyTable: {
       '/api': {
         target: 'http://118.24.111.58:12002/',
@@ -29,7 +26,6 @@ module.exports = {
         }
       }
     },
->>>>>>> aef6fe0... group data show
 
     // Various Dev Server settings
     host: '0.0.0.0', // can be overwritten by process.env.HOST
