@@ -1,5 +1,5 @@
 {
-  "name": "attendance",
+  "name": "test1",
   "version": "1.0.0",
   "description": "A Vue.js project",
   "author": "jiaohai",
@@ -11,6 +11,7 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "moment": "^2.22.2",
     "axios": "^0.20.0",
     "echarts": "^4.9.0",
     "element-ui": "^2.13.2",

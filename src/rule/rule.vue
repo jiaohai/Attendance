@@ -16,10 +16,18 @@
       <div class="uncommonpiece" v-for="item in ruledata" :key="item.id" @click="goAddRule(item)">
         <div class="rulecotent">
           <span class="contentspan">{{ item.ruleName }}</span>
-          <span class="contentspan secondspan" v-if="item.ruleType === '固定上下班'">时间 {{ item.attendceTime.workTime[0].startTime }} ~ {{ item.attendceTime.workTime[0].endtime }}</span>
-          <span class="contentspan secondspan" v-if="item.ruleType === '按班次上下班'">班次 {{ item.attendceTime.shiftList[0].startTime }} ~ {{ item.attendceTime.shiftList[0].endtime }}</span>
-          <span class="contentspan secondspan" v-if="item.ruleType === '自由上下班'">工作日 {{ item.attendceTime.weekDay }}</span>
-          <span class="contentspan secondspan">位置 {{ item.attendceTime.position[0].name }}</span>
+          <span class="contentspan secondspan" v-if="item.ruleType === '固定上下班'">
+            时间
+            <span v-for="(itmes, index) in item.schedule" :key="index + 's'">{{ itmes.workTime[0].startTime }} ~ {{ itmes.workTime[0].endTime }}</span>
+          </span>
+          <span class="contentspan secondspan" v-if="item.ruleType === '按班次上下班'">
+            班次
+            <span v-for="(itmef, index) in item.shift" :key="index + 'f'">{{ itmef.name }}</span>
+          </span>
+          <span class="contentspan secondspan" v-if="item.ruleType === '自由上下班'">
+            工作日 {{ item.weekDay }}</span>
+          <span class="contentspan secondspan" v-if="item.places.length === 0">位置 未设置</span>
+          <span class="contentspan secondspan" v-if="item.places.length > 0">位置 {{ item.places[0].name }}</span>
         </div>
         <div class="rightside">
           <i class="fa fastyle fa-angle-right" />
@@ -57,7 +65,113 @@ export default {
       showstatistics: true,
       showrule: true,
       showsetting: true,
-      ruledata: []
+      ruledata: [],
+      newData: {
+        id: null,
+        ruleName: '',
+        ruleType: '固定上下班',
+        lateSign: 1,
+        expiration: '不限制',
+        lateSignCount: 30,
+        remind: 0,
+        offWorkRemind: null,
+        workRemind: '十分钟',
+        split: '12:00',
+        workDay: '',
+        overTime: {
+          id: null,
+          type: '按打卡时间',
+          starTtime: null,
+          shortest: null,
+          longest: null,
+          restStart: null,
+          restEnd: null,
+          ruleId: null,
+          deductionName: null,
+          overHour: null,
+          deductHour: null
+        },
+        special: {
+          id: null,
+          holiday: 1,
+          noAttendanceDay: [
+            {
+              date: '',
+              reason: '',
+              id: null,
+              type: 0
+            }
+          ],
+          attendanceDay: [
+            {
+              date: '',
+              reason: '',
+              id: null,
+              type: 1,
+              workTime: [
+                {
+                  id: '',
+                  startTime: '08:00',
+                  endTime: '18:00',
+                  target: null,
+                  scheduleId: 0,
+                  overWorkId: 0,
+                  shiftId: 0
+                }
+              ]
+            }
+          ]
+        },
+        schedule: [
+          {
+            id: null,
+            restStart: '12:00',
+            day: '星期一 星期二 星期三 星期四 星期五',
+            restEnd: '14:00',
+            workTime: [
+              {
+                id: null,
+                startTime: '14:49',
+                endTime: '14:49'
+              }
+            ]
+          }
+        ],
+        shift: [
+          {
+            id: null,
+            restStart: '12:00',
+            name: '',
+            restEnd: '14:00',
+            workTime: [
+              {
+                id: null,
+                startTime: '08:00',
+                endTime: '18:00'
+              }
+            ]
+          }
+        ],
+        shiftCycle: [],
+        shiftRule: [],
+        places: [
+          {
+            id: '',
+            name: '',
+            location: '',
+            longtitude: null,
+            latitude: null,
+            range: '300',
+            ruleId: null
+          }
+        ],
+        whiteList: [],
+        attendance: {
+          users: [],
+          departs: []
+        },
+        supervisors: []
+      }
     }
   },
   created: function () {
@@ -68,6 +182,7 @@ export default {
       window.history.go(-1)
     },
     goAddRule (item) {
+      console.log('2222222')
       this.$router.push({
         name: 'addrule',
         params: {
@@ -88,7 +203,7 @@ export default {
       this.$router.push('/addadmin')
     },
     getInit () {
-      this.$axios.get('/api/rule/findAll').then(res => {
+      this.$axios.get('/api/rule/ruleList').then(res => {
         if (res.data.flag) {
           this.ruledata = res.data.data
         }

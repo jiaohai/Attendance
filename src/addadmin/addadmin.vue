@@ -14,7 +14,8 @@
         <div class="rulecotent">
           <span class="contentspan">{{ item.name }}</span>
           <span class="contentspan secondspan" v-if="item.admins.length === 0" >管理员：</span>
-          <span class="contentspan secondspan" v-for="(citem, cindex) in item.admins" :key="'a' + cindex">管理员：{{ citem.name }}</span>
+          <span class="contentspan secondspan" v-if="item.admins.length === 1" >管理员：{{ item.admins[0].name }}</span>
+          <span class="contentspan secondspan" v-if="item.admins.length > 1" >管理员：{{ item.admins[0].name }} 等{{ item.admins.length }}位</span>
         </div>
         <div class="rightside">
           <i class="fa fastyle fa-angle-right" />

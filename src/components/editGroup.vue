@@ -65,7 +65,7 @@
         </div>
       </div>
       <input-modal v-if="showInput" :titlename="'请输入'" :inputtxt="inputTxt" @getinput="getInput" v-on:closeinput="closeInput"></input-modal>
-      <search-modal v-if="showSearch" :titlename="'编辑'" :existlist="existList" @getsearch="getSearch" v-on:closesearch="closeSearch"></search-modal>
+      <search-modal v-if="showSearch" :titlename="'编辑'" :onlyUser="onlyUser" :existlist="existList" @getsearch="getSearch" v-on:closesearch="closeSearch"></search-modal>
     </div>
   </div>
 </template>
@@ -143,6 +143,7 @@ export default {
     showSearchModal (mark) {
       this.marktype = mark
       if (mark === 'attendrange') {
+        this.onlyUser = false
         this.existList.departs = this.newGroup.departs
         this.existList.users = this.newGroup.users
       }
@@ -399,12 +400,13 @@ export default {
     background-color: white;
   }
   .titles{
+    width: 30%;
     margin-left: 20px;
     margin-top: 10px;
     margin-bottom: 10px;
   }
   .descrip{
-    /* width: calc(75% - 20px); */
+    width: calc(65% - 20px);
     text-align: right;
     margin: auto;
     overflow: hidden;
@@ -413,6 +415,12 @@ export default {
   }
   .fastyle{
     margin: auto;
+    width: 5%;
+  }
+  .spanstyle{
+    margin: auto;
     margin-right: 10px;
+    font-size: small;
+    color:rgb(165, 165, 165);
   }
 </style>

@@ -6,10 +6,11 @@
       </div>
       <div class="title common" style="align-items:center;">{{ msg }}</div>
       <div class="more common">
-        月报
       </div>
     </div>
-    <div class="heading">选择月份组件</div>
+    <div class="heading" style="height: 60px">
+      <monthesSlider @change="getSelectDate"></monthesSlider>
+    </div>
     <div class="statisticspiece">
       <span class="stcspan">上下班统计</span>
       <div class="cotentinfo">
@@ -30,6 +31,9 @@
 
 <script>
 
+import dateSlider from '../components/dateSlider'
+import monthesSlider from '../components/monthesSlider'
+
 export default {
   name: 'singlereport',
   data () {
@@ -38,10 +42,15 @@ export default {
     }
   },
   components: {
+    dateSlider,
+    monthesSlider
   },
   methods: {
     goBackThing () {
       window.history.go(-1)
+    },
+    getSelectDate (msg) {
+      console.log(msg)
     }
   }
 }

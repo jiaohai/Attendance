@@ -293,7 +293,7 @@ export default {
         temppartlist.push(this.depatmentlist[i])
       }
       this.depatmentlist = temppartlist
-      this.getOptions(item.id)
+      this.getOptions(item.departmentId)
     },
     getNextLevel (item) {
       console.log(item)
