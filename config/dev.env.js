@@ -5,5 +5,5 @@ const prodEnv = require('./prod.env')
 module.exports = merge(prodEnv, {
   NODE_ENV: '"development"',
   /*接口地址nginx代理的地址*/
-  VUE_APP_BASE_API : '"http://127.0.0.1:86"'
+  VUE_APP_BASE_API : '"http://localhost:8080"'
 })

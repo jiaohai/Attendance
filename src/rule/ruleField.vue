@@ -99,12 +99,11 @@ rule: {
     ],
     shiftRule: [
       {
-        userId: '',
-        username: '',
+        user: {},
         workInfo: [
           {
-            time: '',
-            dayInfo: '',
+            data: '',
+            shift: {},
           }
         ]
       }

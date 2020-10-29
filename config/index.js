@@ -24,12 +24,26 @@ module.exports = {
         pathRewrite: {
           '^/groupApi': ''
         }
+      },
+      '/record': {
+        target: 'http://118.24.111.58:12003/',
+        changeOrigin: true,
+        // pathRewrite: {
+        //   '^/groupApi': ''
+        // }
+      },
+      '/recordOut': {
+        target: 'http://118.24.111.58:12003/',
+        changeOrigin: true,
+        // pathRewrite: {
+        //   '^/groupApi': ''
+        // }
       }
     },
 
     // Various Dev Server settings
-    host: '0.0.0.0', // can be overwritten by process.env.HOST
-    port: 8088, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
+    host: 'localhost', // can be overwritten by process.env.HOST
+    port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: false,
     errorOverlay: true,
     notifyOnErrors: true,

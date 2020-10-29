@@ -45,7 +45,6 @@
 
 <script>
 
-// import dateSlider from '../components/dateSlider'
 import monthesSlider from '../components/monthesSlider'
 
 import { count } from '../api/record/checkRecord'
@@ -66,7 +65,6 @@ export default {
     }
   },
   components: {
-    // dateSlider,
     monthesSlider
   },
 
