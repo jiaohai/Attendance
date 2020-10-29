@@ -16,7 +16,7 @@
             <span>班次</span>
           </div>
           <div class="descrip" v-if="tempexist.shiftlist.length > 0">
-            <span class="spanstyle" v-for="(item, index) in tempexist.shiftlist" :key="index" >{{ item.name }}</span>
+            <span class="spanstyle" v-for="(item, index) in tempexist.shiftlist" :key="index" >{{ item.shiftName }}</span>
           </div>
           <div class="descrip" v-if="tempexist.shiftlist.length === 0">
             <span class="spanstyle">未设置</span>

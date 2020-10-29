@@ -17,7 +17,7 @@
               <span>日期</span>
             </div>
             <div class="descrip" style="display: inline-flex; text-overflow: unset; overflow-x: scroll;" >
-              <span class="spanstyle">{{ tempexist.day }}</span>
+              <span class="spanstyle">{{ tempexist.date }}</span>
             </div>
             <i class="fa fastyle fa-angle-right" />
           </div>
@@ -34,7 +34,7 @@
                 <span>上班</span>
               </div>
               <div class="descrip">
-                <span class="spanstyle">{{ item.starttime }}</span>
+                <span class="spanstyle">{{ item.startTime }}</span>
               </div>
               <i class="fa fastyle fa-angle-right" />
             </div>
@@ -43,7 +43,7 @@
                 <span>下班</span>
               </div>
               <div class="descrip">
-                <span class="spanstyle">{{ item.endtime }}</span>
+                <span class="spanstyle">{{ item.endTime }}</span>
               </div>
               <i class="fa fastyle fa-angle-right" />
             </div>
@@ -59,7 +59,7 @@
               <span>事由</span>
             </div>
             <div class="descrip">
-              <span class="spanstyle">{{ tempexist.desc }}</span>
+              <span class="spanstyle">{{ tempexist.reason }}</span>
             </div>
             <i class="fa fastyle fa-angle-right" />
           </div>
@@ -67,7 +67,7 @@
       </div>
     </div>
     <date-select v-if="isEdiDate" @getdate="getDate" v-on:closedate="closeDate"></date-select>
-    <time-picker v-if="isEditTime" @savetime="getTime" v-on:closepicker="closeTime"></time-picker>
+    <time-picker v-if="isEditTime" :hourInfo="editHour" :minuteInfo="editMinute" @savetime="getTime" v-on:closepicker="closeTime"></time-picker>
     <input-modal v-if="isEditCause" :titlename="'事由'" :inputtxt="cause" @getinput="getCause" v-on:closeinput="closeCause"></input-modal>
   </div>
 </template>
@@ -114,22 +114,60 @@ export default {
       this.closeSelf()
     },
     addWorkTime () {
-      var timename = '时间段' + (this.tempexist.workTime.length + 1)
-      this.tempexist.workTime.push({name: timename, starttime: '09:00', endtime: '18:00'})
+      let startHour = ''
+      let endHour = ''
+      let timeStart = this.tempexist.workTime[this.tempexist.workTime.length - 1].endTime.split(':')[0]
+      let timeInt = parseInt(timeStart)
+      let minInt = timeInt + 1
+      let endTimeInt = timeInt + 2
+      if (timeInt === 0) {
+        alert('时间不能超过当天24点')
+        return
+      } else if (timeInt === 23) {
+        minInt = 23
+        startHour = '23:01'
+        endHour = '00:00'
+      } else if (timeInt === 22) {
+        startHour = '23:00'
+        endHour = '00:00'
+      } else {
+        startHour = minInt < 10 ? ('0' + minInt + ':' + '00') : (minInt + ':' + '00')
+        endHour = endTimeInt < 10 ? ('0' + endTimeInt + ':' + '00') : (endTimeInt + ':' + '00')
+      }
+      this.tempexist.workTime.push({name: this.tempexist.workTime.length + 1, startTime: startHour, endTime: endHour})
+      console.log(this.tempexist.workTime)
     },
     delWorkTime (item) {
-      this.tempexist.workTime.splice(this.tempexist.workTime.indexOf(item, 1))
+      let tempWorData = []
+      for (let i = 0; i < this.tempexist.workTime.length; i++) {
+        if (this.tempexist.workTime[i].name !== item.name) {
+          tempWorData.push({
+            name: tempWorData.length + 1,
+            startTime: this.tempexist.workTime[i].startTime,
+            endTime: this.tempexist.workTime[i].endTime
+          })
+        }
+      }
+      this.tempexist.workTime = tempWorData
     },
     editDate () {
       this.isEdiDate = !this.isEdiDate
     },
     getDate (msg) {
-      this.tempexist.day = msg
+      this.tempexist.date = msg
     },
     closeDate () {
       this.isEdiDate = !this.isEdiDate
     },
     editTime (timeInfo, timeType) {
+      if (timeType === 'start') {
+        this.editHour = timeInfo.startTime.split(':')[0]
+        this.editMinute = timeInfo.startTime.split(':')[1]
+      } else {
+        this.editHour = timeInfo.endTime.split(':')[0]
+        this.editMinute = timeInfo.endTime.split(':')[1]
+      }
+      this.editTimeType = timeType
       this.editTimeData = timeInfo
       this.editTimeType = timeType
       this.isEditTime = !this.isEditTime
@@ -138,9 +176,9 @@ export default {
       for (let i = 0; i < this.tempexist.workTime.length; i++) {
         if (this.tempexist.workTime[i].name === this.editTimeData.name) {
           if (this.editTimeType === 'start') {
-            this.tempexist.workTime[i].starttime = msg
+            this.tempexist.workTime[i].startTime = msg
           } else {
-            this.tempexist.workTime[i].endtime = msg
+            this.tempexist.workTime[i].endTime = msg
           }
           break
         }
@@ -153,7 +191,7 @@ export default {
       this.isEditCause = !this.isEditCause
     },
     getCause (msg) {
-      this.tempexist.desc = msg
+      this.tempexist.reason = msg
     },
     closeCause () {
       this.isEditCause = !this.isEditCause

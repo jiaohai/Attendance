@@ -16,10 +16,10 @@
             <span>汇报对象</span>
           </div>
           <div class="descrip">
-            <div v-for="(item, index) in tempexist.reportTo" :key="index">
+            <div v-for="(item, index) in tempexist.supervisors" :key="index">
               <span class="spanstyle">{{ item.name }}</span>
             </div>
-            <span class="spanstyle" v-if="tempexist.reportTo.length === 0">未设置</span>
+            <span class="spanstyle" v-if="tempexist.supervisors.length === 0">未设置</span>
           </div>
           <i class="fa fastyle fa-angle-right" />
         </div>
@@ -76,32 +76,32 @@
           <div class="langtitles">
             <span>允许提交补卡申请</span>
           </div>
-          <i class="fa fastyle fa-toggle-on" style="margin-right: 5%" v-if="tempexist.isApplyRcard" @click="isApply"/>
-          <i class="fa fastyle fa-toggle-off" style="margin-right: 5%" v-if="!tempexist.isApplyRcard" @click="isApply"/>
+          <i class="fa fastyle fa-toggle-on" style="margin-right: 5%" v-if="isApplyRcard" @click="isApply"/>
+          <i class="fa fastyle fa-toggle-off" style="margin-right: 5%" v-if="!isApplyRcard" @click="isApply"/>
         </div>
-        <div class="titlehead" v-if="tempexist.isApplyRcard" @click="editCount('dcount')" style="display: inline-flex; width:100%; border-bottom: 1px solid #eee;">
+        <div class="titlehead" v-if="isApplyRcard" @click="editCount('dcount')" style="display: inline-flex; width:100%; border-bottom: 1px solid #eee;">
           <div class="langtitles">
             <span>允许补卡时限</span>
           </div>
           <div class="shortdescrip" >
-            <span class="spanstyle" v-if="tempexist.rcardTimeLimit === 0">不限制</span>
-            <span class="spanstyle" v-if="tempexist.rcardTimeLimit !== 0">{{ tempexist.rcardTimeLimit }}天</span>
+            <span class="spanstyle" v-if="tempexist.expiration === 0">不限制</span>
+            <span class="spanstyle" v-if="tempexist.expiration !== 0">{{ tempexist.expiration }}天</span>
           </div>
           <i class="fa fastyle fa-angle-right" />
         </div>
-        <div class="titlehead" v-if="tempexist.isApplyRcard" @click="editCount('count')" style="display: inline-flex; width:100%;">
+        <div class="titlehead" v-if="isApplyRcard" @click="editCount('count')" style="display: inline-flex; width:100%;">
           <div class="langtitles">
             <span>每月允许补卡次数</span>
           </div>
           <div class="shortdescrip" >
-            <span class="spanstyle" v-if="tempexist.rcardCount === 0">不限制</span>
-            <span class="spanstyle" v-if="tempexist.rcardCount !== 0">{{ tempexist.rcardCount }}次</span>
+            <span class="spanstyle" v-if="tempexist.lateSignCount === 0">不限制</span>
+            <span class="spanstyle" v-if="tempexist.lateSignCount !== 0">{{ tempexist.lateSignCount }}次</span>
           </div>
           <i class="fa fastyle fa-angle-right" />
         </div>
       </div>
     </div>
-    <search-modal v-if="showList" :titlename="'请选择'" :showAdd="hasUser" :existlist="userList" @getsearch="getUser" v-on:closesearch="closeUser"></search-modal>
+    <search-modal v-if="showList" :titlename="'请选择'" :onlyUser="onlyUser" :existlist="userData" @getsearch="getUser" v-on:closesearch="closeUser"></search-modal>
     <remind v-if="showRemind" :existData="remindData" @getremind="getRemind" v-on:closeremind="closeRemind"></remind>
     <time-picker v-if="showBoder" @savetime="getBoder" v-on:closepicker="closeBoder"></time-picker>
     <special-day v-if="showHspday" :existData="hspdayDate" @gethspday="getHspday" v-on:closehspday="closeFspday"></special-day>
@@ -134,11 +134,16 @@ export default {
       showList: false,
       hasUser: false,
       listType: '',
-      userList: [],
+      onlyUser: true,
+      userData: {
+        departs: [],
+        users: []
+      },
       showRemind: false,
       remindData: {},
       showHspday: false,
       hspdayDate: {},
+      isApplyRcard: false,
       showBoder: false,
       inputCount: '0',
       countType: '',
@@ -147,6 +152,7 @@ export default {
     }
   },
   created: function () {
+    this.getIsApply()
   },
   components: {
     searchModal,
@@ -163,30 +169,40 @@ export default {
       this.$emit('getmore', this.tempexist)
       this.closeSelf()
     },
+    getIsApply () {
+      if (this.tempexist.lateSign === 1) {
+        this.isApplyRcard = true
+      } else {
+        this.isApplyRcard = false
+      }
+    },
+    getLateSign () {
+      if (this.isApplyRcard) {
+        this.tempexist.lateSign = 1
+      } else {
+        this.tempexist.lateSign = 0
+      }
+    },
     isApply () {
-      this.tempexist.isApplyRcard = !this.tempexist.isApplyRcard
+      this.isApplyRcard = !this.isApplyRcard
+      this.getLateSign()
     },
     editUser (type) {
       this.listType = type
       if (type === 'report') {
-        this.userList = this.tempexist.reportTo
+        this.userData.users = this.tempexist.supervisors
       }
       if (type === 'white') {
-        this.userList = this.tempexist.whitelist
-      }
-      if (this.userList.length === 0) {
-        this.hasUser = true
-      } else {
-        this.hasUser = false
+        this.userData.users = this.tempexist.whiteList
       }
       this.showList = !this.showList
     },
     getUser (msg) {
       if (this.listType === 'report') {
-        this.tempexist.reportTo = msg
+        this.tempexist.supervisors = msg
       }
       if (this.listType === 'white') {
-        this.tempexist.whitelist = msg
+        this.tempexist.whiteList = msg
       }
     },
     closeUser () {
@@ -215,20 +231,30 @@ export default {
     },
     getCount (msg) {
       if (this.countType === 'dcount') {
-        this.tempexist.rcardTimeLimit = parseInt(msg)
+        this.tempexist.expiration = parseInt(msg)
       } else {
-        this.tempexist.rcardCount = parseInt(msg)
+        this.tempexist.lateSignCount = parseInt(msg)
       }
     },
     closeCount () {
       this.isEditCount = !this.isEditCount
     },
     editHspday () {
-      this.hspdayDate = this.tempexist.hspDay
+      if (!this.tempexist.special) {
+        this.hspdayDate = {
+          id: null,
+          holiday: 1,
+          noAttendanceDay: [],
+          attendanceDay: []
+        }
+      } else {
+        this.hspdayDate = this.tempexist.special
+      }
       this.showHspday = !this.showHspday
     },
     getHspday (msg) {
       this.hspdayDate = msg
+      this.tempexist.special = this.hspdayDate
     },
     closeFspday () {
       this.showHspday = !this.showHspday

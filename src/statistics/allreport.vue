@@ -9,7 +9,9 @@
         月报
       </div>
     </div>
-    <div class="heading">选择月份组件</div>
+    <div class="heading" style="height: 60px">
+      <monthesSlider @change="getSelectDate"></monthesSlider>
+    </div>
     <div class="statisticspiece">
       <span class="stcspan">上下班统计·人</span>
       <div class="cotentinfo">
@@ -40,6 +42,8 @@
 </template>
 
 <script>
+
+import monthesSlider from '../components/monthesSlider'
 import { getRecordCountByTime } from '../api/record/record'
 
 export default {
@@ -58,6 +62,7 @@ export default {
     this.getRecordCountByTime()
   },
   components: {
+    monthesSlider
   },
   methods: {
     goBackThing () {
@@ -168,6 +173,9 @@ export default {
         }
       }
       return false
+    },
+    getSelectDate (msg) {
+      console.log(msg)
     }
   }
 }

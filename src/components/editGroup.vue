@@ -90,7 +90,6 @@ export default {
   data () {
     return {
       msg: '编辑考情组',
-      isexist: false,
       showSearch: false,
       showInput: false,
       onlyUser: false,
@@ -151,11 +150,6 @@ export default {
         this.onlyUser = true
         this.existList.departs = []
         this.existList.users = this.newGroup.admins
-      }
-      if (this.existList.length === 0) {
-        this.isexist = true
-      } else {
-        this.isexist = false
       }
       this.showSearch = !this.showSearch
     },

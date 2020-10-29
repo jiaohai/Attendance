@@ -16,8 +16,8 @@
             <div class="langtitles" >
               <span>法定节假日不用打卡</span>
             </div>
-            <i class="fa fastyle fa-toggle-on" style="margin-right: 5%" v-if="tempexist.isHolidayClock" @click="isClock"/>
-            <i class="fa fastyle fa-toggle-off" style="margin-right: 5%" v-if="!tempexist.isHolidayClock" @click="isClock"/>
+            <i class="fa fastyle fa-toggle-on" style="margin-right: 5%" v-if="isHolidayClock" @click="isClock"/>
+            <i class="fa fastyle fa-toggle-off" style="margin-right: 5%" v-if="!isHolidayClock" @click="isClock"/>
           </div>
         </div>
         <div class="commonpiece">
@@ -26,7 +26,7 @@
           </div>
           <div class="titlehead" v-for="(item, index) in clockDay" :key="index">
           </div>
-          <div class="titlehead" style="display: inline-flex; width:100%;" @click="editDay('clock')">
+          <div class="titlehead" style="display: inline-flex; width:100%;" @click="editDay(attendanceDay, 'clock', -1)">
             <i class="fa fa-plus" style="font-size: large; margin: auto 0px 5px 25px;"/>
             <span style="padding-left: 10px;margin: auto 0px 5px 0px;;">添加打卡时间</span>
           </div>
@@ -37,7 +37,7 @@
           </div>
           <div class="titlehead" v-for="(item, index) in notClockDay" :key="index">
           </div>
-          <div class="titlehead" style="display: inline-flex; width:100%;" @click="editDay('unclock')">
+          <div class="titlehead" style="display: inline-flex; width:100%;" @click="editDay(noAttendanceDay, 'unclock', -1)">
             <i class="fa fa-plus" style="font-size: large; margin: auto 0px 5px 25px;"/>
             <span style="padding-left: 10px;margin: auto 0px 5px 0px;;">添加打卡时间</span>
           </div>
@@ -66,15 +66,43 @@ export default {
   },
   data () {
     return {
+      isHolidayClock: true,
       notClockDay: [],
       clockDay: [],
+      isHoliday: 1,
+      noAttendanceDay: {
+        date: '',
+        reason: '',
+        id: null,
+        type: 0
+      },
+      attendanceDay: {
+        date: '',
+        reason: '',
+        id: null,
+        type: 1,
+        workTime: [
+          {
+            id: '',
+            name: 1,
+            startTime: '08:00',
+            endTime: '18:00'
+          }
+        ]
+      },
       isEditDay: false,
+      editIndex: -1,
       specialDayData: {},
       dayType: 'clock',
       tempexist: this.existData
     }
   },
   created: function () {
+    console.log(this.tempexist)
+    this.isHoliday = this.tempexist.holiday
+    this.clockDay = this.tempexist.attendanceDay
+    this.notClockDay = this.tempexist.noAttendanceDay
+    this.getIsClock()
   },
   components: {
     settingDay
@@ -84,39 +112,48 @@ export default {
       this.$emit('closehspday')
     },
     saveHspday () {
+      this.tempexist.attendanceDay = this.clockDay
+      this.tempexist.noAttendanceDay = this.notClockDay
       this.$emit('gethspday', this.tempexist)
       this.closeSelf()
     },
-    isClock () {
-      this.tempexist.isHolidayClock = !this.tempexist.isHolidayClock
-    },
-    editDay (type) {
-      this.dayType = type
-      if (this.dayType === 'clock') {
-        this.specialDayData = {
-          day: '',
-          desc: '',
-          workTime: [
-            {
-              name: '时间段1',
-              starttime: '08:00',
-              endtime: '18:00'
-            }
-          ]
-        }
+    getIsClock () {
+      if (this.isHoliday === 1) {
+        this.isHolidayClock = true
       } else {
-        this.specialDayData = {
-          day: '',
-          desc: ''
-        }
+        this.isHolidayClock = false
       }
+    },
+    getHoliday () {
+      if (this.isHolidayClock) {
+        this.isHoliday = 1
+      } else {
+        this.isHoliday = 0
+      }
+    },
+    isClock () {
+      this.isHolidayClock = !this.isHolidayClock
+      this.getHoliday()
+    },
+    editDay (editData, type, dataIndex) {
+      this.dayType = type
+      this.editIndex = dataIndex
+      this.specialDayData = editData
       this.isEditDay = !this.isEditDay
     },
     getDay (msg) {
       if (this.dayType === 'clock') {
-        this.clockDay.push(msg)
+        if (this.editIndex === -1){
+          this.clockDay.push(msg)
+        } else {
+          this.clockDay[this.editIndex] = msg
+        }
       } else {
-        this.notClockDay.push(msg)
+        if (this.editIndex === -1){
+          this.notClockDay.push(msg)
+        } else {
+          this.notClockDay[this.editIndex] = msg
+        }
       }
     },
     closeDay () {

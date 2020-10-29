@@ -14,7 +14,19 @@
         </div>
       </div>
       <div class="existstyle">
-        <div class="addtitle" @click="showTimeModal('new')">
+        <div class="addtitle" v-if="dataType === 'fixed'" @click="showTimeModal(fixedNew, -1)">
+          <i class="fa fa-plus" style="font-size: x-large; margin: auto 0px auto 25px;"/>
+          <div style="margin: 5px auto auto 0px;">
+            <span style="padding-left: 10px;margin-top: 5px;">添加</span>
+          </div>
+        </div>
+        <div class="addtitle" v-if="dataType === 'shift'" @click="showTimeModal(shiftNew, -1)">
+          <i class="fa fa-plus" style="font-size: x-large; margin: auto 0px auto 25px;"/>
+          <div style="margin: 5px auto auto 0px;">
+            <span style="padding-left: 10px;margin-top: 5px;">添加</span>
+          </div>
+        </div>
+        <div class="addtitle" v-if="dataType === 'cycle'" @click="showTimeModal(cycleNew, -1)">
           <i class="fa fa-plus" style="font-size: x-large; margin: auto 0px auto 25px;"/>
           <div style="margin: 5px auto auto 0px;">
             <span style="padding-left: 10px;margin-top: 5px;">添加</span>
@@ -26,20 +38,20 @@
               <div class="lione">
                 <span class="titlespan">工作日</span>
                 <div class="spancontent">
-                  <span class="spanstyle">{{ item.weekDay }}</span>
+                  <span class="spanstyle">{{ item.day }}</span>
                 </div>
               </div>
               <div class="lione">
                 <span class="titlespan">时段</span>
                 <div class="spancontent">
-                  <span class="spanstyle" v-for="(timeitem, index) in item.workTime" :key="index" >{{ timeitem.starttime }}~{{ timeitem.endtime }}</span>
+                  <span class="spanstyle" v-for="(timeitem, index) in item.workTime" :key="index" >{{ timeitem.startTime }}~{{ timeitem.endTime }}</span>
                 </div>
               </div>
             </div>
             <div v-if="isedit" class="fastyle" @click="delDate(item)">
               <i class="fa fa-close" />
             </div>
-            <div v-if="!isedit" class="fastyle">
+            <div v-if="!isedit" class="fastyle"  @click="showTimeModal(item, index)">
               <i class="fa fa-angle-right" />
             </div>
           </div>
@@ -50,20 +62,20 @@
               <div class="lione">
                 <span class="titlespan">班次名称</span>
                 <div class="spancontent">
-                  <span class="spanstyle">{{ item.name }}</span>
+                  <span class="spanstyle">{{ item.shiftName }}</span>
                 </div>
               </div>
               <div class="lione">
                 <span class="titlespan">时段</span>
                 <div class="spancontent">
-                  <span class="spanstyle" v-for="(timeitem, index) in item.workTime" :key="index" >{{ timeitem.starttime }}~{{ timeitem.endtime }}</span>
+                  <span class="spanstyle" v-for="(timeitem, index) in item.workTime" :key="index" >{{ timeitem.startTime }}~{{ timeitem.endTime }}</span>
                 </div>
               </div>
             </div>
             <div v-if="isedit" class="fastyle" @click="delDate(item)">
               <i class="fa fa-close" />
             </div>
-            <div v-if="!isedit" class="fastyle">
+            <div v-if="!isedit" class="fastyle" @click="showTimeModal(item, index)">
               <i class="fa fa-angle-right" />
             </div>
           </div>
@@ -80,15 +92,18 @@
               <div class="lione">
                 <span class="titlespan">周期天数</span>
                 <div class="spancontent">
-                  <span class="spanstyle">{{ item.cycleList.length }}天为周期：</span>
-                  <span class="spanstyle" v-for="(timeitem, index) in item.cycleList" :key="index" >{{ timeitem.dayInfo.name }} </span>
+                  <span class="spanstyle">{{ item.dayInfo.length }}天为周期：</span>
+                  <span class="spanstyle" v-for="(timeitem, index) in item.dayInfo" :key="index" >
+                    <span v-if="timeitem.isRest === 1">休息</span>
+                    <span v-if="timeitem.shift">{{ timeitem.shift.shiftName }}</span>
+                  </span>
                 </div>
               </div>
             </div>
             <div v-if="isedit" class="fastyle" @click="delDate(item)">
               <i class="fa fa-close" />
             </div>
-            <div v-if="!isedit" class="fastyle">
+            <div v-if="!isedit" class="fastyle" @click="showTimeModal(item, index)">
               <i class="fa fa-angle-right" />
             </div>
           </div>
@@ -134,6 +149,43 @@ export default {
       workTime: [],
       restTime: {},
       parentData: {},
+      editIndex : -1,
+      fixedNew: {
+        day: '星期一 星期二 星期三 星期四 星期五',
+        restStart: '12:00',
+        restEnd: '14:00',
+        workTime: [
+          {
+            name: 1,
+            startTime: '08:00',
+            endTime: '18:00'
+          }
+        ]
+      },
+      shiftNew: {
+        restStart: '12:00',
+        shiftName: '',
+        restEnd: '14:00',
+        workTime: [
+          {
+            id: null,
+            name: 1,
+            startTime: '08:00',
+            endTime: '18:00'
+          }
+        ]
+      },
+      cycleNew: {
+        name: '',
+        dayInfo: [
+          {
+            dayName: 1,
+            shift: null,
+            isRest: 0,
+            id: null
+          }
+        ]
+      },
       tempexist: this.existlist
     }
   },
@@ -143,14 +195,16 @@ export default {
   components: {
     timeModal
   },
-  // computed: {
-  // },
-  // mounted () {
-  // },
   methods: {
     initList () {
       if (this.tempexist.length === 0) {
-        this.showTimeModal('new')
+        if (this.dataType === 'fixed') {
+          this.showTimeModal(this.fixedNew, -1)
+        } else if (this.dataType === 'shift') {
+          this.showTimeModal(this.shiftNew, -1)
+        } else if (this.dataType === 'cycle') {
+          this.showTimeModal(this.cycleNew, -1)
+        }
       }
     },
     closeSelf () {
@@ -169,80 +223,17 @@ export default {
     delDate (item) {
       this.existlist.splice(this.existlist.indexOf(item, 1))
     },
-    showTimeModal (item) {
-      if (item === 'new') {
-        if (this.listType === 'shift') {
-          this.parentData = {
-            name: '',
-            workTime: [
-              {
-                name: '时间段一',
-                starttime: '09:00',
-                endtime: '18:00'
-              }
-            ],
-            restTime: {
-              name: 'rest',
-              starttime: '12:00',
-              endtime: '13:00'
-            }
-          }
-        }
-        if (this.listType === 'fixed') {
-          this.parentData = {
-            weekDay: '星期一 星期二 星期三 星期四 星期五',
-            workTime: [
-              {
-                name: '时间段一',
-                starttime: '09:00',
-                endtime: '18:00'
-              }
-            ],
-            restTime: {
-              name: 'rest',
-              starttime: '12:00',
-              endtime: '13:00'
-            }
-          }
-        }
-        if (this.listType === 'cycle') {
-          this.parentData = {
-            name: '',
-            cycleInfo: [
-              {
-                dayNum: '第1天',
-                dayInfo: {
-                  name: '未设置'
-                }
-              }
-            ],
-            shiftList: this.selectType
-          }
-        }
-      }
-      // this.parentData = this.tempexist[0]
+    showTimeModal (editData, index) {
+      console.log(editData, index)
+      this.editIndex = index
+      this.parentData = editData
       this.showModal = !this.showModal
     },
     getTime (msg) {
-      if (this.listType === 'shift') {
-        this.tempexist.push({
-          name: msg.name,
-          workTime: msg.time,
-          restTime: msg.rest
-        })
-      }
-      if (this.listType === 'fixed') {
-        this.tempexist.push({
-          weekDay: msg.day,
-          workTime: msg.time,
-          restTime: msg.rest
-        })
-      }
-      if (this.listType === 'cycle') {
-        this.tempexist.push({
-          name: msg.name,
-          cycleList: msg.cycleInfo
-        })
+      if (this.editIndex === -1){
+        this.tempexist.push(msg)
+      } else {
+        this.tempexist[this.editIndex] = msg
       }
     },
     closeTimeModal: function () {

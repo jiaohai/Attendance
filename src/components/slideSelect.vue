@@ -50,16 +50,10 @@ export default {
       this.$emit('closeslide')
     },
     getSelectValue (msg) {
-      console.log(msg)
       this.selecteName = msg
     },
     saveSlide () {
-      for (let i = 0; i < this.selection.length; i++) {
-        if (this.selection[i].name === this.selecteName) {
-          this.$emit('saveslide', this.selection[i])
-          break
-        }
-      }
+      this.$emit('saveslide', this.selecteName)
       this.closeSelf()
     }
   }

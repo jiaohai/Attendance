@@ -25,7 +25,7 @@
             <span v-for="(itmef, index) in item.shift" :key="index + 'f'">{{ itmef.name }}</span>
           </span>
           <span class="contentspan secondspan" v-if="item.ruleType === '自由上下班'">
-            工作日 {{ item.weekDay }}</span>
+            工作日 {{ item.workDay }}</span>
           <span class="contentspan secondspan" v-if="item.places.length === 0">位置 未设置</span>
           <span class="contentspan secondspan" v-if="item.places.length > 0">位置 {{ item.places[0].name }}</span>
         </div>
@@ -131,8 +131,8 @@ export default {
             workTime: [
               {
                 id: null,
-                startTime: '14:49',
-                endTime: '14:49'
+                startTime: '08:00',
+                endTime: '18:00'
               }
             ]
           }
@@ -182,7 +182,6 @@ export default {
       window.history.go(-1)
     },
     goAddRule (item) {
-      console.log('2222222')
       this.$router.push({
         name: 'addrule',
         params: {
