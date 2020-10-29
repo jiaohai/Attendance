@@ -47,8 +47,7 @@
 <script>
 
 import monthesSlider from '../components/monthesSlider'
-import {
-  getRecordCountByTime } from '../api/record/record'
+import { getRecordCountByTime } from '../api/record/record'
 
 export default {
   name: 'allreport',
