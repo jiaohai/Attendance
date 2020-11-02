@@ -47,7 +47,6 @@
 <script>
 
 import monthesSlider from '../components/monthesSlider'
-import { getRecordCountByTime } from '../api/record/record'
 import { getRecordCountByTimeForECharts,
   getRecordCountByTime } from '../api/record/record'
 
@@ -56,7 +55,7 @@ export default {
   data () {
     return {
       msg: '月报',
-      date: '2020-10',
+      date: new Date(),
       recordDataList: [],
       normal: 0,
       error: 0,
@@ -148,6 +147,7 @@ export default {
     },
 
     getRecordCountByTime (){
+      //  这里测试用10月份的
       getRecordCountByTime('2020-10').then(res => {
         this.ifLate = res.data.data[0].lateCount
         this.ifAbsent = res.data.data[0].ifAbsence
