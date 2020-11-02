@@ -15,14 +15,14 @@
       <div class="cotentinfo">
         <el-row>
           <div class="vol-data">
-            <div id="myChart" :style="{width:'100%',height:'300px'}">
+            <div id="myChart" :style="{width:'100%',height:'200px'}">
             </div>
           </div>
         </el-row>
         <el-row :gutter="20">
-          <el-col :span="6" :offset = "2"><div class="grid-content bg-purple"></div>正常:<span style="color: #67C23A">{{normal}}</span></el-col>
-          <el-col :span="6" :offset = "2"><div class="grid-content bg-purple"></div>异常:<span style="color: #F56C6C">{{error}}</span></el-col>
-          <el-col :span="6" :offset = "2"><div class="grid-content bg-purple"></div>缺勤:<span style="color: #E6A23C">{{absence}}</span></el-col>
+          <el-col :span="6" :offset = "2"><div class="grid-content bg-purple"></div>正常:<span style="color: #67C23A;font-weight: 700">{{normal}}</span></el-col>
+          <el-col :span="6" :offset = "2"><div class="grid-content bg-purple"></div>异常:<span style="color: #F56C6C;font-weight: 700">{{error}}</span></el-col>
+          <el-col :span="6" :offset = "2"><div class="grid-content bg-purple"></div>缺勤:<span style="color: #E6A23C;font-weight: 700">{{absence}}</span></el-col>
         </el-row>
       </div>
     </div>
@@ -122,7 +122,7 @@ export default {
           {
             name: '上下班统计',
             type: 'pie',
-            radius: ['50%', '70%'],
+            radius: [50, 70],
             avoidLabelOverlap: false,
             label: {
               show: false,
@@ -182,14 +182,17 @@ export default {
         for (let item in res.data.data){
           const obj = {}
           const itemStyle = {}
-          if (res.data.data[item].status === '正常'){
+          if (res.data.data[item].status === '0'){
             this.normal = res.data.data[item].count
+            res.data.data[item].status = '正常'
             itemStyle.color = '#67C23A'
-          } else if (res.data.data[item].status === '异常'){
+          } else if (res.data.data[item].status === '2'){
             this.error = res.data.data[item].count
+            res.data.data[item].status = '异常'
             itemStyle.color = '#F56C6C'
           } else {
             this.absence = res.data.data[item].count
+            res.data.data[item].status = '缺勤'
             itemStyle.color = '#E6A23C'
           }
           obj.value = res.data.data[item].count

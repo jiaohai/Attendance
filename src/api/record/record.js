@@ -8,6 +8,10 @@ export function getRecordOutByTime (recordTime) {
   return get('/recordOut/getRecordOutByTime', {recordTime})
 }
 
+export function getRecordCountByTimeForECharts (recordTime) {
+  return get('/record/getRecordCountByTimeForECharts', {recordTime})
+}
+
 export function getRecordCountByTime (recordTime) {
   return get('/record/getRecordCountByTime', {recordTime})
 }
