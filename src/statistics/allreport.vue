@@ -118,7 +118,8 @@ export default {
       myChart.setOption(option)
     },
     getRecordCountByTimeForECharts (){
-      getRecordCountByTimeForECharts(this.date).then(res => {
+      //  这里测试用10月份的 this.date
+      getRecordCountByTimeForECharts('2020-10').then(res => {
         const list = []
         for (let item in res.data.data){
           const obj = {}
@@ -147,7 +148,7 @@ export default {
     },
 
     getRecordCountByTime (){
-      //  这里测试用10月份的
+      //  这里测试用10月份的 this.date
       getRecordCountByTime('2020-10').then(res => {
         this.ifLate = res.data.data[0].lateCount
         this.ifAbsent = res.data.data[0].ifAbsence
