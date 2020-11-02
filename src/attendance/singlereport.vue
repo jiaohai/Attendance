@@ -31,7 +31,7 @@
 
 <script>
 
-import dateSlider from '../components/dateSlider'
+// import dateSlider from '../components/dateSlider'
 import monthesSlider from '../components/monthesSlider'
 
 export default {
@@ -42,7 +42,7 @@ export default {
     }
   },
   components: {
-    dateSlider,
+    // dateSlider,
     monthesSlider
   },
   methods: {

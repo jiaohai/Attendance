@@ -15,14 +15,17 @@
       <div class="cotentinfo">
         <el-row>
           <div class="vol-data">
-            <div id="myChart" :style="{width:'100%',height:'300px'}">
+            <div id="myChart" :style="{width:'100%',height:'200px'}">
             </div>
           </div>
         </el-row>
         <el-row :gutter="20">
-          <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>正常:<span style="color: #67C23A">{{normal}}</span></el-col>
-          <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>异常:<span style="color: #F56C6C">{{error}}</span></el-col>
-          <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>缺勤:<span style="color: #E6A23C">{{absence}}</span></el-col>
+          <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>迟到: <span style="color: #F56C6C;font-weight: 700">{{ifLate}}</span></el-col>
+          <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>缺卡: <span style="color: #F56C6C;font-weight: 700">{{ifAbsent}}</span></el-col>
+          <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>早退: <span style="color: #F56C6C;font-weight: 700">{{ifLeaveEarly}}</span></el-col>
+          <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>正常: <span style="color: #67C23A;font-weight: 700">{{normal}}</span></el-col>
+          <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>异常: <span style="color: #F56C6C;font-weight: 700">{{error}}</span></el-col>
+          <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>缺勤: <span style="color: #E6A23C;font-weight: 700">{{absence}}</span></el-col>
         </el-row>
       </div>
     </div>
@@ -40,21 +43,26 @@
 </template>
 
 <script>
-import { getRecordCountByTime } from '../api/record/record'
+import { getRecordCountByTimeForECharts,
+  getRecordCountByTime } from '../api/record/record'
 
 export default {
   name: 'allreport',
   data () {
     return {
       msg: '月报',
-      date: new Date(),
+      date: '2020-10',
       recordDataList: [],
       normal: 0,
       error: 0,
-      absence: 0
+      absence: 0,
+      ifLate: 0,
+      ifAbsent: 0,
+      ifLeaveEarly: 0
     }
   },
   mounted (){
+    this.getRecordCountByTimeForECharts()
     this.getRecordCountByTime()
   },
   components: {
@@ -82,7 +90,7 @@ export default {
           {
             name: '上下班统计',
             type: 'pie',
-            radius: ['50%', '70%'],
+            radius: ['50', '70'],
             avoidLabelOverlap: false,
             label: {
               show: false,
@@ -104,20 +112,23 @@ export default {
       }
       myChart.setOption(option)
     },
-    getRecordCountByTime (){
-      getRecordCountByTime(this.date).then(res => {
+    getRecordCountByTimeForECharts (){
+      getRecordCountByTimeForECharts(this.date).then(res => {
         const list = []
         for (let item in res.data.data){
           const obj = {}
           const itemStyle = {}
-          if (res.data.data[item].status === '正常'){
+          if (res.data.data[item].status === '0'){
             this.normal = res.data.data[item].count
+            res.data.data[item].status = '正常'
             itemStyle.color = '#67C23A'
-          } else if (res.data.data[item].status === '异常'){
+          } else if (res.data.data[item].status === '2'){
             this.error = res.data.data[item].count
+            res.data.data[item].status = '异常'
             itemStyle.color = '#F56C6C'
           } else {
             this.absence = res.data.data[item].count
+            res.data.data[item].status = '缺勤'
             itemStyle.color = '#E6A23C'
           }
           obj.value = res.data.data[item].count
@@ -129,8 +140,16 @@ export default {
         this.checkData(this.recordDataList)
       })
     },
+
+    getRecordCountByTime (){
+      getRecordCountByTime('2020-10').then(res => {
+        this.ifLate = res.data.data[0].lateCount
+        this.ifAbsent = res.data.data[0].ifAbsence
+        this.ifLeaveEarly = res.data.data[0].ifLeaveEarliy
+      })
+    },
     checkData (recordDataList){
-      if (!this.inArray(recordDataList, '正常')){
+      if (!this.inArray(recordDataList, '0')){
         const obj = {}
         const itemStyle = {}
         obj.value = 0
@@ -139,7 +158,7 @@ export default {
         obj.itemStyle = itemStyle
         this.recordDataList.push(obj)
       }
-      if (!this.inArray(recordDataList, '异常')){
+      if (!this.inArray(recordDataList, '2')){
         const obj = {}
         const itemStyle = {}
         obj.value = 0
@@ -148,7 +167,7 @@ export default {
         obj.itemStyle = itemStyle
         this.recordDataList.push(obj)
       }
-      if (!this.inArray(recordDataList, '缺勤')){
+      if (!this.inArray(recordDataList, '1')){
         const obj = {}
         const itemStyle = {}
         obj.value = 0
