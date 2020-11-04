@@ -89,7 +89,7 @@ export default {
   },
   data () {
     return {
-      msg: '编辑考情组',
+      msg: '编辑考勤组',
       showSearch: false,
       showInput: false,
       onlyUser: false,
@@ -117,6 +117,13 @@ export default {
       this.updateGroup()
       // this.$emit('getedit', this.newGroup)
       // this.closeSelf()
+    },
+    openMsg (message) {
+      this.$confirm(message, '提示', {
+        showCancelButton: false,
+        showConfirmButton: false,
+        type: 'warning'
+      }).then(() => {}).catch(() => {})
     },
     showInputModal (mark) {
       this.marktype = mark
@@ -213,9 +220,11 @@ export default {
           users: this.getUserId()
         }).then(res => {
           if (res.data.flag) {
-            alert('修改成功')
+            this.openMsg('修改成功')
             this.$router.go(0)
             // this.$router.push('/addadmin')
+          } else {
+            this.openMsg(res.data.msg)
           }
           console.log(res)
         })
@@ -231,9 +240,11 @@ export default {
           users: this.getUserId()
         }).then(res => {
           if (res.data.flag) {
-            alert('创建成功')
+            this.openMsg('创建成功')
             this.$router.go(0)
             // this.$router.push('/addadmin')
+          } else {
+            this.openMsg(res.data.msg)
           }
           console.log(res)
         })
@@ -416,5 +427,9 @@ export default {
     margin-right: 10px;
     font-size: small;
     color:rgb(165, 165, 165);
+  }
+
+  .el-message-box{
+    max-width: 50%;
   }
 </style>

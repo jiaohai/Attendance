@@ -6,7 +6,7 @@
       </div>
       <div class="title common" style="align-items:center;">{{ msg }}</div>
     </div>
-    <div class="commonpiece" @click="goSearch">
+    <div class="commonpiece">
       <div class="titlehead" style="display: inline-flex; width:100%;">
         <div class="titles">
           <span>名称</span>
@@ -14,7 +14,7 @@
         <span class="spanstyle">{{ devicename }}</span>
       </div>
     </div>
-    <div class="commonpiece" @click="goSearch">
+    <div class="commonpiece">
       <div class="titlehead" style="display: inline-flex; width:100%;">
         <div class="titles">
           <span>编号</span>
@@ -34,6 +34,9 @@
 </template>
 
 <script>
+
+import MobileDetect from 'mobile-detect'
+
 export default {
   name: 'device',
   data () {
@@ -44,7 +47,41 @@ export default {
       device: '手机信息'
     }
   },
+  created: function () {
+    this.getDevice()
+  },
   methods: {
+    getDevice () {
+      /* eslint-disable */
+      Array.prototype.contains = function (needle) {
+        for (i in this) {
+          if (this[i].indexOf(needle) > 0) return i
+        }
+        return -1
+      }
+      var deviceType = navigator.userAgent // 获取userAgent信息
+      var md = new MobileDetect(deviceType) // 初始化mobile-detect
+      var os = md.os() // 获取系统
+      console.log(os)
+      console.log(md)
+      var model = ''
+      // ios系统的处理
+      if (os === 'iOS') {
+        os = +md.version('iPhone')
+        console.log(os)
+        model = md.mobile()
+      } else if (os === 'AndroidOS') { // Android系统的处理
+        os = md.os() + md.version('Android')
+        var sss = deviceType.split(';')
+        var i = sss.contains('Build/')
+        if (i > -1) {
+          model = sss[i].substring(0, sss[i].indexOf('Build/'))
+        }
+      }
+      // alert(os + "---" + model);//打印系统版本和手机型号
+      console.log(model + '||' + os, '打印系统版本和手机型号')
+      this.devicename = os + ' ' + model
+    },
     goBackThing () {
       window.history.go(-1)
     }

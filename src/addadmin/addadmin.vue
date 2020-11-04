@@ -52,7 +52,7 @@ export default {
   name: 'addadmin',
   data () {
     return {
-      msg: '设置',
+      msg: '考勤组',
       showcheck: true,
       showstatistics: true,
       showrule: true,
