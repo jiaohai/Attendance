@@ -154,17 +154,7 @@ export default {
         ],
         shiftCycle: [],
         shiftRule: [],
-        places: [
-          {
-            id: '',
-            name: '',
-            location: '',
-            longtitude: null,
-            latitude: null,
-            range: '300',
-            ruleId: null
-          }
-        ],
+        places: [],
         whiteList: [],
         attendance: {
           users: [],

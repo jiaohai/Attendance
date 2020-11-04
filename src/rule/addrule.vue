@@ -98,9 +98,9 @@
           <span>打卡位置</span>
         </div>
         <div class="descrip" style="display: inline-flex;">
-          <span class="spanstyle" v-if="ruleData.places.length === 0">未设置</span>
-          <span class="spanstyle" v-if="ruleData.places.length === 1">{{ ruleData.places[0].name }}</span>
-          <span class="spanstyle" v-if="ruleData.places.length > 1">{{ ruleData.places[0].name }}等{{ ruleData.places.length }}个地点</span>
+          <span class="spanstyle" v-if="places.length === 0">未设置</span>
+          <span class="spanstyle" v-if="places.length === 1">{{ ruleData.places[0].name }}</span>
+          <span class="spanstyle" v-if="places.length > 1">{{ ruleData.places[0].name }}等{{ ruleData.places.length }}个地点</span>
         </div>
         <i class="fa fastyle fa-angle-right" />
       </div>
@@ -138,7 +138,7 @@
     <mselect-modal v-if="showDay" :selection="workDay" :titlename="'工作日'" @getday="getDay" v-on:closeday="closeDay"></mselect-modal>
     <data-list v-if="showData" :titlename="'打卡时间'" :existlist="scheduleData" :dataType="typerule" @getdata="getdataList" v-on:closelist="closeDataList"></data-list>
     <shift-setting v-if="showShift" :titlename="'排班设置'" :existlist="shiftCont" :dataType="typerule" @getshift="getShift" v-on:closeshift="closeShift"></shift-setting>
-    <get-position v-if="showPosition" :existlist="position" @getposition="getPosition" v-on:closeposition="closePosition"></get-position>
+    <get-position v-if="showPosition" :existlist="places" @getposition="getPosition" v-on:closeposition="closePosition"></get-position>
     <over-rule v-if="showOver" :existlist="overTime" :overType="overWork" @getover="getOver" v-on:closeover="closeOver"></over-rule>
     <more-setting v-if="showMoreset" :existlist="moreFactor" :titlename="'更多设置'" @getmore="getMoreset" v-on:closemore="closeMore"></more-setting>
   </div>
@@ -328,6 +328,17 @@ export default {
       shiftRule: [],
       shiftCont: {},
       rulePosition: [],
+      places: [
+        // {
+        //   id: '',
+        //   name: '',
+        //   location: '',
+        //   longtitude: null,
+        //   latitude: null,
+        //   range: '300',
+        //   ruleId: null
+        // }
+      ],
       moreFactor: {
         reportTo: [],
         whitelist: [],
@@ -413,17 +424,7 @@ export default {
           }
         ],
         shiftRule: [],
-        places: [
-          {
-            id: '',
-            name: '',
-            location: '',
-            longtitude: null,
-            latitude: null,
-            range: '300',
-            ruleId: null
-          }
-        ],
+        places: [],
         attendance: {
           users: [],
           departs: []
@@ -461,6 +462,11 @@ export default {
   },
   created: function () {
     this.initData()
+    // window.addEventListener('popstate', function (e) {
+    //   // 根据自己的需求实现自己的功能
+    //   console.log(e)
+    //   alert('我监听到了浏览器的返回按钮事件啦')
+    // }, false)
   },
   beforeCreate: function () {
     // this.initData()
@@ -502,6 +508,7 @@ export default {
           lateSignCount: this.ruleData.lateSignCount,
           workBorder: this.ruleData.split
         }
+        this.places = this.ruleData.places
       } else {
         this.$axios.get('/api/rule/findRuleInfo/' + ruleInfo.id).then(res => {
           if (res.data.flag) {
@@ -526,6 +533,7 @@ export default {
               lateSignCount: this.ruleData.lateSignCount,
               workBorder: this.ruleData.split
             }
+            this.places = this.ruleData.places
           }
           console.log(res)
         })
@@ -563,10 +571,11 @@ export default {
         this.ruleData.shfit = []
         this.ruleData.shiftCycle = []
       }
-      this.ruleData.workDay = this.weekDay
-      this.ruleData.schedule = this.scheduleData
-      this.ruleData.shfit = this.shiftData
-      this.ruleData.shiftCycle = this.shiftCycle
+      // this.ruleData.workDay = this.weekDay
+      // this.ruleData.schedule = this.scheduleData
+      // this.ruleData.shfit = this.shiftData
+      // this.ruleData.shiftCycle = this.shiftCycle
+      this.ruleData.places = this.places
       console.log(this.ruleData)
       if (this.ruleData.id) {
         console.log('update rule')
@@ -683,7 +692,7 @@ export default {
       this.showPosition = !this.showPosition
     },
     getPosition (msg) {
-      this.rulePosition = msg
+      this.places = msg
     },
     closePosition () {
       this.showPosition = !this.showPosition

@@ -55,7 +55,7 @@
             <i class="fa fa-check-circle circle " v-if="parentChecked  && !onlyUser" />
             <div class="user">
               <div >
-                <img :src="itemo.avatarurl" width="30" height="30" />
+                <img :src="itemo.avatar" width="30" height="30" />
               </div>
               <div style="margin: 5px auto auto 0px;">
                 <span style="padding-left: 10px;margin-top: 5px;">{{ itemo.name }}</span>
@@ -76,7 +76,7 @@
           </div>
           <div v-for="(itemu, indexu) in tempexist.users" :key="'foutth' + indexu" style="margin: auto 0px auto 5px;">
             <div class="checker">
-              <img :src="itemu.avatarurl" width="30" height="30" />
+              <img :src="itemu.avatar" width="30" height="30" />
             </div>
           </div>
         </div>
@@ -108,7 +108,7 @@
           <div class="alloption" v-for="(itemr, indexr) in tempexist.users" :key="'sixth' + indexr">
             <div class="user">
               <div >
-                <img :src="itemr.avatarurl" width="30" height="30" />
+                <img :src="itemr.avatar" width="30" height="30" />
               </div>
               <div style="margin: 5px auto auto 0px;">
                 <span style="padding-left: 10px;margin-top: 5px;">{{ itemr.name }}</span>
