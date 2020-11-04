@@ -178,6 +178,9 @@ export default {
     // 获取上下班统计
     getData (){
       getRecordByDate(this.recordDate).then(res => {
+        debugger
+        const employeeId = res.headers.userid
+        console.log(employeeId)
         const list = []
         for (let item in res.data.data){
           const obj = {}
