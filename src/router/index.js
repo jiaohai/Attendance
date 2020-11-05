@@ -25,12 +25,12 @@ const addadmin = r => require.ensure([], () => r(require('../addadmin/addadmin')
 Vue.use(Router)
 
 export default new Router({
-  // mode: 'history',
+  mode: 'history',
   routes: [
-    {
-      path: '/',
-      redirect: '/check'
-    },
+    // {
+    //   path: '/',
+    //   redirect: '/check'
+    // },
     {
       path: '/check',
       name: 'check',
