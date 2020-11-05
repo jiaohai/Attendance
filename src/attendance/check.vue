@@ -194,8 +194,13 @@ export default {
     }, false)
     // this.getSignKey()
     this.getCheckInfo()
+    this.setUserId()
   },
   methods: {
+    setUserId () {
+      let userId = this.$route.query.userId
+      sessionStorage.setItem("userId",userId + '')
+    },
     async getCheckInfo () {
       this.userId = this.$route.query.userId
       this.authority = parseInt(this.$route.query.authority)

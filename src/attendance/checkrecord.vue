@@ -51,7 +51,7 @@ export default {
   data () {
     return {
       ifShow: false,
-      employeeId: '',
+      employeeId: sessionStorage.getItem("userId"),
       recordDate: new Date(),
       msg: '打卡记录',
       checkrule: '打卡规则',
@@ -74,7 +74,7 @@ export default {
       })
     },
     getData () {
-      recordDate(this.recordDate, 'jiaohaia').then(res => {
+      recordDate(this.recordDate, this.employeeId).then(res => {
         // 获取当前日期 yyyy-MM-dd
         let cur = this.getNowDate()
         let curSencond = this.getNowDateSecond()

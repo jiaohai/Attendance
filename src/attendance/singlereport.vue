@@ -55,6 +55,7 @@ export default {
   data () {
     return {
       date: new Date(),
+      employeeId: sessionStorage.getItem("userId"),
       msg: '月报',
       normal: 0,
       error: 0,
@@ -115,7 +116,7 @@ export default {
       myChart.setOption(option)
     },
     getData () {
-      count(this.date, '125').then(res => {
+      count(this.date, this.employeeId).then(res => {
         const list = []
         const record = res.data.data.record
         for (let item in record){
