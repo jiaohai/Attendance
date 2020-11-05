@@ -116,7 +116,6 @@ export default {
     },
     getData () {
       count(this.date, '125').then(res => {
-        debugger
         const list = []
         const record = res.data.data.record
         for (let item in record){
@@ -159,7 +158,6 @@ export default {
       window.history.go(-1)
     },
     getSelectDate (msg) {
-      debugger
       console.log(msg)
       this.date = msg
       this.normal = 0

@@ -76,7 +76,6 @@ export default {
     getData () {
       recordDate(this.recordDate, 'jiaohaia').then(res => {
         // 获取当前日期 yyyy-MM-dd
-        debugger
         let cur = this.getNowDate()
         let curSencond = this.getNowDateSecond()
         let reg = new RegExp('-', 'g')
