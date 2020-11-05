@@ -22,20 +22,20 @@
         </div>
       </div>
     </div>
-    <div class="bottoming">
-      <button class="clock-in bottomchildre" :class="$route.path.indexOf('check') !== -1 ? 'colortext' : 'colorcommon' " v-if="showcheck" @click="gocheck">
+    <div class="bottoming" v-if="showfoot">
+      <button class="clock-in bottomchildre" :class="$route.path.indexOf('check') !== -1 ? 'colortext' : 'colorcommon' " @click="gocheck">
         <i class="fa fa-map-marker" />
         <span>打卡</span>
       </button>
-      <button class="statistics bottomchildre" :class="$route.path.indexOf('statistics') !== -1 ? 'colortext' : 'colorcommon' " v-if="showstatistics" @click="gostatistics">
+      <button class="statistics bottomchildre" :class="$route.path.indexOf('statistics') !== -1 ? 'colortext' : 'colorcommon' " v-if="showS || showR" @click="gostatistics">
         <i class="fa fa-pie-chart" />
         <span>统计</span>
       </button>
-      <button class="rule bottomchildre" :class="$route.path.indexOf('rule') !== -1 ? 'colortext' : 'colorcommon' " v-if="showrule" @click="gorule">
+      <button class="rule bottomchildre" :class="$route.path.indexOf('rule') !== -1 ? 'colortext' : 'colorcommon' " v-if="showR" @click="gorule">
         <i class="fa fa-sliders " />
         <span>规则</span>
       </button>
-      <button class="setting bottomchildre" :class="$route.path.indexOf('addadmin') !== -1 ? 'colortext' : 'colorcommon' " v-if="showsetting" @click="gosetting">
+      <button class="setting bottomchildre" :class="$route.path.indexOf('addadmin') !== -1 ? 'colortext' : 'colorcommon' " v-if="showA" @click="gosetting">
         <i class="fa fa-cog" />
         <span>设置</span>
       </button>
@@ -66,7 +66,8 @@ export default {
       marktype: '',
       inputTxt: '',
       existList: [],
-      user: {},
+      userId: null,
+      authority: null,
       isaddAddmin: false,
       editGroupData: {},
       newAttendanceGroup: {
@@ -75,11 +76,27 @@ export default {
         departs: [],
         users: [],
         descrise: ''
-      }
+      },
+      showfoot: false,
+      showS: false,
+      showR: false,
+      showA: false
     }
   },
   created: function () {
-    this.user = this.$route.query.user
+    this.userId = this.$route.query.userId
+    this.authority = parseInt(this.$route.query.authority)
+    if (this.authority > 1) {
+      this.showfoot = true
+    }
+    console.log(this.authority)
+    if (this.authority === 2) {
+      this.showS = true
+    } else if (this.authority === 3) {
+      this.showR = true
+    } else if (this.authority === 4) {
+      this.showA = true
+    }
     this.getAttendce()
     if (this.attendanceList.length === 0) {
       this.isaddAddmin = true
@@ -101,19 +118,28 @@ export default {
       window.history.go(-1)
     },
     gocheck () {
-      this.$router.push('/check')
-    },
-    goSearch () {
-      this.$router.push('/search')
+      if (this.$route.path === '/check') {
+        return
+      }
+      this.$router.push({path: '/check', query: {userId: this.userId, authority: this.authority}})
     },
     gostatistics () {
-      this.$router.push('/statistics')
+      if (this.$route.path === '/statistics') {
+        return
+      }
+      this.$router.push({path: '/statistics', query: {userId: this.userId, authority: this.authority}})
     },
     gorule () {
-      this.$router.push('/rule')
+      if (this.$route.path === '/rule') {
+        return
+      }
+      this.$router.push({path: '/rule', query: {userId: this.userId, authority: this.authority}})
     },
     gosetting () {
-      this.$router.push('/addadmin')
+      if (this.$route.path === '/addadmin') {
+        return
+      }
+      this.$router.push({path: '/addadmin', query: {userId: this.userId, authority: this.authority}})
     },
     showEditGroup (item, type) {
       console.log(type)

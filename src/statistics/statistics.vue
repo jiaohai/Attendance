@@ -45,20 +45,20 @@
         </template>
       </div>
     </div>
-    <div class="bottoming">
-      <button class="clock-in bottomchildre" :class="$route.path.indexOf('check') !== -1 ? 'colortext' : 'colorcommon' " v-if="showcheck" @click="gocheck">
+    <div class="bottoming" v-if="showfoot">
+      <button class="clock-in bottomchildre" :class="$route.path.indexOf('check') !== -1 ? 'colortext' : 'colorcommon' " @click="gocheck">
         <i class="fa fa-map-marker" />
         <span>打卡</span>
       </button>
-      <button class="statistics bottomchildre" :class="$route.path.indexOf('statistics') !== -1 ? 'colortext' : 'colorcommon' " v-if="showstatistics" @click="gostatistics">
+      <button class="statistics bottomchildre" :class="$route.path.indexOf('statistics') !== -1 ? 'colortext' : 'colorcommon' " v-if="showS || showR" @click="gostatistics">
         <i class="fa fa-pie-chart" />
         <span>统计</span>
       </button>
-      <button class="rule bottomchildre" :class="$route.path.indexOf('rule') !== -1 ? 'colortext' : 'colorcommon' " v-if="showrule" @click="gorule">
+      <button class="rule bottomchildre" :class="$route.path.indexOf('rule') !== -1 ? 'colortext' : 'colorcommon' " v-if="showR" @click="gorule">
         <i class="fa fa-sliders " />
         <span>规则</span>
       </button>
-      <button class="setting bottomchildre" :class="$route.path.indexOf('addadmin') !== -1 ? 'colortext' : 'colorcommon' " v-if="showsetting" @click="gosetting">
+      <button class="setting bottomchildre" :class="$route.path.indexOf('addadmin') !== -1 ? 'colortext' : 'colorcommon' " v-if="showA" @click="gosetting">
         <i class="fa fa-cog" />
         <span>设置</span>
       </button>
@@ -92,7 +92,13 @@ export default {
         {message: 'Foo', url : 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'},
         {message: 'Bar', url : 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'}
       ],
-      recordOutList:[]
+      recordOutList:[],
+      userId: null,
+      authority: null,
+      showfoot: false,
+      showS: false,
+      showR: false,
+      showA: false
     }
   },
   components: {
@@ -101,6 +107,21 @@ export default {
   mounted () {
     this.getData()
     this.getRecordOutData()
+  },
+  created: function () {
+    this.userId = this.$route.query.userId
+    this.authority = parseInt(this.$route.query.authority)
+    if (this.authority > 1) {
+      this.showfoot = true
+    }
+    console.log(this.authority)
+    if (this.authority === 2) {
+      this.showS = true
+    } else if (this.authority === 3) {
+      this.showR = true
+    } else if (this.authority === 4) {
+      this.showA = true
+    }
   },
   methods: {
     drawLine (){
@@ -234,20 +255,29 @@ export default {
     goBackThing () {
       window.history.go(-1)
     },
-    goAllreport () {
-      this.$router.push('/allreport')
-    },
     gocheck () {
-      this.$router.push('/check')
+      if (this.$route.path === '/check') {
+        return
+      }
+      this.$router.push({path: '/check', query:{userId: this.userId, authority: this.authority}})
     },
     gostatistics () {
-      this.$router.push('/statistics')
+      if (this.$route.path === '/statistics') {
+        return
+      }
+      this.$router.push({path: '/statistics', query:{userId: this.userId, authority: this.authority}})
     },
     gorule () {
-      this.$router.push('/rule')
+      if (this.$route.path === '/rule') {
+        return
+      }
+      this.$router.push({path: '/rule', query:{userId: this.userId, authority: this.authority}})
     },
     gosetting () {
-      this.$router.push('/addadmin')
+      if (this.$route.path === '/addadmin') {
+        return
+      }
+      this.$router.push({path: '/addadmin', query: {userId: this.userId, authority: this.authority}})
     }
   }
 }
