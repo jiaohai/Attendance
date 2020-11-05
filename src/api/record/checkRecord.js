@@ -7,3 +7,7 @@ export function recordDate (recordDate, employeeId) {
 export function count (yearMonth, employeeId) {
   return get('/record/count', {yearMonth, employeeId})
 }
+
+export function findById (id) {
+  return get('/rule/findById', {id})
+}

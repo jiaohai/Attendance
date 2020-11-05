@@ -13,14 +13,14 @@
     <div class="uncommonpiece" @click="goRule" v-if="ifShow">
       <div class="rulecotent">
         <span class="contentspan">上下班打卡</span>
-        <span class="contentspan secondspan">打卡规则: {{ checkrule }} | 工作时长 {{ worktime }}</span>
+        <span class="contentspan secondspan">打卡规则:{{ checkrule }} | 工作时长:{{ worktime }}小时</span>
       </div>
       <div class="rightside">
         <i class="fa fastyle fa-chevron-right" />
       </div>
     </div>
-    <div v-if="!ifShow">
-      <h4 style="position: center">无打卡记录</h4>
+    <div v-if="!ifShow" style="height: 100%;width: 100%">
+      <p style="color:#a5a5a5;position: absolute;top: 50%;left: 45%">无打卡记录</p>
     </div>
     <div class="block">
       <el-timeline v-for="(item, index_) in activities" :key="index_">
@@ -31,7 +31,7 @@
                           :color="activity.color"
                           :size="activity.size"
                           :timestamp="activity.timestamp">
-          <p v-html="activity.content">{</p>
+          <p v-html="activity.content"></p>
         </el-timeline-item>
       </el-timeline>
     </div>
@@ -43,7 +43,8 @@
 // import Calendar from 'vue-calendar-component'
 import Calendar from '../components/calendar'
 
-import { recordDate } from '../api/record/checkRecord'
+import { recordDate,
+  findById } from '../api/record/checkRecord'
 
 export default {
   name: 'checkrecord',
@@ -54,7 +55,7 @@ export default {
       recordDate: new Date(),
       msg: '打卡记录',
       checkrule: '打卡规则',
-      worktime: '8小时',
+      worktime: '8',
       activities: []
     }
   },
@@ -66,13 +67,26 @@ export default {
     this.getData()
   },
   methods: {
+    getRuleDetail (id) {
+      findById(id).then(res => {
+        let rule = res.data.data
+        this.checkrule = rule.name
+      })
+    },
     getData () {
-      debugger
       recordDate(this.recordDate, 'jiaohaia').then(res => {
+        // 获取当前日期 yyyy-MM-dd
+        debugger
+        let cur = this.getNowDate()
+        let curSencond = this.getNowDateSecond()
+        let reg = new RegExp('-', 'g')
         console.log(res.data.data)
         // 每次加载数据前清空
         this.activities = []
         const record = res.data.data.Record
+        if (record.length > 0){
+          this.getRuleDetail(record[0].ruleId)
+        }
         if (record.length > 0){
           this.ifShow = true
         } else {
@@ -82,30 +96,109 @@ export default {
           const arr = []
           const obj = {}
           const obj1 = {}
+          let workTimeCount = 0
           obj.timestamp = record[item].startTime
-          if (record[item].reachRecord == null || record[item].reachRecord === ''){
-            obj.content = '<b style="color: #F56C6C">上班<br/>未打卡</b>'
-          } else if (record[item].lateCount !== 0){
-            obj.content = '<b style="color: #F56C6C">上班<br/>迟到打卡(' + record[item].reachRecord + ')</b>'
-          } else {
-            obj.content = '<b>上班</b><br/>上班打卡(' + record[item].reachRecord + ')'
-          }
-          arr.push(obj)
           obj1.timestamp = record[item].endTime
-          if (record[item].leaveRecord == null || record[item].leaveRecord === ''){
-            // obj1.color = '#F56C6C'
-            obj1.content = '<b style="color: #F56C6C">下班<br/>未打卡</b>'
-          } else if (record[item].ifLeaveEarliy === 1){
-            // obj1.color = '#F56C6C'
-            obj1.content = '<b style="color: #F56C6C">下班<br/>早退打卡(' + record[item].leaveRecord + ')</b>'
+          // let o1 = Date.parse(cur.replace(reg, '/'))
+          // let o2 = Date.parse((record[item].createTime).replace(reg, '/'))
+          if (Date.parse(cur.replace(reg, '/')) < Date.parse((record[item].createTime).replace(reg, '/'))){
+            obj.content = '<b style="color: #a5a5a5">上班</b>'
+            obj1.content = '<b style="color: #a5a5a5">下班</b>'
+            this.worktime = '-'
           } else {
-            // obj1.color = '#67C23A'
-            obj1.content = '<b>下班</b><br/>下班打卡(' + record[item].leaveRecord + ')'
+            if (record[item].reachRecord == null || record[item].reachRecord === ''){
+              // 当前时间在今日开始前到今日12:00:00之间如果未打卡 置灰
+              // let d1 = Date.parse((cur + ' ' + '00:00:00').replace(reg, '/'))
+              // let d2 = Date.parse(curSencond.replace(reg, '/'))
+              // let d3 = Date.parse((cur + ' ' + '12:00:00').replace(reg, '/'))
+              if (Date.parse((cur + ' ' + '00:00:00').replace(reg, '/')) < Date.parse(curSencond.replace(reg, '/')) &&
+                Date.parse(curSencond.replace(reg, '/')) < Date.parse((cur + ' ' + '12:00:00').replace(reg, '/'))){
+                obj.content = '<b style="color: #a5a5a5">上班</b>'
+              } else {
+                obj.content = '<b style="color: #F56C6C">上班<br/>未打卡</b>'
+              }
+              this.worktime = '-'
+            } else if (record[item].lateCount !== 0){
+              obj.content = '<b style="color: #F56C6C">上班<br/>迟到打卡(' + record[item].reachRecord + ')</b>'
+            } else {
+              obj.content = '<b>上班</b><br/>上班打卡(' + record[item].reachRecord + ')'
+            }
+            if (record[item].leaveRecord == null || record[item].leaveRecord === ''){
+              this.worktime = '-'
+              // 下班时间到下班后三个小时为空 置灰
+              // let d4 = Date.parse((cur + ' ' + '12:00:00').replace(reg, '/'))
+              // let d5 = Date.parse(curSencond.replace(reg, '/'))
+              // let d6 = (Date.parse((cur + ' ' + record[item].endTime + ':00').replace(reg, '/')) + 1000 * 60 * 60 * 3)
+              if (Date.parse((cur + ' ' + '12:00:00').replace(reg, '/')) < Date.parse(curSencond.replace(reg, '/')) &&
+                Date.parse(curSencond.replace(reg, '/')) < (Date.parse((cur + ' ' + record[item].endTime + ':00').replace(reg, '/')) + 1000 * 60 * 60 * 3)){
+                obj1.content = '<b style="color: #a5a5a5">下班</b>'
+              } else {
+                obj1.content = '<b style="color: #F56C6C">下班<br/>未打卡</b>'
+              }
+            } else if (record[item].ifLeaveEarliy === 1){
+              obj1.content = '<b style="color: #F56C6C">下班<br/>早退打卡(' + record[item].leaveRecord + ')</b>'
+            } else {
+              obj1.content = '<b>下班</b><br/>下班打卡(' + record[item].leaveRecord + ')'
+            }
+           if ((record[item].reachRecord == null || record[item].reachRecord === '') || (record[item].leaveRecord == null || record[item].leaveRecord === '')){
+             this.worktime = '-'
+           } else {
+             workTimeCount = workTimeCount + parseInt((Date.parse(cur + ' '+ record[item].leaveRecord+':00')-Date.parse(cur + ' '+ record[item].reachRecord+':00'))/parseInt(1000 * 3600))
+           }
           }
+          this.worktime = workTimeCount
+          arr.push(obj)
           arr.push(obj1)
           this.activities.push(arr)
         }
       })
+    },
+    /**
+     * 获取当前日期yyyy-MM-dd
+     * @returns {string}
+     */
+    getNowDate () {
+      let date = new Date()
+      let split = '-'
+      let year = date.getFullYear()
+      let month = date.getMonth() + 1
+      let strDate = date.getDate()
+      if (month >= 1 && month <= 9) {
+        month = '0' + month
+      }
+      if (strDate >= 0 && strDate <= 9) {
+        strDate = '0' + strDate
+      }
+      let currentDate = year + split + month + split + strDate
+      return currentDate
+    },
+    getNowDateSecond () {
+      let date = new Date()
+      let split = '-'
+      let spl = ':'
+      let year = date.getFullYear()
+      let month = date.getMonth() + 1
+      let strDate = date.getDate()
+      let hour = date.getHours()
+      let minutes = date.getMinutes()
+      let second = date.getSeconds()
+      if (month >= 1 && month <= 9) {
+        month = '0' + month
+      }
+      if (strDate >= 0 && strDate <= 9) {
+        strDate = '0' + strDate
+      }
+      if (hour >= 1 && hour <= 9) {
+        hour = '0' + hour
+      }
+      if (minutes >= 0 && minutes <= 9) {
+        minutes = '0' + minutes
+      }
+      if (second >= 0 && second <= 9) {
+        second = '0' + second
+      }
+      let currentDate = year + split + month + split + strDate + ' ' + hour + spl + minutes + spl + second
+      return currentDate
     },
     goBackThing () {
       window.history.go(-1)

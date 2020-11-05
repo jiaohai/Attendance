@@ -54,7 +54,7 @@ export default {
   name: 'singlereport',
   data () {
     return {
-      date: '',
+      date: new Date(),
       msg: '月报',
       normal: 0,
       error: 0,
@@ -70,6 +70,7 @@ export default {
   },
 
   mounted () {
+    this.date = this.getNowFormatDate()
     // 加载数据
     this.getData()
   },
@@ -169,6 +170,21 @@ export default {
       this.ifLeaveEarly = 0
       // 重新加载数据
       this.getData()
+    },
+    /**
+     * 获取当前日期yyyy-MM
+     * @returns {string}
+     */
+    getNowFormatDate () {
+      let date = new Date()
+      let split = '-'
+      let year = date.getFullYear()
+      let month = date.getMonth() + 1
+      if (month >= 1 && month <= 9) {
+        month = '0' + month
+      }
+      let currentDate = year + split + month
+      return currentDate
     }
   }
 }
