@@ -194,6 +194,7 @@ export default {
     }, false)
     // this.getSignKey()
     this.getCheckInfo()
+    // 全局userid
     this.setUserId()
   },
   methods: {
