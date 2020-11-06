@@ -164,7 +164,7 @@ export default {
     // this.getMyLocation()
     var _this = this
     window.addEventListener('message', function (event) {
-      _this.openMsg(event)
+      // _this.openMsg(event)
       if (!_this.loading) {
         return
       }
@@ -199,7 +199,7 @@ export default {
   methods: {
     setUserId () {
       let userId = this.$route.query.userId
-      sessionStorage.setItem("userId",userId + '')
+      sessionStorage.setItem('userId',userId + '')
     },
     async getCheckInfo () {
       this.userId = this.$route.query.userId
@@ -238,13 +238,13 @@ export default {
           }
         } else {
           console.log(res)
-          this.openMsg('获取打卡信息失败！')
+          // this.openMsg('获取打卡信息失败！')
         }
         // this.getMyLocation()
         // await this.getPlace()
       } catch (err) {
         console.log(err)
-        this.openMsg('请求出错！')
+        // this.openMsg('请求出错！')
       }
     },
     controlShow () {
@@ -345,7 +345,7 @@ export default {
         this.recordType = this.userData.type === 0 ? '上班打卡' : '下班打卡'
       } else {
         console.log(res)
-        this.openMsg('打卡失败！')
+        // this.openMsg('打卡失败！')
       }
       this.clocking = false
     },
@@ -385,7 +385,7 @@ export default {
     },
     filde () {
       this.loading = false
-      this.openMsg('定位失败')
+      // this.openMsg('定位失败')
     },
     async getPlace () {
       var _this = this
@@ -437,7 +437,7 @@ export default {
     //解析定位错误信息
     onError (data) {
       this.loading = false
-      this.openMsg('定位失败')
+      // this.openMsg('定位失败')
     }
   },
   mounted () {

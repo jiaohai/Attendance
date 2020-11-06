@@ -55,7 +55,7 @@ export default {
   data () {
     return {
       date: new Date(),
-      employeeId: sessionStorage.getItem("userId"),
+      employeeId: sessionStorage.getItem('userId'),
       msg: '月报',
       normal: 0,
       error: 0,

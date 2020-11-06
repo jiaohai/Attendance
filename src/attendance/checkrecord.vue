@@ -13,7 +13,7 @@
     <div class="uncommonpiece" @click="goRule" v-if="ifShow">
       <div class="rulecotent">
         <span class="contentspan">上下班打卡</span>
-        <span class="contentspan secondspan">打卡规则:{{ checkrule }} | 工作时长:{{ worktime }}小时</span>
+        <span class="contentspan secondspan">打卡规则:{{ checkrule }} | 工作时长:{{ worktime }}</span>
       </div>
       <div class="rightside">
         <i class="fa fastyle fa-chevron-right" />
@@ -51,7 +51,7 @@ export default {
   data () {
     return {
       ifShow: false,
-      employeeId: sessionStorage.getItem("userId"),
+      employeeId: sessionStorage.getItem('userId'),
       recordDate: new Date(),
       msg: '打卡记录',
       checkrule: '打卡规则',
@@ -73,6 +73,9 @@ export default {
         this.checkrule = rule.name
       })
     },
+    /**
+     * 加载数据
+     */
     getData () {
       recordDate(this.recordDate, this.employeeId).then(res => {
         // 获取当前日期 yyyy-MM-dd
@@ -104,12 +107,32 @@ export default {
             obj.content = '<b style="color: #a5a5a5">上班</b>'
             obj1.content = '<b style="color: #a5a5a5">下班</b>'
             this.worktime = '-'
+          } else if (Date.parse(cur.replace(reg, '/')) > Date.parse((record[item].createTime).replace(reg, '/'))){
+            // 设置上班卡样式
+            if (record[item].reachRecord == null || record[item].reachRecord === ''){
+              obj.content = '<b style="color: #F56C6C">上班<br/>未打卡</b>'
+            } else if (record[item].lateCount !== 0){
+              obj.content = '<b style="color: #F56C6C">上班<br/>迟到打卡(' + record[item].reachRecord + ')</b>'
+            } else {
+              obj.content = '<b>上班</b><br/>上班打卡(' + record[item].reachRecord + ')'
+            }
+            // 设置下班卡
+            if (record[item].leaveRecord == null || record[item].leaveRecord === ''){
+              obj1.content = '<b style="color: #F56C6C">下班<br/>未打卡</b>'
+            } else if (record[item].ifLeaveEarliy === 1){
+              obj1.content = '<b style="color: #F56C6C">下班<br/>早退打卡(' + record[item].leaveRecord + ')</b>'
+            } else {
+              obj1.content = '<b>下班</b><br/>下班打卡(' + record[item].leaveRecord + ')'
+            }
+            if ((record[item].reachRecord == null || record[item].reachRecord === '') || (record[item].leaveRecord == null || record[item].leaveRecord === '')){
+              this.worktime = '-'
+            } else {
+              workTimeCount = workTimeCount + parseInt((Date.parse(cur + ' ' + record[item].leaveRecord + ':00') - Date.parse(cur + ' ' + record[item].reachRecord + ':00')) / parseInt(1000 * 3600))
+              this.worktime = workTimeCount + '小时'
+            }
           } else {
             if (record[item].reachRecord == null || record[item].reachRecord === ''){
               // 当前时间在今日开始前到今日12:00:00之间如果未打卡 置灰
-              // let d1 = Date.parse((cur + ' ' + '00:00:00').replace(reg, '/'))
-              // let d2 = Date.parse(curSencond.replace(reg, '/'))
-              // let d3 = Date.parse((cur + ' ' + '12:00:00').replace(reg, '/'))
               if (Date.parse((cur + ' ' + '00:00:00').replace(reg, '/')) < Date.parse(curSencond.replace(reg, '/')) &&
                 Date.parse(curSencond.replace(reg, '/')) < Date.parse((cur + ' ' + '12:00:00').replace(reg, '/'))){
                 obj.content = '<b style="color: #a5a5a5">上班</b>'
@@ -125,10 +148,7 @@ export default {
             if (record[item].leaveRecord == null || record[item].leaveRecord === ''){
               this.worktime = '-'
               // 下班时间到下班后三个小时为空 置灰
-              // let d4 = Date.parse((cur + ' ' + '12:00:00').replace(reg, '/'))
-              // let d5 = Date.parse(curSencond.replace(reg, '/'))
-              // let d6 = (Date.parse((cur + ' ' + record[item].endTime + ':00').replace(reg, '/')) + 1000 * 60 * 60 * 3)
-              if (Date.parse((cur + ' ' + '12:00:00').replace(reg, '/')) < Date.parse(curSencond.replace(reg, '/')) &&
+              if (Date.parse((cur + ' ' + record[item].startTime + ':00').replace(reg, '/')) < Date.parse(curSencond.replace(reg, '/')) &&
                 Date.parse(curSencond.replace(reg, '/')) < (Date.parse((cur + ' ' + record[item].endTime + ':00').replace(reg, '/')) + 1000 * 60 * 60 * 3)){
                 obj1.content = '<b style="color: #a5a5a5">下班</b>'
               } else {
@@ -139,13 +159,14 @@ export default {
             } else {
               obj1.content = '<b>下班</b><br/>下班打卡(' + record[item].leaveRecord + ')'
             }
-           if ((record[item].reachRecord == null || record[item].reachRecord === '') || (record[item].leaveRecord == null || record[item].leaveRecord === '')){
-             this.worktime = '-'
-           } else {
-             workTimeCount = workTimeCount + parseInt((Date.parse(cur + ' '+ record[item].leaveRecord+':00')-Date.parse(cur + ' '+ record[item].reachRecord+':00'))/parseInt(1000 * 3600))
-           }
+            if ((record[item].reachRecord == null || record[item].reachRecord === '') || (record[item].leaveRecord == null || record[item].leaveRecord === '')){
+              this.worktime = '-'
+            } else {
+              workTimeCount = workTimeCount + parseInt((Date.parse(cur + ' ' + record[item].leaveRecord + ':00') - Date.parse(cur + ' ' + record[item].reachRecord + ':00')) / parseInt(1000 * 3600))
+              this.worktime = workTimeCount + '小时'
+            }
           }
-          this.worktime = workTimeCount
+
           arr.push(obj)
           arr.push(obj1)
           this.activities.push(arr)
