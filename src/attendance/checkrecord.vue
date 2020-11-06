@@ -319,7 +319,7 @@ export default {
   /deep/ .el-timeline-item__content {
     color: #303133;
     position: relative;
-    left: -300px;
+    left: -50px;
   }
   /deep/ .el-timeline {
     padding-left: 60px;
