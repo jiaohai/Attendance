@@ -20,7 +20,7 @@
       </div>
     </div>
     <div v-if="!ifShow" style="height: 100%;width: 100%">
-      <p style="color:#a5a5a5;position: absolute;top: 50%;left: 45%">无打卡记录</p>
+      <p style="color:#a5a5a5;position: absolute;top: 65%;left: 45%">无打卡记录</p>
     </div>
     <div class="block">
       <el-timeline v-for="(item, index_) in activities" :key="index_">
@@ -46,6 +46,10 @@ import Calendar from '../components/calendar'
 import { recordDate,
   findById } from '../api/record/checkRecord'
 
+import { setCookie,
+  getCookie,
+  delCookie} from '../utils/cookie-util';
+
 export default {
   name: 'checkrecord',
   data () {
@@ -65,6 +69,14 @@ export default {
   mounted () {
     // 个人打卡详情
     this.getData()
+    this.$cookieStore.setCookie('employeeId',this.employeeId)
+  },
+  beforeMount () {
+    Vue.prototype.$cookieStore = {
+      setCookie,
+      getCookie,
+      delCookie
+    }
   },
   methods: {
     getRuleDetail (id) {

@@ -26,7 +26,7 @@
           <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>缺卡: <span style="color: #F56C6C;font-weight: 700">{{ifAbsent}}</span></el-col>
           <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>早退: <span style="color: #F56C6C;font-weight: 700">{{ifLeaveEarly}}</span></el-col>
           <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>正常: <span style="color: #67C23A;font-weight: 700">{{normal}}</span></el-col>
-          <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>异常: <span style="color: #F56C6C;font-weight: 700">{{error}}</span></el-col>
+<!--          <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>异常: <span style="color: #F56C6C;font-weight: 700">{{error}}</span></el-col>-->
           <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>缺勤: <span style="color: #E6A23C;font-weight: 700">{{absence}}</span></el-col>
         </el-row>
       </div>
@@ -47,7 +47,7 @@
 <script>
 
 import monthesSlider from '../components/monthesSlider'
-import { getRecordCountByTimeForECharts,
+import {
   getRecordCountByTime } from '../api/record/record'
 
 export default {
@@ -66,7 +66,7 @@ export default {
     }
   },
   mounted (){
-    this.getRecordCountByTimeForECharts()
+    // this.getRecordCountByTimeForECharts()
     this.getRecordCountByTime()
   },
   components: {
@@ -87,7 +87,7 @@ export default {
         legend: {
           orient: 'vertical',
           left: 10,
-          data: ['正常', '异常', '缺勤']
+          data: ['正常', '迟到', '旷工', '早退', '缺卡']
         },
         // 设置饼状图每个颜色块的颜色
         // color : [ 'red', 'green', 'yellow' ],
@@ -117,44 +117,62 @@ export default {
       }
       myChart.setOption(option)
     },
-    getRecordCountByTimeForECharts (){
-      //  这里测试用10月份的 this.date
-      getRecordCountByTimeForECharts('2020-10').then(res => {
-        const list = []
-        for (let item in res.data.data){
-          const obj = {}
-          const itemStyle = {}
-          if (res.data.data[item].status === '0'){
-            this.normal = res.data.data[item].count
-            res.data.data[item].status = '正常'
-            itemStyle.color = '#67C23A'
-          } else if (res.data.data[item].status === '2'){
-            this.error = res.data.data[item].count
-            res.data.data[item].status = '异常'
-            itemStyle.color = '#F56C6C'
-          } else {
-            this.absence = res.data.data[item].count
-            res.data.data[item].status = '缺勤'
-            itemStyle.color = '#E6A23C'
-          }
-          obj.value = res.data.data[item].count
-          obj.name = res.data.data[item].status
-          obj.itemStyle = itemStyle
-          list.push(obj)
-        }
-        this.recordDataList = list
-        this.checkData(this.recordDataList)
-      })
-    },
-
     getRecordCountByTime (){
       //  这里测试用10月份的 this.date
-      getRecordCountByTime('2020-10').then(res => {
+      getRecordCountByTime(this.date).then(res => {
+        debugger
+        const list = []
+        const record = res.data.data[0]
+        for (let item in record){
+          const obj = {}
+          const itemStyle = {}
+          if (item === 'ifLeaveEarliy'){
+            itemStyle.color = '#F56C6C'
+            obj.name = '早退'
+            obj.value = record[item]
+            // obj.itemStyle = itemStyle
+          } else if (item === 'normal'){
+            itemStyle.color = '#67C23A'
+            obj.name = '正常'
+            obj.value = record[item]
+            obj.itemStyle = itemStyle
+          } else if (item === 'absent'){
+            itemStyle.color = '#E6A23C'
+            obj.name = '旷工'
+            obj.value = record[item]
+            obj.itemStyle = itemStyle
+          } else if (item === 'lateCount'){
+            itemStyle.color = '#F56C6C'
+            obj.name = '迟到'
+            obj.value = record[item]
+            // obj.itemStyle = itemStyle
+          } else if (item === 'ifAbsence'){
+            itemStyle.color = '#F56C6C'
+            obj.name = '缺卡'
+            obj.value = record[item]
+            // obj.itemStyle = itemStyle
+          }
+          list.push(obj)
+        }
         this.ifLate = res.data.data[0].lateCount
         this.ifAbsent = res.data.data[0].ifAbsence
         this.ifLeaveEarly = res.data.data[0].ifLeaveEarliy
+        this.absence = res.data.data[0].absent
+        this.normal = res.data.data[0].normal
+        this.recordDataList = list
+        // 绘制echarts
+        this.drawLine()
       })
     },
+
+    // getRecordCountByTime (){
+    //   //  这里测试用10月份的 this.date
+    //   getRecordCountByTime(this.date).then(res => {
+    //     this.ifLate = res.data.data[0].lateCount
+    //     this.ifAbsent = res.data.data[0].ifAbsence
+    //     this.ifLeaveEarly = res.data.data[0].ifLeaveEarliy
+    //   })
+    // },
     checkData (recordDataList){
       if (!this.inArray(recordDataList, '0')){
         const obj = {}
@@ -184,7 +202,7 @@ export default {
         this.recordDataList.push(obj)
       }
       // 绘制echarts
-      this.drawLine()
+      // this.drawLine()
     },
     // 判断数组中的元素是否包含search
     inArray (array, search) {
@@ -197,6 +215,8 @@ export default {
     },
     getSelectDate (msg) {
       console.log(msg)
+      this.date = msg
+      this.getRecordCountByTime()
     }
   }
 }

@@ -201,6 +201,8 @@ export default {
     setUserId () {
       let userId = this.$route.query.userId
       sessionStorage.setItem('userId',userId + '')
+      // sessionStorage.setItem('userId','jiaohaia' + '')
+
     },
     async getCheckInfo () {
       this.userId = this.$route.query.userId

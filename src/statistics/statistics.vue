@@ -277,6 +277,9 @@ export default {
         return
       }
       this.$router.push({path: '/addadmin', query: {userId: this.userId, authority: this.authority}})
+    },
+    goAllreport () {
+      this.$router.push('/allreport')
     }
   }
 }
