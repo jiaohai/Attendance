@@ -8,7 +8,8 @@
     </div>
     <div class="piece">
       <div class="user">
-        <img :src="avatarurl" width="35" height="35" />
+<!--        <img :src="avatarurl" width="35" height="35" />-->
+        <el-avatar :src="avatarurl"></el-avatar>
         <span style="padding-left: 20px;margin-top: 5px;position: absolute;">{{ username }}</span>
       </div>
       <span style="margin-left: 20px; padding-bottom: 10px; display: block;">打卡规则：{{ rulename }}</span>
@@ -87,6 +88,12 @@
 </template>
 
 <script>
+import Vue from 'vue'
+import { findRuleInfoByRuleId } from '../api/record/rule'
+import { setCookie,
+  getCookie,
+  delCookie} from '../utils/cookie-util'
+
 export default {
   name: 'checkrule',
   data () {
@@ -105,7 +112,53 @@ export default {
       showwork: true
     }
   },
+  beforeMount () {
+    Vue.prototype.$cookieStore = {
+      setCookie,
+      getCookie,
+      delCookie
+    }
+  },
+  mounted () {
+    this.getData()
+  },
   methods: {
+    getData () {
+      findRuleInfoByRuleId(this.$cookieStore.getCookie('ruleId')).then(res => {
+        debugger
+        console.log(res.data.data)
+        // 回填数据
+        let this_ = this
+        let employeeId = sessionStorage.getItem('userId')
+        let tmp = res.data.data
+        this_.checkUser(employeeId,tmp.attendance.users)
+        this.rulename = tmp.ruleName
+        this.worktime = tmp.schedule[0].day + '  ' + tmp.schedule[0].workTime[0].startTime + '-' + tmp.schedule[0].workTime[0].endTime
+        this.place = tmp.places[0].name
+        if (Object.keys(tmp.overTime).length != 0){
+          this.workout = tmp.overTime.type
+          if (tmp.overTime.type === '以加班申请为准'){
+            this.workout += ':加班申请通过后，直接记录为加班时长'
+          } else if (tmp.overTime.type === '以打卡时间为准'){
+            this.workout += ':根据打卡时间自动计算加班时长'
+          } else {
+            this.workout += ':打卡后，根据加班申请核算加班时长'
+          }
+        } else {
+          this.workout = '无'
+        }
+      })
+    },
+    // 给头像，员工名赋值
+    checkUser (employeeId,arr) {
+      for (let item in arr) {
+        if (arr[item].employeeId === employeeId){
+          this.avatarurl = arr[item].avatar
+          this.username = arr[item].name
+          break
+        }
+      }
+    },
     goBackThing () {
       window.history.go(-1)
     },

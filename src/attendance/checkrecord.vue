@@ -39,7 +39,7 @@
 </template>
 
 <script>
-
+import Vue from 'vue'
 // import Calendar from 'vue-calendar-component'
 import Calendar from '../components/calendar'
 
@@ -48,7 +48,7 @@ import { recordDate,
 
 import { setCookie,
   getCookie,
-  delCookie} from '../utils/cookie-util';
+  delCookie} from '../utils/cookie-util'
 
 export default {
   name: 'checkrecord',
@@ -69,7 +69,6 @@ export default {
   mounted () {
     // 个人打卡详情
     this.getData()
-    this.$cookieStore.setCookie('employeeId',this.employeeId)
   },
   beforeMount () {
     Vue.prototype.$cookieStore = {
@@ -83,6 +82,7 @@ export default {
       findById(id).then(res => {
         let rule = res.data.data
         this.checkrule = rule.name
+        this.$cookieStore.setCookie('ruleId', rule.id)
       })
     },
     /**
