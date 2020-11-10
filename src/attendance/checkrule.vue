@@ -8,9 +8,9 @@
     </div>
     <div class="piece">
       <div class="user">
-<!--        <img :src="avatarurl" width="35" height="35" />-->
-        <el-avatar :src="avatarurl"></el-avatar>
-        <span style="padding-left: 20px;margin-top: 5px;position: absolute;">{{ username }}</span>
+        <img :src="avatarurl" width="35" height="35" />
+<!--        <el-avatar :src="avatarurl"></el-avatar>-->
+        <span style="padding-left: 20px;margin-top: 5px;position: absolute;font-weight: bold">{{ username }}</span>
       </div>
       <span style="margin-left: 20px; padding-bottom: 10px; display: block;">打卡规则：{{ rulename }}</span>
     </div>
@@ -131,11 +131,11 @@ export default {
         let this_ = this
         let employeeId = sessionStorage.getItem('userId')
         let tmp = res.data.data
-        this_.checkUser(employeeId,tmp.attendance.users)
+        this_.checkUser(employeeId, tmp.attendance.users)
         this.rulename = tmp.ruleName
         this.worktime = tmp.schedule[0].day + '  ' + tmp.schedule[0].workTime[0].startTime + '-' + tmp.schedule[0].workTime[0].endTime
         this.place = tmp.places[0].name
-        if (Object.keys(tmp.overTime).length != 0){
+        if (Object.keys(tmp.overTime).length !== 0){
           this.workout = tmp.overTime.type
           if (tmp.overTime.type === '以加班申请为准'){
             this.workout += ':加班申请通过后，直接记录为加班时长'
@@ -150,7 +150,7 @@ export default {
       })
     },
     // 给头像，员工名赋值
-    checkUser (employeeId,arr) {
+    checkUser (employeeId, arr) {
       for (let item in arr) {
         if (arr[item].employeeId === employeeId){
           this.avatarurl = arr[item].avatar
