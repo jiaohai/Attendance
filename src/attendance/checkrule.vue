@@ -116,7 +116,6 @@ import { findRuleInfoByRuleId } from '../api/record/rule'
 import { setCookie,
   getCookie,
   delCookie} from '../utils/cookie-util'
-import morerule from "../rule/morerule";
 
 export default {
   name: 'checkrule',
