@@ -120,7 +120,7 @@ export default {
     getRecordCountByTime (){
       //  这里测试用10月份的 this.date
       getRecordCountByTime(this.date).then(res => {
-        debugger
+        // debugger
         const list = []
         const record = res.data.data[0]
         for (let item in record){

@@ -44,9 +44,9 @@
         <hr style="margin: auto; margin-left: 20px; margin-right: 10px;" />
         <div class="caption" style="margin-top: 10px;margin-bottom: 10px;margin-left: 20px;">
           <span>打卡地点</span>
-          <div class="svgplace" style="margin-top: 10px;">
+          <div class="svgplace" style="margin-top: 10px;" v-for="(item, index) in places" :key="index">
             <i class="fa fa-map-marker" />
-            <span>{{ place }}</span>
+            <span>{{ item.name }}</span>
           </div>
         </div>
       </div>
@@ -109,7 +109,8 @@ export default {
       showtime: true,
       showplace: true,
       showrule: true,
-      showwork: true
+      showwork: true,
+      places: []
     }
   },
   beforeMount () {
@@ -125,16 +126,20 @@ export default {
   methods: {
     getData () {
       findRuleInfoByRuleId(this.$cookieStore.getCookie('ruleId')).then(res => {
-        debugger
+        // debugger
         console.log(res.data.data)
         // 回填数据
         let this_ = this
         let employeeId = sessionStorage.getItem('userId')
         let tmp = res.data.data
+        // 员工头像 用户名
         this_.checkUser(employeeId, tmp.attendance.users)
         this.rulename = tmp.ruleName
+        // 打卡时间
         this.worktime = tmp.schedule[0].day + '  ' + tmp.schedule[0].workTime[0].startTime + '-' + tmp.schedule[0].workTime[0].endTime
-        this.place = tmp.places[0].name
+        // 打卡地点有可能多个
+        this.places = tmp.places
+        // 加班规则
         if (Object.keys(tmp.overTime).length !== 0){
           this.workout = tmp.overTime.type
           if (tmp.overTime.type === '以加班申请为准'){
