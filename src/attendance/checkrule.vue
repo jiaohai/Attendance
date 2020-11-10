@@ -17,17 +17,38 @@
     <div class="piece">
       <div class="titlehead" style="display: inline-flex; width:100%;">
         <div class="titles">
-          <span>打卡时间</span>
+          <span style="color: #1a8abe;font-weight: bold">打卡时间</span>
         </div>
-        <i class="fa fastyle fa-chevron-down" v-if="!showtime" @click="showTime" />
-        <i class="fa fastyle fa-chevron-up" v-if="showtime" @click="showTime" />
+        <i class="fa fastyle fa-chevron-down" style="color: #1a8abe" v-if="!showtime" @click="showTime" />
+        <i class="fa fastyle fa-chevron-up" style="color: #1a8abe" v-if="showtime" @click="showTime" />
       </div>
-      <div class="content" v-if="showtime">
+<!--      固定上下班-->
+      <div class="content" v-if="showtime" v-show="showSchedule">
         <hr style="margin: auto; margin-left: 20px; margin-right: 10px;"/>
-        <div class="caption" style="margin-top: 10px;margin-bottom: 10px;margin-left: 20px;">
+        <div class="caption" style="margin-top: 10px;margin-bottom: 10px;margin-left: 20px;" v-if="showSchedule" v-for="(schedule, index) in schedules" :key="index">
           <span>上下班时间</span>
-          <div class="svgplace" style="margin-top: 10px;">
-            <span>{{ worktime }}</span>
+          <div class="svgplace" style="margin-top: 10px;line-height: 1.5em">
+            <span v-html="schedule.content"></span>
+          </div>
+        </div>
+      </div>
+<!--      按班次上下班-->
+      <div class="content" v-if="showtime" v-show="showShift">
+        <hr style="margin: auto; margin-left: 20px; margin-right: 10px;"/>
+        <div class="caption" style="margin-top: 10px;margin-bottom: 10px;margin-left: 20px;" v-if="showShift" v-for="(shift, _index) in shifts" :key="_index">
+          <span style="font-weight: bolder">上下班时间</span>
+          <div class="svgplace" style="margin-top: 10px;line-height: 1.5em">
+            <span v-html="shift.content"></span>
+          </div>
+        </div>
+      </div>
+<!--      自由上下班-->
+      <div class="content" v-if="showtime" v-show="showFree">
+        <hr style="margin: auto; margin-left: 20px; margin-right: 10px;"/>
+        <div class="caption" style="margin-top: 10px;margin-bottom: 10px;margin-left: 20px;" v-if="showFree">
+          <span style="font-weight: bolder">上下班时间</span>
+          <div class="svgplace" style="margin-top: 10px;line-height: 1.5em">
+            <span v-html="this.worktime"></span>
           </div>
         </div>
       </div>
@@ -35,16 +56,18 @@
     <div class="piece">
       <div class="titlehead" style="display: inline-flex; width:100%;">
         <div class="titles">
-          <span>打卡范围</span>
+          <span style="color: #1a8abe;font-weight: bold">打卡范围</span>
         </div>
-        <i class="fa fastyle fa-chevron-down" v-if="!showplace" @click="showPlace" />
-        <i class="fa fastyle fa-chevron-up" v-if="showplace" @click="showPlace" />
+        <i class="fa fastyle fa-chevron-down" style="color: #1a8abe" v-if="!showplace" @click="showPlace" />
+        <i class="fa fastyle fa-chevron-up" style="color: #1a8abe" v-if="showplace" @click="showPlace" />
       </div>
       <div class="content" v-if="showplace">
         <hr style="margin: auto; margin-left: 20px; margin-right: 10px;" />
-        <div class="caption" style="margin-top: 10px;margin-bottom: 10px;margin-left: 20px;">
-          <span>打卡地点</span>
-          <div class="svgplace" style="margin-top: 10px;" v-for="(item, index) in places" :key="index">
+        <div class="caption" style="margin-top: 10px;margin-bottom: 10px;margin-left: 20px;line-height: 1.5em">
+          <el-row >
+            <span>打卡地点</span>
+          </el-row>
+          <div class="svgplace" style="margin-top: 10px;background: #99a9bf;width:auto; display:inline-block !important; display:inline;" v-for="(item, index) in places" :key="index">
             <i class="fa fa-map-marker" />
             <span>{{ item.name }}</span>
           </div>
@@ -54,10 +77,10 @@
     <div class="piece">
       <div class="titlehead" style="display: inline-flex; width:100%;">
         <div class="titles">
-          <span>加班规则</span>
+          <span style="color: #1a8abe;font-weight: bold">加班规则</span>
         </div>
-        <i class="fa fastyle fa-chevron-down" v-if="!showwork" @click="showWork" />
-        <i class="fa fastyle fa-chevron-up" v-if="showwork" @click="showWork" />
+        <i class="fa fastyle fa-chevron-down" style="color: #1a8abe" v-if="!showwork" @click="showWork" />
+        <i class="fa fastyle fa-chevron-up" style="color: #1a8abe" v-if="showwork" @click="showWork" />
       </div>
       <div class="content" v-if="showwork">
         <hr style="margin: auto; margin-left: 20px; margin-right: 10px;" />
@@ -72,15 +95,15 @@
     <div class="piece" style="margin-bottom: 10px;">
       <div class="titlehead" style="display: inline-flex; width:100%;">
         <div class="titles">
-          <span>更多规则</span>
+          <span style="color: #1a8abe;font-weight: bold">更多规则</span>
         </div>
-        <i class="fa fastyle fa-chevron-down" v-if="!showrule" @click="showRule" />
-        <i class="fa fastyle fa-chevron-up" v-if="showrule" @click="showRule" />
+        <i class="fa fastyle fa-chevron-down" style="color: #1a8abe" v-if="!showrule" @click="showRule" />
+        <i class="fa fastyle fa-chevron-up" style="color: #1a8abe" v-if="showrule" @click="showRule" />
       </div>
       <div class="content" v-if="showrule">
         <hr style="margin: auto; margin-left: 20px; margin-right: 10px;" />
         <div class="caption" style="margin-top: 10px;margin-bottom: 10px;margin-left: 20px;">
-          <span>{{ ruleinfo }}</span>
+          <span>{{ moreRule }}</span>
         </div>
       </div>
     </div>
@@ -93,6 +116,7 @@ import { findRuleInfoByRuleId } from '../api/record/rule'
 import { setCookie,
   getCookie,
   delCookie} from '../utils/cookie-util'
+import morerule from "../rule/morerule";
 
 export default {
   name: 'checkrule',
@@ -106,11 +130,19 @@ export default {
       place: '设置的打卡地点',
       workout: '加班方式，时间以什么为准',
       ruleinfo: '打卡规则中一些注意的事项，提醒员工，与以说明，避免一些特殊情况让员工感到困惑，从而影响打卡',
+      showFree: false,
       showtime: true,
       showplace: true,
       showrule: true,
       showwork: true,
-      places: []
+      showSchedule: true,
+      showShift: false,
+      places: [],
+      // 班次上下班
+      shifts: [],
+      schedules: [],
+      contents: '弹性上下班<br/><span style="color: #a5a5a5">上班前半个小时内可打上班卡,下个班次上班前半个小时可以打上个班次下班卡,最后一个班次下班后两小时内可打下班卡</span>',
+      moreRule: '无'
     }
   },
   beforeMount () {
@@ -135,8 +167,6 @@ export default {
         // 员工头像 用户名
         this_.checkUser(employeeId, tmp.attendance.users)
         this.rulename = tmp.ruleName
-        // 打卡时间
-        this.worktime = tmp.schedule[0].day + '  ' + tmp.schedule[0].workTime[0].startTime + '-' + tmp.schedule[0].workTime[0].endTime
         // 打卡地点有可能多个
         this.places = tmp.places
         // 加班规则
@@ -151,6 +181,63 @@ export default {
           }
         } else {
           this.workout = '无'
+        }
+        // 打卡时间
+        let workTime_ = []
+        let obj = {}
+        // this.worktime = tmp.schedule[0].day + '  ' + tmp.schedule[0].workTime[0].startTime + '-' + tmp.schedule[0].workTime[0].endTime
+        if (tmp.ruleType === '固定上下班'){
+          this.showFree = false
+          this.showShift = false
+          this.showSchedule = true
+          let schedules_ = tmp.schedule
+          for (let index in schedules_) {
+            workTime_ = schedules_[index].workTime
+            for (let index_ in workTime_){
+              obj = {}
+              obj.content = '<span style="color: #a5a5a5">' + schedules_[index].day + '  ' + workTime_[index_].startTime + '-' + workTime_[index_].endTime + '</span>'
+              this_.schedules.push(obj)
+            }
+          }
+        } else if (tmp.ruleType === '按班次上下班'){
+          this.showFree = false
+          this.showShift = true
+          this.showSchedule = false
+          let shifts_ = tmp.shift
+          for (let index in shifts_){
+            workTime_ = shifts_[index].workTime
+            for (let index_ in workTime_){
+              obj = {}
+              obj.content = '<span style="color: #a5a5a5">' + shifts_[index].shiftName + '  ' + workTime_[index_].startTime + '-' + workTime_[index_].endTime + '</span></br>' + this_.contents
+              this_.shifts.push(obj)
+            }
+          }
+          let tmp1 = {}
+          tmp1.content = '<span style="color: #a5a5a5">休息</span></br>' + this.contents
+          this.shifts.push(tmp1)
+          console.log(this.shifts)
+        } else {
+          this.showFree = true
+          this.showShift = false
+          this.showSchedule = false
+          this.worktime = '<span style="color: #a5a5a5">自由上下班</span></br>无时间限制,可随时打卡,只统计旷工'
+        }
+        // 更多规则
+        this.moreRule = ''
+        if (tmp.lateSign === 1){
+          // 允许补卡
+          this.moreRule += '允许提交补卡申请，'
+          if (tmp.lateSign === null){
+            this.moreRule += '不限制补卡次数，'
+          } else {
+            this.moreRule += '限制补卡' + tmp.lateSignCount + '次，'
+          }
+          if (tmp.expiration === '不限制' || tmp.expiration === null || tmp.expiration === ''){
+            this.moreRule += '不限制补卡时限'
+          }
+        } else {
+          // 不允许补卡
+          this.moreRule += '不允许提交补卡申请'
         }
       })
     },
@@ -221,6 +308,7 @@ export default {
   }
   .title {
     width:90%;
+    color: #1a8abe;
   }
   .common {
     position: inherit;
