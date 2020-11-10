@@ -7,6 +7,7 @@ import VueTouch from 'vue-touch'
 import Axios from 'axios'
 import 'font-awesome/css/font-awesome.css'
 import '../static/jquery-1.11.1/jquery.min.js'
+import '../static/styles/basic.css'
 // import '../static/mobile-detect/mobile-detect.js'
 // import '../static/qywx/jweixin-1.2.0.js'
 

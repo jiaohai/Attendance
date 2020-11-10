@@ -1,6 +1,6 @@
 <template>
   <div class="attendance">
-    <div class="heading">
+    <!-- <div class="heading">
       <div class="black common">
         <i class="fa fa-arrow-left" />
       </div>
@@ -33,7 +33,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
     <div class="miding" v-if="!showCheckInfo">
       <el-main v-loading="!showCheckInfo" style="height: 100%;"></el-main>
     </div>
@@ -49,14 +49,19 @@
       <div class="operate" v-if="showworkcheck">
         <div class="showmpa">
           <!-- <iframe id="mapPage" width="100%" height="100%" style="display:none;" frameborder=0 src="https://apis.map.qq.com/tools/locpicker?search=1&type=1&key=5YSBZ-W75KG-VLGQC-I24FQ-GT4A7-O4FBE&referer=myapp"></iframe> -->
-          <iframe id="geoPage" width=0 height=0 frameborder=0  style="display:none;" scrolling="no" src="https://apis.map.qq.com/tools/geolocation?key=5YSBZ-W75KG-VLGQC-I24FQ-GT4A7-O4FBE&referer=myapp"></iframe>
-          <iframe id="markPage" width="100%" height="100%" frameborder=0 scrolling="no" :src="mapsrc"></iframe>
-          <!-- <el-image v-loading="loading" element-loading-text="loading..." element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)" class="map" :src="showMapImg" >
+          <!-- <iframe id="geoPage" width=0 height=0 frameborder=0  style="display:none;" scrolling="no" src="https://apis.map.qq.com/tools/geolocation?key=5YSBZ-W75KG-VLGQC-I24FQ-GT4A7-O4FBE&referer=myapp"></iframe> -->
+          <!-- <iframe id="markPage" width="100%" height="100%" frameborder=0 scrolling="no" :src="mapsrc"></iframe> -->
+          <el-image v-loading="loading" element-loading-text="loading..." element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)" class="map" :src="showMapImg" >
             <div slot="error">
             </div>
-          </el-image> -->
+          </el-image>
         </div>
         <div class="checkbutton">
+          <!-- <el-main class="buttonline" v-loading="clocking" style="height: 100%;">
+            <button class="workbutton" @click="checkOntime" v-if="!clocking">
+              <span>{{ checkmassege }}</span>
+            </button>
+          </el-main> -->
           <el-main v-loading="clocking" style="height: 100%;"></el-main>
           <div class="buttonline" v-if="!clocking">
             <button class="workbutton" @click="checkOntime">
@@ -68,6 +73,24 @@
         <div class="massege" v-if="showRecoed">
           <div class="recordType">{{ recordType }} {{ recordStatus }}</div>
           <div class="recordTime">打卡时间 {{ recordTime }}</div>
+        </div>
+        <div class="record">
+          <button>
+            <router-link to='/checkrecord' class="menu_li">
+              <!-- <i class="fa fa-bars" style="padding-top: 3px;" /> -->
+              <div class="selectext">
+                打卡记录
+              </div>
+            </router-link>
+          </button>
+          <button>
+            <router-link to='/checksetting'  class="menu_li">
+              <!-- <i class="fa fa-cog" style="padding-top: 3px;" /> -->
+              <div class="selectext">
+                打卡设置
+              </div>
+            </router-link>
+          </button>
         </div>
       </div>
       <div class="operate" v-if="showoutcheck">
@@ -97,7 +120,7 @@
       </button>
       <button class="setting bottomchildre" :class="$route.path.indexOf('addadmin') !== -1 ? 'colortext' : 'colorcommon' " v-if="showA" @click="gosetting">
         <i class="fa fa-cog" />
-        <span>设置</span>
+        <span>考勤组</span>
       </button>
     </div>
   </div>
@@ -160,39 +183,7 @@ export default {
     }
   },
   created: function () {
-    /* eslint-disable*/
-    // this.getMyLocation()
-    var _this = this
-    window.addEventListener('message', function (event) {
-      // _this.openMsg(event)
-      if (!_this.loading) {
-        return
-      }
-      var loc = event.data
-      console.log('location', loc)
-      // _this.openMsg(loc)
-      if (loc && loc.module === 'geolocation') {
-        // _this.showMapImg = 'https://apis.map.qq.com/ws/staticmap/v2/?center=' + loc.lat + ',' + loc.lng + '&zoom=18&size=500*300&maptype=roadmap&scale=2&markers=size:large|color:red|' + loc.lat + ',' + loc.lng + '&key=5YSBZ-W75KG-VLGQC-I24FQ-GT4A7-O4FBE'
-        _this.mapsrc = 'https://apis.map.qq.com/tools/poimarker' + '?marker=coord:' + loc.lat + ',' + loc.lng + '&key=5YSBZ-W75KG-VLGQC-I24FQ-GT4A7-O4FBE&referer=myapp'
-        _this.loading = false
-        for (let i = 0; i < _this.userData.position.length; i++) {
-          let pos = _this.userData.position[i]
-          _this.range = _this.getRange(loc.lat, loc.lng, pos.latitude, pos.longtitude)
-          if ((_this.range * 1000) < parseInt(pos.range)) {
-            _this.showCheckInfo = true
-            _this.checkPlace = pos.id
-            break
-          }
-        }
-        // _this.range = _this.getRange(loc.lat, loc.lng, 29.612842034, 106.503453517)
-        _this.showCheckInfo = true
-      }
-      // else {
-      //   _this.showCheckInfo = true
-      //   _this.openMsg('定位失败')
-      // }
-    }, false)
-    // this.getSignKey()
+    this.getSignKey()
     this.getCheckInfo()
     // 全局userid
     this.setUserId()
@@ -200,11 +191,9 @@ export default {
   methods: {
     setUserId () {
       let userId = this.$route.query.userId
-      sessionStorage.setItem('userId',userId + '')
-      // sessionStorage.setItem('userId','jiaohaia' + '')
-
+      sessionStorage.setItem('userId', userId + '')
     },
-    async getCheckInfo () {
+    getCheckInfo () {
       this.userId = this.$route.query.userId
       this.authority = parseInt(this.$route.query.authority)
       if (this.authority > 1) {
@@ -218,7 +207,6 @@ export default {
       } else if (this.authority === 4) {
         this.showA = true
       }
-      await this.getUserInfo()
       console.log(this.userId)
       console.log(this.authority)
       console.log(this.userData)
@@ -241,13 +229,12 @@ export default {
           }
         } else {
           console.log(res)
-          // this.openMsg('获取打卡信息失败！')
+          this.openMsg('获取打卡信息失败！')
+          this.checkmassege = '获取信息失败，不能打卡'
         }
-        // this.getMyLocation()
-        // await this.getPlace()
       } catch (err) {
-        console.log(err)
-        // this.openMsg('请求出错！')
+        this.openMsg('获取打卡信息失败！')
+        this.checkmassege = '获取信息失败，不能打卡'
       }
     },
     controlShow () {
@@ -271,7 +258,7 @@ export default {
       var a = radLat1 - radLat2
       var b = lng1 * Math.PI / 180.0 - lng2 * Math.PI / 180.0
       var s = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a / 2), 2) + Math.cos(radLat1) * Math.cos(radLat2) * Math.pow(Math.sin(b / 2), 2)))
-      s = s * 6378.137 // EARTH_RADIUS;
+      s = s * 6378.137 // EARTH_RADIUS
       s = Math.round(s * 10000) / 10000
       return s
     },
@@ -283,19 +270,20 @@ export default {
       }).then(() => {}).catch(() => {})
     },
     getSignKey () {
+      /* eslint-disable*/
+      var _this = this
       this.$axios.get('/groupApi/getSign/', {params: {
-        url: 'http://shooturbrain.top:8083/check'
+        url: window.location.href
       }}).then(res => {
         if (res.data.flag) {
-          this.signKey = res.data.data
+          _this.signKey = res.data.data
           wx.config({
             beta: true,
-            debug: true,
-            // appId: 'ww434de06cbbaf240a',
-            appId: this.signKey.appId,
-            timestamp: this.signKey.timestamp,
-            nonceStr: this.signKey.nonceStr,
-            signature: this.signKey.signature,
+            // debug: true,
+            appId: _this.signKey.appId,
+            timestamp: _this.signKey.timestamp,
+            nonceStr: _this.signKey.nonceStr,
+            signature: _this.signKey.signature,
             jsApiList: [
               'openLocation',
               'getLocation',
@@ -304,148 +292,135 @@ export default {
               'hideOptionMenu'
             ]
           })
-          var _this = this
+          wx.hideOptionMenu()
           wx.getLocation({
-            type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
-            success: function (res) {
-              var latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
-              var longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
-              var speed = res.speed; // 速度，以米/每秒计
-              var accuracy = res.accuracy; // 位置精度
+            type: 'gcj02', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+            success: async function (res) {
+              var latitude = res.latitude // 纬度，浮点数，范围为90 ~ -90
+              var longitude = res.longitude // 经度，浮点数，范围为180 ~ -180。
+              // var speed = res.speed // 速度，以米/每秒计
+              // var accuracy = res.accuracy // 位置精度
               _this.showMapImg = 'https://apis.map.qq.com/ws/staticmap/v2/?center=' + latitude + ',' + longitude + '&zoom=18&size=500*300&maptype=roadmap&scale=2&markers=size:large|color:red|' + latitude + ',' + longitude + '&key=5YSBZ-W75KG-VLGQC-I24FQ-GT4A7-O4FBE'
               _this.loading = false
-              _this.range = this.getRange(latitude, longitude, 29.612842034, 106.503453517)
-              console.log(this.authority)
+              try {
+                let res = await _this.$axios.get('/api/rule/attendance/', {
+                  params: {
+                    employeeId: _this.$route.query.userId
+                  }
+                })
+                if (res.data.flag) {
+                  _this.userData = res.data.data
+                  if (_this.userData.isAttendance) {
+                    _this.showIsCheck = true
+                    _this.checkmassege = _this.userData.type === 0 ? '上班打卡' : '下班打卡'
+                    if (_this.userData.record.length !== 0) {
+                      _this.recordData = _this.userData.record[-1]
+                      if (_this.recordData.status === 0) {
+                        _this.recordTime = _this.userData.type === 0 ? moment(_this.recordData.reachRecord).format('HH:mm') : moment(_this.recordData.leaveRecord).format('HH:mm')
+                        _this.recordStatus = '正常'
+                      } else if (_this.recordData.status === 1) {
+                        _this.recordTime = moment(_this.recordData.reachRecord).format('HH:mm')
+                        _this.recordStatus = '迟到'
+                      } else if (_this.recordData.status === 2) {
+                        _this.recordTime = moment(_this.recordData.leaveRecord).format('HH:mm')
+                        _this.recordStatus = '早退'
+                      }
+                      _this.recordType = _this.userData.type === 0 ? '上班打卡' : '下班打卡'
+                    }
+                  } else {
+                    _this.showIsCheck = false
+                  }
+                  for (let i = 0; i < _this.userData.position.length; i++) {
+                    let pos = _this.userData.position[i]
+                    _this.range = _this.getRange(latitude, longitude, pos.latitude, pos.longtitude)
+                    if ((_this.range * 1000) < parseInt(pos.range)) {
+                      _this.checkPlace = pos.id
+                      break
+                    }
+                  }
+                  _this.showCheckInfo = true
+                } else {
+                  _this.openMsg('获取打卡信息失败！！')
+                  _this.checkmassege = '获取信息失败，不能打卡'
+                  _this.showCheckInfo = true
+                  return
+                }
+              } catch (err) {
+                _this.openMsg('获取打卡信息失败！')
+                _this.checkmassege = '获取信息失败，不能打卡'
+                _this.showCheckInfo = true
+                return
+              }
+            },
+            fail: function () {
+              _this.showCheckInfo = true
             }
           })
         }
       })
-      console.log(this.signKey)
     },
     async checkOntime () {
-      this.clocking = true
-      var _this = this
-      var nowTime = moment().format('YYYY-MM-DD HH:mm:ss')
-      let res = await this.$axios.put('/record/clockIn/', {
-        employeeId: this.userId,
-        recordTime: nowTime,
-        type: this.userData.type,
-        placeId: this.checkPlace
-      })
-      if (res.data.flag) {
-        console.log(res.data)
-        this.checkmassege = '更新打卡'
-        this.showRecoed = true
-        this.recordData = res.data.data
-        if (this.recordData.status === 0) {
-          this.recordStatus = '正常'
-        } else if (this.recordData.status === 1) {
-          this.recordStatus = '迟到'
-        } else if (this.recordData.status === 2) {
-          this.recordStatus = '早退'
-        }
-        this.recordTime = moment(this.recordData.recordTime).format('HH:mm')
-        this.recordType = this.userData.type === 0 ? '上班打卡' : '下班打卡'
-      } else {
-        console.log(res)
-        // this.openMsg('打卡失败！')
+      if (!this.showIsCheck) {
+        return
       }
+      this.clocking = true
+      var nowTime = moment().format('YYYY-MM-DD HH:mm:ss')
+      try {
+        let res = await this.$axios.put('/record/clockIn/', {
+          employeeId: this.userId,
+          recordTime: nowTime,
+          type: this.userData.type,
+          placeId: this.checkPlace
+        })
+        if (res.data.flag) {
+          console.log(res.data)
+          this.checkmassege = '更新打卡'
+          this.showRecoed = true
+          this.recordData = res.data.data
+          if (this.recordData.status === 0) {
+            this.recordStatus = '正常'
+          } else if (this.recordData.status === 1) {
+            this.recordStatus = '迟到'
+          } else if (this.recordData.status === 2) {
+            this.recordStatus = '早退'
+          }
+          this.recordTime = moment(this.recordData.recordTime).format('HH:mm')
+          this.recordType = this.userData.type === 0 ? '上班打卡' : '下班打卡'
+        } else {
+          this.openMsg('打卡失败！')
+        }
+      } catch(err) {
+        this.openMsg('打卡失败！')
+      }
+      
       this.clocking = false
     },
     gocheck () {
       if (this.$route.path === '/check') {
         return
       }
-      this.$router.push({path: '/check', query:{ userId: this.userId, authority: this.authority}})
+      this.$router.push({path: '/check', query: {userId: this.userId, authority: this.authority}})
     },
     gostatistics () {
       if (this.$route.path === '/statistics') {
         return
       }
-      this.$router.push({path: '/statistics', query:{ userId: this.userId, authority: this.authority}})
+      this.$router.push({path: '/statistics', query: {userId: this.userId, authority: this.authority}})
     },
     gorule () {
       if (this.$route.path === '/rule') {
         return
       }
-      this.$router.push({path: '/rule', query:{ userId: this.userId, authority: this.authority}})
+      this.$router.push({path: '/rule', query: {userId: this.userId, authority: this.authority}})
     },
     gosetting () {
       if (this.$route.path === '/addadmin') {
         return
       }
-      this.$router.push({path: '/addadmin', query:{ userId: this.userId, authority: this.authority}})
-    },
-    async getMyLocation () {
-      var _this = this
-      var geolocation = new qq.maps.Geolocation('5YSBZ-W75KG-VLGQC-I24FQ-GT4A7-O4FBE', 'myapp')
-      geolocation.getLocation(this.getSeccss, this.filde)
-    },
-    getSeccss (position) {
-      this.showMapImg = 'https://apis.map.qq.com/ws/staticmap/v2/?center=' + position.lat + ',' + position.lng + '&zoom=18&size=500*300&maptype=roadmap&scale=2&markers=size:large|color:red|' + position.lat + ',' + position.lng + '&key=5YSBZ-W75KG-VLGQC-I24FQ-GT4A7-O4FBE'
-      this.loading = false
-      this.range = this.getRange(position.lat, position.lng, 29.612842034, 106.503453517)
-    },
-    filde () {
-      this.loading = false
-      // this.openMsg('定位失败')
-    },
-    async getPlace () {
-      var _this = this
-      // var map = new AMap.Map('container', {
-      //   resizeEnable: true
-      // })
-      // var geolocation = new AMap.Geolocation({
-      //   enableHighAccuracy: true,//是否使用高精度定位，默认:true
-      //   timeout: 10000,          //超过10秒后停止定位，默认：5s
-      //   buttonPosition:'RB',    //定位按钮的停靠位置
-      //   buttonOffset: new AMap.Pixel(10, 20),//定位按钮与设置的停靠位置的偏移量，默认：Pixel(10, 20)
-      //   zoomToAccuracy: true,   //定位成功后是否自动调整地图视野到定位点
-      // })
-      // geolocation.getCurrentPosition(function(status,result){
-      //   if(status=='complete'){
-      //       _this.onComplete(result)
-      //   }else{
-      //       _this.onError(result)
-      //   }
-      // })
-      AMap.plugin('AMap.Geolocation', function() {
-        console.log('11111111111111111111111111111111111111')
-        var geolocation = new AMap.Geolocation({
-          enableHighAccuracy: true,//是否使用高精度定位，默认:true
-          timeout: 10000,          //超过10秒后停止定位，默认：5s
-          buttonPosition:'RB',    //定位按钮的停靠位置
-          buttonOffset: new AMap.Pixel(10, 20),//定位按钮与设置的停靠位置的偏移量，默认：Pixel(10, 20)
-          zoomToAccuracy: true,   //定位成功后是否自动调整地图视野到定位点
-        })
-        // map.addControl(geolocation);
-        geolocation.getCurrentPosition(function(status,result){
-          if(status=='complete'){
-              _this.onComplete(result)
-          }else{
-              _this.onError(result)
-          }
-        })
-      })
-    },
-    //解析定位结果
-    onComplete (data) {
-      console.log(data)
-      var positionList = data.position.lng
-      this.showMapImg = 'https://apis.map.qq.com/ws/staticmap/v2/?center=' + data.position.lat + ',' + data.position.lng + '&zoom=18&size=500*300&maptype=roadmap&scale=2&markers=size:large|color:red|' + data.position.lat + ',' + data.position.lng + '&key=5YSBZ-W75KG-VLGQC-I24FQ-GT4A7-O4FBE'
-      this.loading = false
-      this.range = this.getRange(data.position.lat, data.position.lng, 29.612842034, 106.503453517)
-      console.log(this.authority)
-    },
-    //解析定位错误信息
-    onError (data) {
-      this.loading = false
-      // this.openMsg('定位失败')
+      this.$router.push({path: '/addadmin', query: {userId: this.userId, authority: this.authority}})
     }
   },
   mounted () {
-    // this.getMyLocation()
-    // this.getPlace()
   }
 }
 </script>
@@ -463,7 +438,7 @@ export default {
     outline: none;
   }
 
-  .heading {
+  /* .heading {
     display: inline-flex;
     width:100%;
     height:45px;
@@ -490,7 +465,7 @@ export default {
     left: 0;
     margin: auto;
     color:white;
-  }
+  } */
   .manner {
     display: flex;
     height: 35px;
@@ -504,7 +479,7 @@ export default {
     height:100%;
   }
   .miding{
-    height: calc(100% - 85px);
+    height: calc(100% - 40px);
     padding-bottom:40px;
     background-color:rgb(245, 245, 245);
   }
@@ -565,7 +540,7 @@ export default {
     margin-bottom: 10px;
   }
   .menu_li{
-    color: white;
+    color: black;
     display: flex;
     text-decoration: blink;
   }
@@ -605,13 +580,17 @@ export default {
     text-align: center;
     -webkit-border-radius: 60px;
     -moz-border-radius: 60px;
-    border-radius: 60px;
+    border-radius: 50%;
     font-size: 14px;
     font-weight: bold;
   }
   .massege{
     width:100%;
-    height: 20%;
+    height: 15%;
+  }
+  .record{
+    width:100%;
+    height: 5%;
   }
 
   .el-message-box{

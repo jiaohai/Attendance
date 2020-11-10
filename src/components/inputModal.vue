@@ -2,6 +2,14 @@
   <div class="modal-backdrop">
     <div class="attendance">
       <div class="heading">
+        <div class="title" style="align-items:center;">{{ titlename }}</div>
+        <div class="opete" style="align-items:center;">
+          <button @click="saveInput(false)" >保存</button>
+          <button @click="closeSelf" >返回</button>
+        </div>
+      </div>
+      <hr style="margin-top: 0px"/>
+      <!-- <div class="heading">
         <div class="black common" @click="closeSelf">
           <i class="fa fa-arrow-left" />
         </div>
@@ -9,7 +17,7 @@
           <div class="more common" @click="saveInput(false)">
           <span>确定</span>
         </div>
-      </div>
+      </div> -->
       <div class="commonpiece">
         <div class="titlehead" style="display: inline-flex; width:100%;">
           <input id="focusinput" autocomplete="off" v-model="inputvlue" v-if="onlyNum" @keydown.enter="saveInput(true)" oninput="value=value.replace(/[^\d]/g,'')"/>
@@ -47,6 +55,7 @@ export default {
     document.getElementById('focusinput').focus()
   },
   created: function () {
+    this.inputvlue = this.inputtxt
   },
   methods: {
     closeSelf () {
@@ -88,7 +97,7 @@ export default {
     width: 100%;
   }
 
-  .heading {
+  /* .heading {
     display: inline-flex;
     width:100%;
     height:45px;
@@ -97,9 +106,9 @@ export default {
     box-sizing:border-box;
     border-width:1px;
     text-align: center;
-  }
+  } */
 
-  .black {
+  /* .black {
     width:10%;
   }
   .title {
@@ -116,7 +125,7 @@ export default {
     left: 0;
     margin: auto;
     color:white;
-  }
+  } */
 
   .commonpiece{
     width: 100%;

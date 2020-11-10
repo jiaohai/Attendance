@@ -2,17 +2,26 @@
   <div class="modal-backdrop">
     <div class="attendance">
       <div class="heading">
-        <div class="black common" @click="closeSelf">
+        <div class="title" style="align-items:center;">{{ titlename }}</div>
+        <div class="opete" style="align-items:center;">
+          <button @click="saveSearch(false)" v-if="isedit" >取消</button>
+          <button @click="editList" v-if="isshowExist && !isedit" >编辑</button>
+          <button @click="seveData" >返回</button>
+        </div>
+      </div>
+      <hr style="margin-top: 0px"/>
+      <!-- <div class="heading">
+        <div class="black common" @click="seveData">
           <i class="fa fa-arrow-left" />
         </div>
         <div class="title common" style="align-items:center;">{{ titlename }}</div>
         <div class="more common" @click="saveSearch(false)" v-if="isedit">
-          <span>确定</span>
+          <span>取消</span>
         </div>
         <div class="more common" @click="editList" v-if="isshowExist && !isedit">
           <span>编辑</span>
         </div>
-      </div>
+      </div> -->
       <div class="commonpiece" v-if="showadd">
         <div class="titlehead" style="display: inline-flex; width:100%;" v-if="issearch">
           <div style="width: 100%; display: inline-flex;">
@@ -31,6 +40,9 @@
             {{ iteml.name }}
             <i class="fa fa-angle-right" v-if="depatmentlist.length !== indexl + 1" />
           </span>
+        </div>
+        <div class="options" v-if="optionData.departs.length === 0 && optionData.users.length === 0">
+          没有数据，请重新输入
         </div>
         <div class="options">
           <div class="alloption" v-for="(itemd, indexd) in optionData.departs" :key="'fitst' + indexd">
@@ -151,32 +163,6 @@ export default {
     return {
       inputvlue: '',
       checked: true,
-      datalist: [
-        {
-          name: '部门一',
-          isdepantment: true,
-          ischecked: false,
-          id: 1
-        },
-        {
-          name: '部门二',
-          isdepantment: true,
-          ischecked: false,
-          id: 2
-        },
-        {
-          name: '员工一',
-          isdepantment: false,
-          ischecked: false,
-          di: 3
-        },
-        {
-          name: '员工二',
-          isdepantment: false,
-          ischecked: false,
-          id: 4
-        }
-      ],
       depatmentlist: [
         {
           name: '通讯录',
@@ -221,6 +207,13 @@ export default {
       }
       this.getOptions('')
     },
+    openMsg (message) {
+      this.$confirm(message, '提示', {
+        showCancelButton: false,
+        showConfirmButton: false,
+        type: 'warning'
+      }).then(() => {}).catch(() => {})
+    },
     closeSelf () {
       this.$emit('closesearch')
     },
@@ -230,7 +223,7 @@ export default {
       this.showadd = true
     },
     seveData () {
-      this.$emit('getsearch', this.existlist)
+      this.$emit('getsearch', this.tempexist)
       this.closeSelf()
     },
     clearSearch () {
@@ -241,16 +234,22 @@ export default {
       this.existlist = this.tempexist
     },
     getSearchOptions (item) {
+      if (this.inputvlue === '') {
+        return
+      }
       this.$axios.get('/groupApi/depart/userAndDepart/Search/', {
         params: {
-          searchKey: '',
-          type: 'group'
+          searchKey: this.inputvlue
         }
       }).then(res => {
         if (res.data.flag) {
           this.optionData = res.data.data
+        } else {
+          this.openMsg(res.data.msg)
         }
-        console.log(res)
+      }).catch(error => {
+        console.log(error)
+        this.openMsg('发送请求失败！')
       })
     },
     getOptions (item) {
@@ -272,8 +271,12 @@ export default {
       }).then(res => {
         if (res.data.flag) {
           this.optionData = res.data.data
+        } else {
+          this.openMsg(res.data.msg)
         }
-        console.log(res)
+      }).catch(error => {
+        console.log(error)
+        this.openMsg('发送请求失败！')
       })
     },
     editList () {
@@ -298,7 +301,6 @@ export default {
     getNextLevel (item) {
       console.log(item)
       if (item === 0) {
-        console.log('11111111111')
         this.parentChecked = false
         this.parentCheckedID = []
         this.getOptions('')
@@ -335,12 +337,36 @@ export default {
         this.usersId.push(item.employeeId)
       }
     },
-    delDate (item, type) {
-      if (type === 'depart') {
-        this.tempexist.departs.splice(this.tempexist.departs.indexOf(item.departmentId, 1))
-      } else {
-        this.tempexist.users.splice(this.tempexist.users.indexOf(item.employeeId, 1))
+    refreshExist () {
+      this.deparstId = []
+      this.usersId = []
+      for (let i = 0; i < this.tempexist.departs.length; i++) {
+        this.deparstId.push(this.tempexist.departs[i].departmentId)
       }
+      for (let i = 0; i < this.tempexist.users.length; i++) {
+        this.usersId.push(this.tempexist.users[i].employeeId)
+      }
+    },
+    delDate (item, type) {
+      var tempWorData = []
+      if (type === 'depart') {
+        for (let i = 0; i < this.tempexist.departs.length; i++) {
+          if (this.tempexist.departs[i] !== item) {
+            tempWorData.push(this.tempexist.departs[i])
+          }
+        }
+        this.tempexist.departs = tempWorData
+        // this.tempexist.departs.splice(this.tempexist.departs.indexOf(item.departmentId, 1))
+      } else {
+        for (let i = 0; i < this.tempexist.users.length; i++) {
+          if (this.tempexist.users[i] !== item) {
+            tempWorData.push(this.tempexist.users[i])
+          }
+        }
+        this.tempexist.users = tempWorData
+        // this.tempexist.users.splice(this.tempexist.users.indexOf(item.employeeId, 1))
+      }
+      this.refreshExist()
     }
   }
 }
@@ -364,7 +390,7 @@ export default {
     width: 100%;
   }
 
-  .heading {
+  /* .heading {
     display: inline-flex;
     width:100%;
     height:45px;
@@ -392,7 +418,7 @@ export default {
     left: 0;
     margin: auto;
     color:white;
-  }
+  } */
 
   .commonpiece{
     width: 100%;

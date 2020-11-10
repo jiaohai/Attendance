@@ -2,6 +2,14 @@
   <div class="modal-backdrop">
     <div class="attendance">
       <div class="heading">
+        <div class="title" style="align-items:center;">{{ msg }}</div>
+        <div class="opete" style="align-items:center;">
+          <button @click="saveGrup" >保存</button>
+          <button @click="closeSelf" >返回</button>
+        </div>
+      </div>
+      <hr style="margin-top: 0px"/>
+      <!-- <div class="heading">
         <div class="black common" @click="closeSelf">
           <i class="fa fa-arrow-left" />
         </div>
@@ -9,7 +17,7 @@
         <div class="more common">
           <i class="fa fa-floppy-o" @click="saveGrup" />
         </div>
-      </div>
+      </div> -->
       <div class="contentbody">
         <div class="commonpiece" @click="showInputModal('attendname')">
           <div class="titlehead" style="display: inline-flex; width:100%;">
@@ -85,6 +93,10 @@ export default {
     isEditGroup: {
       type: Boolean,
       default: false
+    },
+    userID: {
+      type: String,
+      default: ''
     }
   },
   data () {
@@ -115,8 +127,6 @@ export default {
     },
     saveGrup () {
       this.updateGroup()
-      // this.$emit('getedit', this.newGroup)
-      // this.closeSelf()
     },
     openMsg (message) {
       this.$confirm(message, '提示', {
@@ -131,7 +141,7 @@ export default {
         this.inputTxt = this.newGroup.name
       }
       if (mark === 'attenddes') {
-        this.inputTxt = this.newGroup.des
+        this.inputTxt = this.newGroup.descrise
       }
       this.showInput = !this.showInput
     },
@@ -195,21 +205,30 @@ export default {
       return adminId.toString()
     },
     updateGroup () {
-      console.log('111111111')
-      var groupparam = {
-        group: {
-          id: this.newGroup.id,
-          groupName: this.newGroup.name,
-          administratorsId: this.getAdminId(),
-          descrise: this.newGroup.descrise
-        },
-        departs: this.getDepartId(),
-        users: this.getUserId()
+      if (!this.newGroup.name) {
+        this.openMsg('考勤组名称不能为空')
+        return
       }
-      console.log(groupparam)
+      if (this.newGroup.admins.length === 0) {
+        this.openMsg('考勤组管理员不能为空')
+        return
+      }
+      if (this.newGroup.departs.length === 0 && this.newGroup.users.length === 0) {
+        this.openMsg('考勤组范围不能为空')
+        return
+      }
+      // var groupparam = {
+      //   group: {
+      //     id: this.newGroup.id,
+      //     groupName: this.newGroup.name,
+      //     administratorsId: this.getAdminId(),
+      //     descrise: this.newGroup.descrise
+      //   },
+      //   departs: this.getDepartId(),
+      //   users: this.getUserId()
+      // }
       if (this.isEditGroup) {
-        console.log('update group')
-        this.$axios.put('/groupApi/group/update/', {
+        this.$axios.post('/groupApi/group/update/', {
           group: {
             id: this.newGroup.id,
             groupName: this.newGroup.name,
@@ -226,13 +245,15 @@ export default {
           } else {
             this.openMsg(res.data.msg)
           }
-          console.log(res)
+        }).catch(error => {
+          console.log(error)
+          this.openMsg('发送请求失败！')
         })
       } else {
-        console.log('create group')
         this.$axios.post('/groupApi/group/add/', {
           group: {
             groupName: this.newGroup.name,
+            creator: this.userID,
             administratorsId: this.getAdminId(),
             descrise: this.newGroup.descrise
           },
@@ -246,18 +267,23 @@ export default {
           } else {
             this.openMsg(res.data.msg)
           }
-          console.log(res)
+        }).catch(error => {
+          console.log(error)
+          this.openMsg('发送请求失败！')
         })
       }
     },
     delGroup () {
-      console.log('delete group')
-      this.$axios.delete('/groupApi/group/delete/' + this.newGroup.id).then(res => {
+      this.$axios.post('/groupApi/group/delete/' + this.newGroup.id).then(res => {
         if (res.data.flag) {
-          alert('删除成功')
+          this.openMsg('删除成功')
           this.$router.go(0)
+        } else {
+          this.openMsg(res.data.msg)
         }
-        console.log(res)
+      }).catch(error => {
+        console.log(error)
+        this.openMsg('发送请求失败！')
       })
     }
   }
@@ -280,15 +306,23 @@ export default {
   height:100%;
   width: 100%;
 }
-.black {
-  width:10%;
+/* .black {
+  width:15%;
+  text-align: right;
 }
 .title {
-  width:80%;
+  width:70%;
+  margin: auto auto 5px 10px;
+}
+.opete {
+  text-align: right;
+  width:30%;
+  margin: auto auto 5px 10px;
 }
 .more{
-  width:10%;
-}
+  width:15%;
+  text-align: right;
+} */
 .modal-footer {
     border-top: 1px solid #eee;
     justify-content: flex-end;
@@ -313,16 +347,16 @@ export default {
     font-size:small;
     color:rgb(165,165,165);
   }
-  .heading {
+  /* .heading {
     display: inline-flex;
     width:100%;
     height:45px;
     background:inherit;
-    background-color:rgb(26, 138, 190);
+    background-color: white;
     box-sizing:border-box;
     border-width:1px;
-    text-align: center;
-  }
+    text-align: left;
+  } */
 
   .contentbody{
     width: 100%;

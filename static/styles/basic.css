@@ -1,0 +1,28 @@
+.heading {
+  display: inline-flex;
+  width:100%;
+  height:45px;
+  background:inherit;
+  /* background-color:rgb(26, 138, 190); */
+  background-color: white;
+  box-sizing:border-box;
+  border-width:1px;
+  text-align: left;
+}
+.black {
+  width:15%;
+  text-align: right;
+}
+.title {
+  width:70%;
+  margin: auto auto 5px 10px;
+}
+.opete {
+  text-align: right;
+  width:30%;
+  margin: auto auto 5px 10px;
+}
+.more{
+  width:15%;
+  text-align: right;
+}

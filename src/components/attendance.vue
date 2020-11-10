@@ -35,7 +35,7 @@
       </button>
       <button class="setting">
         <i class="fa fa-cog" />
-        <span>设置</span>
+        <span>考勤组</span>
       </button>
     </div>
   </div>

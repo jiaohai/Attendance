@@ -1,15 +1,19 @@
 <template>
   <div class="attendance" style="height: 100%">
     <div class="heading">
-      <div class="black common" @click="goBackThing">
-        <i class="fa fa-arrow-left" />
-      </div>
-      <div class="title common" style="align-items:center;">{{ msg }}</div>
-      <div class="more common">
-        <i class="fa fa-plus" @click="showEditGroup(newAttendanceGroup, 'new')" />
+      <div class="title" style="align-items:center;">{{ msg }}</div>
+      <div class="opete" style="align-items:center;">
+        <button @click="showEditGroup(newAttendanceGroup, 'new')" >创建</button>
+        <!-- <button @click="goBackThing" >返回</button> -->
       </div>
     </div>
-    <div class="contentbody" style="height: calc(100% - 86px);">
+    <hr style="margin-top: 0px"/>
+    <div class="contentbody" v-loading="false" style="height: calc(100% - 86px);">
+      <div class="uncommonpiece" v-if="attendanceList.length === 0">
+        <div class="rulecotent">
+          <span class="contentspan">没有数据，请新建考勤组</span>
+        </div>
+      </div>
       <div class="uncommonpiece" v-for="(item, index) in attendanceList" :key="index" @click="showEditGroup(item, 'edit')">
         <div class="rulecotent">
           <span class="contentspan">{{ item.name }}</span>
@@ -37,10 +41,10 @@
       </button>
       <button class="setting bottomchildre" :class="$route.path.indexOf('addadmin') !== -1 ? 'colortext' : 'colorcommon' " v-if="showA" @click="gosetting">
         <i class="fa fa-cog" />
-        <span>设置</span>
+        <span>考勤组</span>
       </button>
     </div>
-    <edit-group v-if="isEdit" :existdate="editGroupData" :isEditGroup="needEdit" @getedit="getEdit" v-on:closeedit="closeEdit"></edit-group>
+    <edit-group v-if="isEdit" :existdate="editGroupData" :userID="userId" :isEditGroup="needEdit" @getedit="getEdit" v-on:closeedit="closeEdit"></edit-group>
   </div>
 </template>
 
@@ -52,7 +56,7 @@ export default {
   name: 'addadmin',
   data () {
     return {
-      msg: '考勤组',
+      msg: '考勤组设置',
       showcheck: true,
       showstatistics: true,
       showrule: true,
@@ -71,6 +75,7 @@ export default {
       isaddAddmin: false,
       editGroupData: {},
       newAttendanceGroup: {
+        id: null,
         name: '',
         admins: [],
         departs: [],
@@ -107,12 +112,23 @@ export default {
   },
   methods: {
     getAttendce () {
-      this.$axios.get('/groupApi/group/groupAndDepart/').then(res => {
+      this.$axios.get('/groupApi/group/groupAndDepart?creatorId=' + this.userId).then(res => {
         if (res.data.flag) {
           this.attendanceList = res.data.data.allGroup
+        } else {
+          this.openMsg(res.data.msg)
         }
-        console.log(res)
+      }).catch(error => {
+        console.log(error)
+        this.openMsg('发送请求失败！')
       })
+    },
+    openMsg (message) {
+      this.$confirm(message, '提示', {
+        showCancelButton: false,
+        showConfirmButton: false,
+        type: 'warning'
+      }).then(() => {}).catch(() => {})
     },
     goBackThing () {
       window.history.go(-1)
@@ -143,15 +159,22 @@ export default {
     },
     showEditGroup (item, type) {
       console.log(type)
-      this.editGroupData = item
+      this.editGroupData = {
+        id: item.id,
+        name: item.name,
+        admins: item.admins,
+        departs: item.departs,
+        users: item.users,
+        descrise: item.descrise
+      }
       if (type === 'edit') { this.needEdit = true }
       this.isEdit = !this.isEdit
     },
     getEdit (msg) {
-      this.editGroupData = msg
-      if (!this.needEdit) {
-        this.attendanceList.push(msg)
-      }
+      // this.editGroupData = msg
+      // if (!this.needEdit) {
+      //   this.attendanceList.push(msg)
+      // }
       this.needEdit = false
     },
     closeEdit () {
@@ -164,16 +187,16 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  .heading {
+  /* .heading {
     display: inline-flex;
     width:100%;
     height:45px;
     background:inherit;
-    background-color:rgb(26, 138, 190);
+    background-color: white;
     box-sizing:border-box;
     border-width:1px;
-    text-align: center;
-  }
+    text-align: left;
+  } */
 
   .contentbody{
     width: 100%;
@@ -218,14 +241,22 @@ export default {
     color:rgb(165,165,165);
   }
 
-  .black {
-    width:10%;
+  /* .black {
+    width:15%;
+    text-align: right;
   }
   .title {
-    width:80%;
+    width:70%;
+    margin: auto auto 5px 10px;
+  }
+  .opete {
+    text-align: right;
+    width:30%;
+    margin: auto auto 5px 10px;
   }
   .more{
-    width:10%;
+    width:15%;
+    text-align: right;
   }
   .common {
     position: inherit;
@@ -235,7 +266,7 @@ export default {
     left: 0;
     margin: auto;
     color:white;
-  }
+  } */
 
   button{
     background-color:white;

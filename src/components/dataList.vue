@@ -221,7 +221,15 @@ export default {
       this.isedit = !this.isedit
     },
     delDate (item) {
-      this.existlist.splice(this.existlist.indexOf(item, 1))
+      let tempWorData = []
+      console.log('111111111111')
+      for (let i = 0; i < this.tempexist.length; i++) {
+        if (this.tempexist[i] !== item) {
+          tempWorData.push(item)
+        }
+      }
+      this.tempexist = tempWorData
+      // this.existlist.splice(this.existlist.indexOf(item, 1))
     },
     showTimeModal (editData, index) {
       console.log(editData, index)
