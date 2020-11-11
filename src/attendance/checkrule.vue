@@ -225,14 +225,14 @@ export default {
         this.moreRule = ''
         if (tmp.lateSign === 1){
           // 允许补卡
-          this.moreRule += '允许提交补卡申请，'
+          this.moreRule += '允许提交补卡申请'
           if (tmp.lateSign === null){
-            this.moreRule += '不限制补卡次数，'
+            this.moreRule += ',不限制补卡次数'
           } else {
-            this.moreRule += '限制补卡' + tmp.lateSignCount + '次，'
+            this.moreRule += ',限制补卡' + tmp.lateSignCount + '次'
           }
           if (tmp.expiration === '不限制' || tmp.expiration === null || tmp.expiration === ''){
-            this.moreRule += '不限制补卡时限'
+            this.moreRule += ',不限制补卡时限'
           }
         } else {
           // 不允许补卡
