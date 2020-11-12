@@ -10,6 +10,7 @@ const checkreminder = r => require.ensure([], () => r(require('../attendance/che
 const application = r => require.ensure([], () => r(require('../attendance/application')), 'application')
 const singlereport = r => require.ensure([], () => r(require('../attendance/singlereport')), 'singlereport')
 const device = r => require.ensure([], () => r(require('../attendance/device')), 'device')
+const login = r => require.ensure([], () => r(require('../attendance/login')), 'login')
 
 const statistics = r => require.ensure([], () => r(require('../statistics/statistics')), 'statistics')
 const allreport = r => require.ensure([], () => r(require('../statistics/allreport')), 'allreport')
@@ -31,6 +32,11 @@ export default new Router({
     //   path: '/',
     //   redirect: '/check'
     // },
+    {
+      path: '/login',
+      name: 'login',
+      component: login
+    },
     {
       path: '/check',
       name: 'check',
