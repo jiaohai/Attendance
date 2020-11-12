@@ -67,10 +67,12 @@
           <el-row >
             <span>打卡地点</span>
           </el-row>
-          <div class="svgplace" style="margin-top: 10px;background: #99a9bf;width:auto; display:inline-block !important; display:inline;" v-for="(item, index) in places" :key="index">
-            <i class="fa fa-map-marker" />
-            <span>{{ item.name }}</span>
-          </div>
+          <el-row v-for="(item, index) in places" :key="index">
+            <div class="svgplace" style="margin-top: 10px;background: #99a9bf;width:auto; display:inline-block !important; display:inline;" >
+              <i class="fa fa-map-marker" />
+              <span>{{ item.name }}</span>
+            </div>
+          </el-row>
         </div>
       </div>
     </div>
