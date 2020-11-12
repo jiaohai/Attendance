@@ -1,7 +1,7 @@
 <template>
   <div class="modal-backdrop">
     <div class="attendance">
-      <div class="heading">
+      <!-- <div class="heading">
         <div class="black common" @click="seveData">
           <i class="fa fa-arrow-left" />
         </div>
@@ -12,7 +12,16 @@
         <div class="more common" @click="editList" v-if="!isedit">
           <span>编辑</span>
         </div>
+      </div> -->
+      <div class="heading">
+        <div class="title" style="align-items:center;">{{ titlename }}</div>
+        <div class="opete" style="align-items:center;">
+          <button @click="saveSearch(false)" v-if="isedit" >取消</button>
+          <button @click="editList" v-if="!isedit" >编辑</button>
+          <button @click="seveData" >返回</button>
+        </div>
       </div>
+      <hr style="margin-top: 0px"/>
       <div class="existstyle">
         <div class="addtitle" v-if="dataType === 'fixed'" @click="showTimeModal(fixedNew, -1)">
           <i class="fa fa-plus" style="font-size: x-large; margin: auto 0px auto 25px;"/>
@@ -110,7 +119,7 @@
         </div>
       </div>
     </div>
-    <time-modal v-if="showModal" :parentData="parentData" :dataselect="selectType" :dataType="listType" @gettime="getTime" v-on:closetime="closeTimeModal"></time-modal>
+    <time-modal v-if="showModal" :titlename="typeName" :parentData="parentData" :dataselect="selectType" :dataType="listType" @gettime="getTime" v-on:closetime="closeTimeModal"></time-modal>
   </div>
 </template>
 
@@ -144,6 +153,7 @@ export default {
     return {
       isedit: false,
       showModal: false,
+      typeName: '',
       listType: this.dataType,
       workDay: '',
       workTime: [],
@@ -197,6 +207,13 @@ export default {
   },
   methods: {
     initList () {
+      if (this.dataType === 'fixed') {
+        this.typeName = '打卡时间设置'
+      } else if (this.dataType === 'shift') {
+        this.typeName = '班次设置'
+      } else if (this.dataType === 'cycle') {
+        this.typeName = '周期设置'
+      }
       if (this.tempexist.length === 0) {
         if (this.dataType === 'fixed') {
           this.showTimeModal(this.fixedNew, -1)
@@ -222,10 +239,9 @@ export default {
     },
     delDate (item) {
       let tempWorData = []
-      console.log('111111111111')
       for (let i = 0; i < this.tempexist.length; i++) {
         if (this.tempexist[i] !== item) {
-          tempWorData.push(item)
+          tempWorData.push(this.tempexist[i])
         }
       }
       this.tempexist = tempWorData
@@ -267,36 +283,6 @@ export default {
   .attendance{
     height:100%;
     width: 100%;
-  }
-
-  .heading {
-    display: inline-flex;
-    width:100%;
-    height:45px;
-    background:inherit;
-    background-color:rgb(26, 138, 190);
-    box-sizing:border-box;
-    border-width:1px;
-    text-align: center;
-  }
-
-  .black {
-    width:10%;
-  }
-  .title {
-    width:80%;
-  }
-  .more{
-    width:10%;
-  }
-  .common {
-    position: inherit;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    margin: auto;
-    color:white;
   }
 
   .existstyle{

@@ -9,15 +9,6 @@
         </div>
       </div>
       <hr style="margin-top: 0px"/>
-      <!-- <div class="heading">
-        <div class="black common" @click="closeSelf">
-          <i class="fa fa-arrow-left" />
-        </div>
-        <div class="title common" style="align-items:center;">{{ msg }}</div>
-        <div class="more common">
-          <i class="fa fa-floppy-o" @click="saveGrup" />
-        </div>
-      </div> -->
       <div class="contentbody">
         <div class="commonpiece" @click="showInputModal('attendname')">
           <div class="titlehead" style="display: inline-flex; width:100%;">
@@ -231,6 +222,7 @@ export default {
         this.$axios.post('/groupApi/group/update/', {
           group: {
             id: this.newGroup.id,
+            creator: this.userID,
             groupName: this.newGroup.name,
             administratorsId: this.getAdminId(),
             descrise: this.newGroup.descrise
@@ -306,23 +298,7 @@ export default {
   height:100%;
   width: 100%;
 }
-/* .black {
-  width:15%;
-  text-align: right;
-}
-.title {
-  width:70%;
-  margin: auto auto 5px 10px;
-}
-.opete {
-  text-align: right;
-  width:30%;
-  margin: auto auto 5px 10px;
-}
-.more{
-  width:15%;
-  text-align: right;
-} */
+
 .modal-footer {
     border-top: 1px solid #eee;
     justify-content: flex-end;
@@ -347,16 +323,6 @@ export default {
     font-size:small;
     color:rgb(165,165,165);
   }
-  /* .heading {
-    display: inline-flex;
-    width:100%;
-    height:45px;
-    background:inherit;
-    background-color: white;
-    box-sizing:border-box;
-    border-width:1px;
-    text-align: left;
-  } */
 
   .contentbody{
     width: 100%;

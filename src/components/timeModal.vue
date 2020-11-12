@@ -2,6 +2,14 @@
   <div class="modal-backdrop">
     <div class="attendance">
       <div class="heading">
+        <div class="title" style="align-items:center;">{{ titlename }}</div>
+        <div class="opete" style="align-items:center;">
+          <button @click="saveData">确定</button>
+          <button @click="closeSelf" >返回</button>
+        </div>
+      </div>
+      <hr style="margin-top: 0px"/>
+      <!-- <div class="heading">
         <div class="black common" @click="closeSelf">
           <i class="fa fa-arrow-left" />
         </div>
@@ -9,7 +17,7 @@
           <div class="more common" @click="saveData">
           <span>确定</span>
         </div>
-      </div>
+      </div> -->
       <div class="contentbody"  v-if="dataType === 'fixed' || dataType === 'shift'">
         <div class="commonpiece" @click="showDayModal" v-if="dataType === 'fixed'">
           <div class="titlehead" style="display: inline-flex; width:100%;">
@@ -145,6 +153,10 @@ export default {
       type: Object,
       default: () => {}
     },
+    titlename: {
+      type: String,
+      default: ''
+    },
     workRule: {
       type: Array,
       default: () => []
@@ -164,7 +176,6 @@ export default {
   },
   data () {
     return {
-      titlename: '编辑打卡时间',
       overTime: [
         {
           worktype: '以加班申请为准',
@@ -263,6 +274,13 @@ export default {
         }
       }
     },
+    openMsg (message) {
+      this.$confirm(message, '提示', {
+        showCancelButton: false,
+        showConfirmButton: false,
+        type: 'warning'
+      }).then(() => {}).catch(() => {})
+    },
     openRest () {
       this.editRtime = !this.editRtime
     },
@@ -270,7 +288,22 @@ export default {
       this.$emit('closetime')
     },
     saveData () {
-      console.log(this.tempData)
+      if (this.dataType === 'fixed') {
+        if (this.tempData.day === '') {
+          this.openMsg('工作日不能为空！')
+          return
+        }
+      } else if (this.dataType === 'shift') {
+        if (this.tempData.shiftName === '') {
+          this.openMsg('名称不能为空！')
+          return
+        }
+      } else if (this.dataType === 'cycle') {
+        if (this.tempData.name === '') {
+          this.openMsg('名称不能为空！')
+          return
+        }
+      }
       this.$emit('gettime', this.tempData)
       this.closeSelf()
     },
@@ -282,7 +315,7 @@ export default {
       let minInt = timeInt + 1
       let endTimeInt = timeInt + 2
       if (timeInt === 0) {
-        alert('时间不能超过当天24点')
+        this.openMsg('时间不能超过当天24点！')
         return
       } else if (timeInt === 23) {
         minInt = 23
@@ -455,42 +488,12 @@ export default {
     width: 100%;
   }
 
-  .heading {
-    display: inline-flex;
-    width:100%;
-    height:45px;
-    background:inherit;
-    background-color:rgb(26, 138, 190);
-    box-sizing:border-box;
-    border-width:1px;
-    text-align: center;
-  }
-
   .contentbody{
     width: 100%;
     height: calc(100% - 45px);
     overflow-y: scroll;
     overflow-x: hidden;
     /* position: relative; */
-  }
-
-  .black {
-    width:10%;
-  }
-  .title {
-    width:80%;
-  }
-  .more{
-    width:10%;
-  }
-  .common {
-    position: inherit;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    margin: auto;
-    color:white;
   }
 
   .commonpiece{

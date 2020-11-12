@@ -32,6 +32,10 @@ export default {
     values: {
       type: Array,
       default: () => []
+    },
+    evalue: {
+      type: String,
+      default: ''
     }
   },
   data () {
@@ -121,6 +125,7 @@ export default {
       const move = (this.finger.startY - ev.targetTouches[0].pageY) + this.finger.prevMove
       this.finger.currentMove = move
       this.$refs.wheel.style.transform = `rotate3d(1, 0, 0, ${(move / lineHeight) * singleDeg}deg)`
+      console.log()
       this.updateRange(Math.round(move / lineHeight))
     },
     listenerTouchEnd (ev) {

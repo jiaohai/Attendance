@@ -21,7 +21,7 @@
       </button>
       <button class="setting bottomchildre" :class="$route.path.indexOf('addadmin') !== -1 ? 'colortext' : 'colorcommon' " v-if="showsetting" @click="gosetting">
         <i class="fa fa-cog" />
-        <span>设置</span>
+        <span>考勤组</span>
       </button>
     </div>
   </div>

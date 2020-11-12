@@ -1,39 +1,5 @@
 <template>
   <div class="attendance">
-    <!-- <div class="heading">
-      <div class="black common">
-        <i class="fa fa-arrow-left" />
-      </div>
-      <div class="title common" style="align-items:center;">{{ msg }}</div>
-      <div class="more common">
-        <i class="fa fa-ellipsis-v" @click="controlShow" />
-        <div class="selectpart" v-show="showmore">
-          <div class="cover" @click="controlHide"></div>
-          <div class="selectlist">
-            <ul>
-              <router-link to='/checkrecord' class="menu_li">
-                <i class="fa fa-bars" style="padding-top: 3px;" />
-                <div class="selectext">
-                  打卡记录
-                </div>
-              </router-link>
-              <router-link to='/application'  class="menu_li">
-                <i class="fa fa-pencil-square-o" style="padding-top: 3px;" />
-                <div class="selectext">
-                  假勤申请
-                </div>
-              </router-link>
-              <router-link to='/checksetting'  class="menu_li">
-                <i class="fa fa-cog" style="padding-top: 3px;" />
-                <div class="selectext">
-                  打卡设置
-                </div>
-              </router-link>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div> -->
     <div class="miding" v-if="!showCheckInfo">
       <el-main v-loading="!showCheckInfo" style="height: 100%;"></el-main>
     </div>
@@ -42,9 +8,9 @@
         <button class="work-check check" @click="changeCheckTpye">
           <span :class="showworkcheck ? 'colortext' : 'colorcommon' ">上下班打卡</span>
         </button>
-        <button class="out-check check" @click="changeCheckTpye">
+        <!-- <button class="out-check check" @click="changeCheckTpye" >
           <span :class="showoutcheck ? 'colortext' : 'colorcommon' ">外出打卡</span>
-        </button>
+        </button> -->
       </div>
       <div class="operate" v-if="showworkcheck">
         <div class="showmpa">
@@ -69,7 +35,7 @@
             </button>
           </div>
         </div>
-        <div class="massege" v-if="!showRecoed">请准时打卡</div>
+        <div class="massege" v-if="!showRecoed && showIsCheck">请准时打卡</div>
         <div class="massege" v-if="showRecoed">
           <div class="recordType">{{ recordType }} {{ recordStatus }}</div>
           <div class="recordTime">打卡时间 {{ recordTime }}</div>
@@ -83,7 +49,7 @@
               </div>
             </router-link>
           </button>
-          <button>
+          <button v-if="false">
             <router-link to='/checksetting'  class="menu_li">
               <!-- <i class="fa fa-cog" style="padding-top: 3px;" /> -->
               <div class="selectext">
@@ -135,7 +101,7 @@ export default {
     return {
       msg: '打卡',
       showCheckInfo: true,
-      checkmassege: '今天不上班，好好休息',
+      checkmassege: '加载中....',
       showIsCheck: false,
       checkcount: 0,
       checkPlace: null,
@@ -158,7 +124,7 @@ export default {
       loading: true,
       userId: null,
       range: null,
-      authority: 1,
+      authority: null,
       mapsrc: '',
       showMapImg: '',
       userData: null,
@@ -182,40 +148,167 @@ export default {
       }
     }
   },
-  created: function () {
+  created: async function () {
+    if (sessionStorage.getItem('userId') === null) {
+      // this.openMsg('获取身份')
+      try {
+        let res = await this.$axios.get('/groupApi/authorize/login?code=' + this.$route.query.code + '&state=' + this.$route.query.state)
+        if (res.data.flag) {
+          sessionStorage.setItem('userId', res.data.data.userId)
+          sessionStorage.setItem('authority', res.data.data.authority)
+        } else {
+          this.openMsg(res.data.msg + '，身份验证失败！！请重新进入此应用。')
+          return
+        }
+      } catch (err) {
+        this.openMsg('发送身份验证的请求失败！！请重新进入此应用。')
+        return
+      }
+    }
+    this.userId = sessionStorage.getItem('userId')
+    this.authority = parseInt(sessionStorage.getItem('authority'))
     this.getSignKey()
+    // this.testCheckInfo()
     this.getCheckInfo()
-    // 全局userid
-    this.setUserId()
   },
   methods: {
-    setUserId () {
-      let userId = this.$route.query.userId
-      sessionStorage.setItem('userId', userId + '')
+    async testCheckInfo () {
+      this.$axios.get('/api/rule/attendance/', { params: {
+        employeeId: this.userId
+      }}).then(res => {
+        if (res.data.flag) {
+          this.userData = res.data.data
+          if (this.userData.isAttendance) {
+            this.showIsCheck = true
+            this.checkmassege = this.userData.type === 0 ? '上班打卡' : '下班打卡'
+            if (this.userData.record.length !== 0) {
+              this.recordData = this.userData.record[0]
+              if (this.recordData.leaveRecord === null && parseInt(this.recordData.lateCount) > 0) {
+                this.recordTime = moment(this.recordData.reachRecord).format('HH:mm')
+                this.recordStatus = '迟到'
+                this.recordType = '上班打卡'
+              } else if (this.recordData.leaveRecord !== null && parseInt(this.recordData.ifLeaveEarliy) > 0) {
+                this.recordTime = moment(this.recordData.leaveRecord).format('HH:mm')
+                this.recordStatus = '早退'
+                this.recordType = '下班打卡'
+              } else {
+                this.recordStatus = '正常'
+                this.recordTime = this.recordData.leaveRecord === null ? moment(this.recordData.reachRecord).format('HH:mm') : moment(this.recordData.leaveRecord).format('HH:mm')
+                this.recordType = this.recordData.leaveRecord === null ? '上班打卡' : '下班打卡'
+              }
+              this.checkmassege = '更新打卡'
+              this.showRecoed = true
+            }
+          } else {
+            this.showIsCheck = false
+            this.checkmassege = '今天不上班，好好休息'
+          }
+          for (let i = 0; i < this.userData.position.length; i++) {
+            let pos = this.userData.position[i]
+            this.range = this.getRange(26, 109, pos.latitude, pos.longtitude)
+            if ((this.range * 1000) < (parseInt(pos.range) - 10)) {
+              this.checkPlace = pos.id
+              break
+            }
+          }
+          if (this.checkPlace === null && this.userData.position.length > 0) {
+            this.showIsCheck = false
+            this.openMsg('不在打卡范围！！')
+            this.checkmassege = '不在打卡范围，不能打卡'
+          }
+          this.showCheckInfo = true
+        } else {
+          this.showIsCheck = false
+          this.openMsg('获取打卡信息失败！！')
+          this.checkmassege = '获取信息失败，不能打卡'
+          this.showCheckInfo = true
+        }
+      }).catch(err => {
+        console.log(err)
+        this.showIsCheck = false
+        this.openMsg('发送获取信息请求失败！！')
+        this.checkmassege = '获取信息失败，不能打卡'
+        this.showCheckInfo = true
+      })
+      // var res = await this.$axios.get('/api/rule/attendance/', {
+      //   params: {
+      //     employeeId: this.userId
+      //   }
+      // })
+      // if (res.data.flag) {
+      //   this.userData = res.data.data
+      //   if (this.userData.isAttendance) {
+      //     this.showIsCheck = true
+      //     this.checkmassege = this.userData.type === 0 ? '上班打卡' : '下班打卡'
+      //     if (this.userData.record.length !== 0) {
+      //       this.recordData = this.userData.record[0]
+      //       if (parseInt(this.recordData.status) === 0) {
+      //         this.recordTime = this.userData.type === 0 ? moment(this.recordData.reachRecord).format('HH:mm') : moment(this.recordData.leaveRecord).format('HH:mm')
+      //         this.recordStatus = '正常'
+      //       } else if (parseInt(this.recordData.status) === 1) {
+      //         this.recordTime = moment(this.recordData.reachRecord).format('HH:mm')
+      //         this.recordStatus = '迟到'
+      //       } else if (parseInt(this.recordData.status) === 2) {
+      //         this.recordTime = moment(this.recordData.leaveRecord).format('HH:mm')
+      //         this.recordStatus = '早退'
+      //       }
+      //       this.checkmassege = '更新打卡'
+      //       this.showRecoed = true
+      //       this.recordType = this.userData.type === 0 ? '上班打卡' : '下班打卡'
+      //     }
+      //   } else {
+      //     this.showIsCheck = false
+      //     this.checkmassege = '今天不上班，好好休息'
+      //     return
+      //   }
+      //   for (let i = 0; i < this.userData.position.length; i++) {
+      //     let pos = this.userData.position[i]
+      //     this.checkPlace = pos.id
+      //     this.range = this.getRange(26, 109, pos.latitude, pos.longtitude)
+      //     if ((this.range * 1000) < parseInt(pos.range)) {
+      //       this.checkPlace = pos.id
+      //       break
+      //     }
+      //   }
+      //   if (this.checkPlace === null) {
+      //     this.showIsCheck = false
+      //     this.openMsg('不在打卡范围！！')
+      //     this.checkmassege = '不在打卡范围，不能打卡'
+      //   }
+      //   this.showCheckInfo = true
+      // } else {
+      //   this.openMsg('获取打卡信息失败！！')
+      //   this.checkmassege = '获取信息失败，不能打卡'
+      //   this.showCheckInfo = true
+      // }
     },
     getCheckInfo () {
-      this.userId = this.$route.query.userId
-      this.authority = parseInt(this.$route.query.authority)
+      // this.userId = sessionStorage.getItem('userId')
+      // this.authority = parseInt(sessionStorage.getItem('authority'))
       if (this.authority > 1) {
         this.showfoot = true
       }
-      console.log(this.authority)
       if (this.authority === 2) {
         this.showS = true
       } else if (this.authority === 3) {
         this.showR = true
       } else if (this.authority === 4) {
         this.showA = true
+      } else if (this.authority === 5) {
+        this.showS = true
+        this.showR = true
+        this.showA = true
       }
-      console.log(this.userId)
-      console.log(this.authority)
-      console.log(this.userData)
     },
     async getUserInfo () {
+      this.userId = this.$route.query.userId
+      if (!this.userId) {
+        this.userId = localStorage.getItem('userId')
+      }
       try {
         let res = await this.$axios.get('/api/rule/attendance/', {
           params: {
-            employeeId: this.$route.query.userId
+            employeeId: this.userId
           }
         })
         if (res.data.flag) {
@@ -226,10 +319,11 @@ export default {
             this.checkPlace = this.userData.position[0].id
           } else {
             this.showIsCheck = false
+            this.checkmassege = '今天不上班，好好休息'
           }
         } else {
           console.log(res)
-          this.openMsg('获取打卡信息失败！')
+          this.openMsg('获取打卡信息失败！！')
           this.checkmassege = '获取信息失败，不能打卡'
         }
       } catch (err) {
@@ -251,6 +345,8 @@ export default {
         this.showworkcheck = true
         this.showoutcheck = false
       }
+      this.showoutcheck = false
+      this.showworkcheck = true
     },
     getRange (lat1, lng1, lat2, lng2) {
       var radLat1 = lat1 * Math.PI / 180.0
@@ -295,64 +391,179 @@ export default {
           wx.hideOptionMenu()
           wx.getLocation({
             type: 'gcj02', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
-            success: async function (res) {
+            success: function (res) {
               var latitude = res.latitude // 纬度，浮点数，范围为90 ~ -90
               var longitude = res.longitude // 经度，浮点数，范围为180 ~ -180。
               // var speed = res.speed // 速度，以米/每秒计
               // var accuracy = res.accuracy // 位置精度
               _this.showMapImg = 'https://apis.map.qq.com/ws/staticmap/v2/?center=' + latitude + ',' + longitude + '&zoom=18&size=500*300&maptype=roadmap&scale=2&markers=size:large|color:red|' + latitude + ',' + longitude + '&key=5YSBZ-W75KG-VLGQC-I24FQ-GT4A7-O4FBE'
               _this.loading = false
-              try {
-                let res = await _this.$axios.get('/api/rule/attendance/', {
-                  params: {
-                    employeeId: _this.$route.query.userId
-                  }
-                })
-                if (res.data.flag) {
-                  _this.userData = res.data.data
+              _this.$axios.get('/api/rule/attendance/', { params: {
+                employeeId: _this.userId
+              }}).then(userres => {
+                if (userres.data.flag) {
+                  _this.userData = userres.data.data
                   if (_this.userData.isAttendance) {
                     _this.showIsCheck = true
                     _this.checkmassege = _this.userData.type === 0 ? '上班打卡' : '下班打卡'
                     if (_this.userData.record.length !== 0) {
-                      _this.recordData = _this.userData.record[-1]
-                      if (_this.recordData.status === 0) {
-                        _this.recordTime = _this.userData.type === 0 ? moment(_this.recordData.reachRecord).format('HH:mm') : moment(_this.recordData.leaveRecord).format('HH:mm')
-                        _this.recordStatus = '正常'
-                      } else if (_this.recordData.status === 1) {
-                        _this.recordTime = moment(_this.recordData.reachRecord).format('HH:mm')
+                      _this.recordData = _this.userData.record[0]
+                      if (_this.recordData.leaveRecord === null && parseInt(_this.recordData.lateCount) > 0) {
+                        _this.recordTime =  moment(_this.recordData.reachRecord).format('HH:mm')
                         _this.recordStatus = '迟到'
-                      } else if (_this.recordData.status === 2) {
+                        _this.recordType = '上班打卡'
+                      } else if (_this.recordData.leaveRecord !== null && parseInt(_this.recordData.ifLeaveEarliy) > 0) {
                         _this.recordTime = moment(_this.recordData.leaveRecord).format('HH:mm')
                         _this.recordStatus = '早退'
+                        _this.recordType = '下班打卡'
+                      } else {
+                        _this.recordStatus = '正常'
+                        _this.recordTime = _this.recordData.leaveRecord === null ? moment(_this.recordData.reachRecord).format('HH:mm') : moment(_this.recordData.leaveRecord).format('HH:mm')
+                        _this.recordType = _this.recordData.leaveRecord === null ? '上班打卡' : '下班打卡'
                       }
-                      _this.recordType = _this.userData.type === 0 ? '上班打卡' : '下班打卡'
+                      _this.checkmassege = '更新打卡'
+                      _this.showRecoed = true
                     }
                   } else {
                     _this.showIsCheck = false
+                    _this.checkmassege = '今天不上班，好好休息'
+                    return
                   }
                   for (let i = 0; i < _this.userData.position.length; i++) {
                     let pos = _this.userData.position[i]
                     _this.range = _this.getRange(latitude, longitude, pos.latitude, pos.longtitude)
-                    if ((_this.range * 1000) < parseInt(pos.range)) {
+                    if ((_this.range * 1000) < (parseInt(pos.range) - 10)) {
                       _this.checkPlace = pos.id
                       break
                     }
                   }
+                  if (_this.checkPlace === null && _this.userData.position.length > 0) {
+                    _this.showIsCheck = false
+                    _this.openMsg('不在打卡范围！！')
+                    _this.checkmassege = '不在打卡范围，不能打卡'
+                  }
                   _this.showCheckInfo = true
                 } else {
+                  _this.showIsCheck = false
                   _this.openMsg('获取打卡信息失败！！')
                   _this.checkmassege = '获取信息失败，不能打卡'
                   _this.showCheckInfo = true
-                  return
                 }
-              } catch (err) {
-                _this.openMsg('获取打卡信息失败！')
+              }).catch(err => {
+                console.log(err)
+                _this.showIsCheck = false
+                _this.openMsg('发送获取信息请求失败！！')
                 _this.checkmassege = '获取信息失败，不能打卡'
                 _this.showCheckInfo = true
-                return
-              }
+              })
+              // var res = await _this.$axios.get('/api/rule/attendance/', {
+              //   params: {
+              //     employeeId: _this.userId
+              //   }
+              // })
+              // if (res.data.flag) {
+              //   _this.openMsg(res.data.data.record)
+              //   _this.userData = res.data.data
+              //   if (_this.userData.isAttendance) {
+              //     _this.showIsCheck = true
+              //     _this.checkmassege = _this.userData.type === 0 ? '上班打卡' : '下班打卡'
+              //     if (_this.userData.record.length !== 0) {
+              //       _this.recordData = _this.userData.record[0]
+              //       if (_this.recordData.leaveRecord === null && parseInt(_this.recordData.lateCount) > 0) {
+              //         _this.recordTime =  moment(_this.recordData.reachRecord).format('HH:mm')
+              //         _this.recordStatus = '迟到'
+              //         _this.recordType = '上班打卡'
+              //       } else if (_this.recordData.leaveRecord !== null && parseInt(_this.recordData.ifLeaveEarliy) > 0) {
+              //         _this.recordTime = moment(_this.recordData.leaveRecord).format('HH:mm')
+              //         _this.recordStatus = '早退'
+              //         _this.recordType = '下班打卡'
+              //       } else {
+              //         _this.recordStatus = '正常'
+              //         _this.recordTime = _this.recordData.leaveRecord === null ? moment(_this.recordData.reachRecord).format('HH:mm') : moment(_this.recordData.leaveRecord).format('HH:mm')
+              //         _this.recordType = _this.recordData.leaveRecord === null ? '上班打卡' : '下班打卡'
+              //       }
+              //       _this.checkmassege = '更新打卡'
+              //       _this.showRecoed = true
+              //     }
+              //   } else {
+              //     _this.showIsCheck = false
+              //     this.checkmassege = '今天不上班，好好休息'
+              //   }
+              //   for (let i = 0; i < _this.userData.position.length; i++) {
+              //     let pos = _this.userData.position[i]
+              //     _this.range = _this.getRange(latitude, longitude, pos.latitude, pos.longtitude)
+              //     if ((_this.range * 1000) < (parseInt(pos.range) - 10)) {
+              //       _this.checkPlace = pos.id
+              //       break
+              //     }
+              //   }
+              //   if (_this.checkPlace === null && _this.userData.position.length > 0) {
+              //     _this.showIsCheck = false
+              //     _this.openMsg('不在打卡范围！！')
+              //     _this.checkmassege = '不在打卡范围，不能打卡'
+              //   }
+              //   _this.showCheckInfo = true
+              // } else {
+              //   _this.showIsCheck = false
+              //   _this.openMsg('获取打卡信息失败！！')
+              //   _this.checkmassege = '获取信息失败，不能打卡'
+              //   _this.showCheckInfo = true
+              //   return
+              // }
+              // try {
+              //   let res = await _this.$axios.get('/api/rule/attendance/', {
+              //     params: {
+              //       employeeId: _this.userId
+              //     }
+              //   })
+              //   if (res.data.flag) {
+              //     _this.userData = res.data.data
+              //     if (_this.userData.isAttendance) {
+              //       _this.showIsCheck = true
+              //       _this.checkmassege = _this.userData.type === 0 ? '上班打卡' : '下班打卡'
+              //       if (_this.userData.record.length !== 0) {
+              //         _this.recordData = _this.userData.record[-1]
+              //         if (_this.recordData.status === 0) {
+              //           _this.recordTime = _this.userData.type === 0 ? moment(_this.recordData.reachRecord).format('HH:mm') : moment(_this.recordData.leaveRecord).format('HH:mm')
+              //           _this.recordStatus = '正常'
+              //         } else if (_this.recordData.status === 1) {
+              //           _this.recordTime = moment(_this.recordData.reachRecord).format('HH:mm')
+              //           _this.recordStatus = '迟到'
+              //         } else if (_this.recordData.status === 2) {
+              //           _this.recordTime = moment(_this.recordData.leaveRecord).format('HH:mm')
+              //           _this.recordStatus = '早退'
+              //         }
+              //         _this.recordType = _this.userData.type === 0 ? '上班打卡' : '下班打卡'
+              //       }
+              //     } else {
+              //       _this.showIsCheck = false
+              //     }
+              //     for (let i = 0; i < _this.userData.position.length; i++) {
+              //       let pos = _this.userData.position[i]
+              //       _this.range = _this.getRange(latitude, longitude, pos.latitude, pos.longtitude)
+              //       if ((_this.range * 1000) < parseInt(pos.range)) {
+              //         _this.checkPlace = pos.id
+              //         break
+              //       }
+              //     }
+              //     _this.showCheckInfo = true
+              //   } else {
+              //     _this.openMsg('获取打卡信息失败！！')
+              //     _this.checkmassege = '获取信息失败，不能打卡'
+              //     _this.showCheckInfo = true
+              //     return
+              //   }
+              // } catch (err) {
+              //   _this.openMsg('获取打卡信息失败！')
+              //   _this.checkmassege = '获取信息失败，不能打卡'
+              //   _this.showCheckInfo = true
+              //   return
+              // }
             },
             fail: function () {
+              _this.openMsg('地图加载失败失败！')
+              _this.checkmassege = '定位失败，不能打卡'
+              _this.loading = false
               _this.showCheckInfo = true
             }
           })
@@ -377,11 +588,11 @@ export default {
           this.checkmassege = '更新打卡'
           this.showRecoed = true
           this.recordData = res.data.data
-          if (this.recordData.status === 0) {
+          if (parseInt(this.recordData.status) === 0) {
             this.recordStatus = '正常'
-          } else if (this.recordData.status === 1) {
+          } else if (parseInt(this.recordData.status) === 1) {
             this.recordStatus = '迟到'
-          } else if (this.recordData.status === 2) {
+          } else if (parseInt(this.recordData.status) === 2) {
             this.recordStatus = '早退'
           }
           this.recordTime = moment(this.recordData.recordTime).format('HH:mm')
@@ -427,51 +638,12 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-  button{
-    background-color:white;
-    border-width:inherit;
-  }
-  button:focus{
-    /* color: #fff; */
-    /* background: #0a90f5; */
-    background: white;
-    outline: none;
-  }
-
-  /* .heading {
-    display: inline-flex;
-    width:100%;
-    height:45px;
-    background:inherit;
-    background-color:rgb(26, 138, 190);
-    box-sizing:border-box;
-    border-width:1px;
-    text-align: center;
-  }
-  .black {
-    width:10%;
-  }
-  .title {
-    width:80%;
-  }
-  .more{
-    width:10%;
-  }
-  .common {
-    position: inherit;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    margin: auto;
-    color:white;
-  } */
   .manner {
     display: flex;
     height: 35px;
   }
   .check {
-    width: 50%;
+    width: 100%;
     height: 100%;
   }
 
@@ -487,27 +659,6 @@ export default {
     height: calc(98% - 35px);
     margin: 2%;
     background-color: white;
-  }
-
-  .bottoming {
-    position:fixed;
-    display:flex;
-    flex:0;
-    width:100%;
-    height:40px;
-    bottom:0px;
-    background-color:white;
-  }
-  .bottomchildre{
-    display: grid;
-    margin-top:5px;
-    width: 100%;
-  }
-  .colortext{
-    color: rgb(26, 138, 190);
-  }
-  .colorcommon{
-    color: rgb(170, 170, 170);
   }
 
   .selectpart{

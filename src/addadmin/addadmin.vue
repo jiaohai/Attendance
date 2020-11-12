@@ -89,8 +89,10 @@ export default {
     }
   },
   created: function () {
-    this.userId = this.$route.query.userId
-    this.authority = parseInt(this.$route.query.authority)
+    // this.userId = this.$route.query.userId
+    // this.authority = parseInt(this.$route.query.authority)
+    this.userId = sessionStorage.getItem('userId')
+    this.authority = parseInt(sessionStorage.getItem('authority'))
     if (this.authority > 1) {
       this.showfoot = true
     }
@@ -100,6 +102,10 @@ export default {
     } else if (this.authority === 3) {
       this.showR = true
     } else if (this.authority === 4) {
+      this.showA = true
+    } else if (this.authority === 5) {
+      this.showS = true
+      this.showR = true
       this.showA = true
     }
     this.getAttendce()
@@ -187,17 +193,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  /* .heading {
-    display: inline-flex;
-    width:100%;
-    height:45px;
-    background:inherit;
-    background-color: white;
-    box-sizing:border-box;
-    border-width:1px;
-    text-align: left;
-  } */
-
   .contentbody{
     width: 100%;
     height: calc(100% - 45px);
@@ -241,44 +236,6 @@ export default {
     color:rgb(165,165,165);
   }
 
-  /* .black {
-    width:15%;
-    text-align: right;
-  }
-  .title {
-    width:70%;
-    margin: auto auto 5px 10px;
-  }
-  .opete {
-    text-align: right;
-    width:30%;
-    margin: auto auto 5px 10px;
-  }
-  .more{
-    width:15%;
-    text-align: right;
-  }
-  .common {
-    position: inherit;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    margin: auto;
-    color:white;
-  } */
-
-  button{
-    background-color:white;
-    border-width:inherit;
-  }
-  button:focus{
-    /* color: #fff; */
-    /* background: #0a90f5; */
-    background: white;
-    outline: none;
-  }
-
   .commonpiece{
     width: 100%;
     margin:auto;
@@ -302,26 +259,5 @@ export default {
   .fastyle{
     margin: auto;
     margin-right: 10px;
-  }
-
-  .bottoming {
-    position:fixed;
-    display:flex;
-    flex:0;
-    width:100%;
-    height:40px;
-    bottom:0px;
-    background-color:white;
-  }
-  .bottomchildre{
-    display: grid;
-    margin-top:5px;
-    width: 100%;
-  }
-  .colortext{
-    color: rgb(26, 138, 190);
-  }
-  .colorcommon{
-    color: rgb(170, 170, 170);
   }
 </style>

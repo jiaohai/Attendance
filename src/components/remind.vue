@@ -2,6 +2,14 @@
   <div class="modal-backdrop">
     <div class="attendance">
       <div class="heading">
+        <div class="title" style="align-items:center;">{{ titlename }}</div>
+        <div class="opete" style="align-items:center;">
+          <button @click="saveRemind" >确定</button>
+          <button @click="closeSelf" >返回</button>
+        </div>
+      </div>
+      <hr style="margin-top: 0px"/>
+      <!-- <div class="heading">
         <div class="black common" @click="closeSelf">
           <i class="fa fa-arrow-left" />
         </div>
@@ -9,7 +17,7 @@
         <div class="more common" @click="saveRemind">
           <span>确定</span>
         </div>
-      </div>
+      </div> -->
       <div class="commonpiece" @click="editRemindTime('stime')">
         <div class="titlehead" style="display: inline-flex; width:100%;">
           <div class="titles">
@@ -57,7 +65,7 @@ export default {
   },
   data () {
     return {
-      inputTime: '0',
+      inputTime: '',
       isEditTime: false,
       remindType: '',
       tempexist: this.existData
@@ -78,6 +86,11 @@ export default {
     },
     editRemindTime (type) {
       this.remindType = type
+      if (this.remindType === 'stime') {
+        this.inputTime = this.tempexist.workRemind === 0 ? '' : this.tempexist.workRemind + ''
+      } else {
+        this.inputTime = this.tempexist.offWorkRemind === 0 ? '' : this.tempexist.offWorkRemind + ''
+      }
       this.isEditTime = !this.isEditTime
     },
     getRemindTime (msg) {
@@ -110,36 +123,6 @@ export default {
   .attendance{
     height:100%;
     width: 100%;
-  }
-
-  .heading {
-    display: inline-flex;
-    width:100%;
-    height:45px;
-    background:inherit;
-    background-color:rgb(26, 138, 190);
-    box-sizing:border-box;
-    border-width:1px;
-    text-align: center;
-  }
-
-  .black {
-    width:10%;
-  }
-  .title {
-    width:80%;
-  }
-  .more{
-    width:10%;
-  }
-  .common {
-    position: inherit;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    margin: auto;
-    color:white;
   }
 
   .commonpiece{

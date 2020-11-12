@@ -2,6 +2,14 @@
   <div class="modal-backdrop">
     <div class="attendance">
       <div class="heading">
+        <div class="title" style="align-items:center;">{{ titlename }}</div>
+        <div class="opete" style="align-items:center;">
+          <button @click="saveSet" >确定</button>
+          <button @click="closeSelf" >返回</button>
+        </div>
+      </div>
+      <hr style="margin-top: 0px"/>
+      <!-- <div class="heading">
         <div class="black common" @click="closeSelf">
           <i class="fa fa-arrow-left" />
         </div>
@@ -9,7 +17,7 @@
         <div class="more common" @click="saveSet">
           <span>确定</span>
         </div>
-      </div>
+      </div> -->
       <div class="commonpiece" @click="editUser('report')">
         <div class="titlehead" style="display: inline-flex; width:100%;">
           <div class="titles">
@@ -49,10 +57,10 @@
           <i class="fa fastyle fa-angle-right" />
         </div>
       </div>
-      <div class="commonpiece">
+      <div class="commonpiece" v-if="false">
         <div class="titlehead" style="display: inline-flex; width:100%;" @click="editHspday">
           <div class="langtitles">
-            <span>节假日与特殊日期</span>
+            <span>节假日与特殊日期（敬请期待）</span>
           </div>
           <div class="shortdescrip" >
             <!-- <span class="spanstyle" >{{ existlist.shiftcycle.length }}个周期</span> -->
@@ -103,7 +111,7 @@
     </div>
     <search-modal v-if="showList" :titlename="'请选择'" :onlyUser="onlyUser" :existlist="userData" @getsearch="getUser" v-on:closesearch="closeUser"></search-modal>
     <remind v-if="showRemind" :existData="remindData" @getremind="getRemind" v-on:closeremind="closeRemind"></remind>
-    <time-picker v-if="showBoder" @savetime="getBoder" v-on:closepicker="closeBoder"></time-picker>
+    <time-picker v-if="showBoder" :hourInfo="editHour" :minuteInfo="editMinute" @savetime="getBoder" v-on:closepicker="closeBoder"></time-picker>
     <special-day v-if="showHspday" :existData="hspdayDate" @gethspday="getHspday" v-on:closehspday="closeFspday"></special-day>
     <input-modal v-if="isEditCount" :titlename="'请输入'" :onlyNum="true" :inputtxt="inputCount" @getinput="getCount" v-on:closeinput="closeCount"></input-modal>
   </div>
@@ -199,10 +207,10 @@ export default {
     },
     getUser (msg) {
       if (this.listType === 'report') {
-        this.tempexist.supervisors = msg
+        this.tempexist.supervisors = msg.users
       }
       if (this.listType === 'white') {
-        this.tempexist.whiteList = msg
+        this.tempexist.whiteList = msg.users
       }
     },
     closeUser () {
@@ -212,11 +220,15 @@ export default {
       this.remindData = this.tempexist.remind
       this.showRemind = !this.showRemind
     },
-    getRemind () {},
+    getRemind (msg) {
+      this.tempexist.remind = msg
+    },
     closeRemind () {
       this.showRemind = !this.showRemind
     },
     editBoder () {
+      this.editHour = this.tempexist.workBorder.split(':')[0]
+      this.editMinute = this.tempexist.workBorder.split(':')[1]
       this.showBoder = !this.showBoder
     },
     getBoder (msg) {
@@ -227,6 +239,11 @@ export default {
     },
     editCount (type) {
       this.countType = type
+      if (this.countType === 'dcount') {
+        this.inputCount = this.tempexist.expiration === 0 ? '' : this.tempexist.expiration + ''
+      } else {
+        this.inputCount = this.tempexist.lateSignCount === 0 ? '' : this.tempexist.lateSignCount + ''
+      }
       this.isEditCount = !this.isEditCount
     },
     getCount (msg) {
@@ -279,36 +296,6 @@ export default {
   .attendance{
     height:100%;
     width: 100%;
-  }
-
-  .heading {
-    display: inline-flex;
-    width:100%;
-    height:45px;
-    background:inherit;
-    background-color:rgb(26, 138, 190);
-    box-sizing:border-box;
-    border-width:1px;
-    text-align: center;
-  }
-
-  .black {
-    width:10%;
-  }
-  .title {
-    width:80%;
-  }
-  .more{
-    width:10%;
-  }
-  .common {
-    position: inherit;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    margin: auto;
-    color:white;
   }
 
   .commonpiece{

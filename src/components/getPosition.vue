@@ -1,7 +1,7 @@
 <template>
   <div class="modal-backdrop">
     <div class="attendance">
-      <div class="heading">
+      <!-- <div class="heading">
         <div class="black common" @click="closeSelf" v-if="!editPlace">
           <i class="fa fa-arrow-left" />
         </div>
@@ -18,7 +18,18 @@
         <div class="more common" @click="editAllData" v-if="!editPlace && !editAllPlace">
           <span>编辑</span>
         </div>
+      </div> -->
+      <div class="heading">
+        <div class="title" style="align-items:center;">打卡位置</div>
+        <div class="opete" style="align-items:center;">
+          <button @click="saveEditData" v-if="editPlace" >确定</button>
+          <button @click="saveAllData" v-if="editAllPlace" >取消</button>
+          <button @click="editAllData" v-if="!editPlace && !editAllPlace">编辑</button>
+          <button @click="closeSelf" v-if="!editPlace" >返回</button>
+          <button @click="closeMap" v-if="editPlace">返回</button>
+        </div>
       </div>
+      <hr style="margin-top: 0px"/>
       <div class="optioncont" v-if="editPlace">
         <iframe id="mapPage" width="100%" height="100%" frameborder=0
           src="https://apis.map.qq.com/tools/locpicker?search=1&type=1&key=5YSBZ-W75KG-VLGQC-I24FQ-GT4A7-O4FBE&referer=myapp">
@@ -218,36 +229,6 @@ export default {
     width: 100%;
   }
 
-  .heading {
-    display: inline-flex;
-    width:100%;
-    height:45px;
-    background:inherit;
-    background-color:rgb(26, 138, 190);
-    box-sizing:border-box;
-    border-width:1px;
-    text-align: center;
-  }
-
-  .black {
-    width:10%;
-  }
-  .title {
-    width:80%;
-  }
-  .more{
-    width:10%;
-  }
-  .common {
-    position: inherit;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    margin: auto;
-    color:white;
-  }
-
   .fastyle{
     margin: auto 10px auto 10px;
     color: rgb(165, 165, 165);
@@ -264,12 +245,6 @@ export default {
     text-align: left;
   }
   .bottoming {
-    position:fixed;
-    display:flex;
-    flex:0;
-    width:100%;
-    height:40px;
-    bottom:0px;
     background-color: rgb(248, 248, 248);
   }
 

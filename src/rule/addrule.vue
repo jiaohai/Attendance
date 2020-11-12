@@ -1,14 +1,13 @@
 <template>
   <div class="attendance">
     <div class="heading">
-      <div class="black common" @click="goBackThing">
-        <i class="fa fa-arrow-left" />
-      </div>
-      <div class="title common" style="align-items:center;">{{ msg }}</div>
-      <div class="more common">
-        <i class="fa fa-floppy-o" @click="saveRule" />
+      <div class="title" style="align-items:center;">{{ msg }}</div>
+      <div class="opete" style="align-items:center;">
+        <button @click="saveRule" >保存</button>
+        <button @click="goBackThing" >返回</button>
       </div>
     </div>
+    <hr style="margin-top: 0px"/>
     <div class="commonpiece" @click="toggleModal">
       <div class="titlehead" style="display: inline-flex; width:100%;">
         <div class="titles">
@@ -105,7 +104,7 @@
         <i class="fa fastyle fa-angle-right" />
       </div>
     </div>
-    <div class="commonpiece" @click="editOver">
+    <div class="commonpiece" @click="editOver" v-if="false">
       <div class="titlehead" style="display: inline-flex; width:100%;">
         <div class="titles">
           <span>加班规则</span>
@@ -163,7 +162,7 @@ export default {
     return {
       msg: '添加规则',
       ruletpye: '固定上下班',
-      rulename: '上下班规则',
+      rulename: '',
       typerule: 'fixed',
       showModal: false,
       showInput: false,
@@ -183,12 +182,12 @@ export default {
           desc: '所有人按照相同时间打卡',
           selected: true
         },
-        {
-          id: 2,
-          name: '按班次上下班',
-          desc: '不同人员按照各自排班打卡',
-          selected: false
-        },
+        // {
+        //   id: 2,
+        //   name: '按班次上下班',
+        //   desc: '不同人员按照各自排班打卡',
+        //   selected: false
+        // },
         {
           id: 3,
           name: '自由上下班',
@@ -340,7 +339,7 @@ export default {
         // }
       ],
       moreFactor: {
-        reportTo: [],
+        supervisors: [],
         whitelist: [],
         remind: {
           workRemind: 0,
@@ -375,6 +374,7 @@ export default {
         workBorder: '12:00'
       },
       ruleData: {
+        creator: sessionStorage.getItem('userId'),
         id: null,
         ruleName: '',
         ruleType: '固定上下班',
@@ -389,8 +389,8 @@ export default {
               {
                 id: null,
                 name: 1,
-                startTime: '14:49',
-                endTime: '14:49'
+                startTime: '08:00',
+                endTime: '18:00'
               }
             ]
           }
@@ -468,9 +468,6 @@ export default {
     //   alert('我监听到了浏览器的返回按钮事件啦')
     // }, false)
   },
-  beforeCreate: function () {
-    // this.initData()
-  },
   components: {
     selectModal,
     inputModal,
@@ -534,11 +531,22 @@ export default {
               workBorder: this.ruleData.split
             }
             this.places = this.ruleData.places
+          } else {
+            this.openMsg(res.data.msg)
           }
-          console.log(res)
+        }).catch(error => {
+          console.log(error)
+          this.openMsg('发送请求失败！')
         })
       }
       this.getTypeRule()
+    },
+    openMsg (message) {
+      this.$confirm(message, '提示', {
+        showCancelButton: false,
+        showConfirmButton: false,
+        type: 'warning'
+      }).then(() => {}).catch(() => {})
     },
     getTypeRule () {
       if (this.ruletpye === '固定上下班') {
@@ -552,20 +560,44 @@ export default {
       this.$router.push('/rule')
     },
     saveRule () {
+      if (this.rulename === '') {
+        this.openMsg('规则名称不能为空！')
+        return
+      }
+      if (this.attendanceData.departs.length === 0 && this.attendanceData.users.length === 0) {
+        this.openMsg('打卡人员不能为空！')
+        return
+      }
+      if (this.places.length === 0) {
+        this.openMsg('打卡位置不能为空！')
+        return
+      }
       this.ruleData.ruleType = this.ruletpye
       this.ruleData.ruleName = this.rulename
       this.ruleData.attendance = this.attendanceData
       if (this.typerule === 'fixed') {
+        if (this.scheduleData.length === 0) {
+          this.openMsg('打卡时间不能为空！')
+          return
+        }
         this.ruleData.workDay = ''
         this.ruleData.schedule = this.scheduleData
         this.ruleData.shfit = []
         this.ruleData.shiftCycle = []
       } else if (this.typerule === 'shift') {
+        if (this.shiftData.length === 0 || this.shiftCycle.length === 0) {
+          this.openMsg('排班设置不能为空！')
+          return
+        }
         this.ruleData.workDay = ''
         this.ruleData.schedule = []
         this.ruleData.shfit = this.shiftData
         this.ruleData.shiftCycle = this.shiftCycle
       } else if (this.typerule === 'free') {
+        if (this.weekDay.length === '') {
+          this.openMsg('工作日不能为空！')
+          return
+        }
         this.ruleData.workDay = this.weekDay
         this.ruleData.schedule = []
         this.ruleData.shfit = []
@@ -576,24 +608,33 @@ export default {
       // this.ruleData.shfit = this.shiftData
       // this.ruleData.shiftCycle = this.shiftCycle
       this.ruleData.places = this.places
+      this.ruleData.creator = sessionStorage.getItem('userId')
       console.log(this.ruleData)
       if (this.ruleData.id) {
         console.log('update rule')
         this.$axios.put('/api/rule/update/', this.ruleData).then(res => {
           if (res.data.flag) {
-            alert('修改成功')
+            this.openMsg('修改成功！')
             this.$router.push('/rule')
+          } else {
+            this.openMsg(res.data.msg)
           }
-          console.log(res)
+        }).catch(error => {
+          console.log(error)
+          this.openMsg('发送请求失败！')
         })
       } else {
         console.log('create rule')
         this.$axios.post('/api/rule/add/', this.ruleData).then(res => {
           if (res.data.flag) {
-            alert('新建成功')
+            this.openMsg('创建成功！')
             this.$router.push('/rule')
+          } else {
+            this.openMsg(res.data.msg)
           }
-          console.log(res)
+        }).catch(error => {
+          console.log(error)
+          this.openMsg('发送请求失败！')
         })
       }
     },
@@ -601,10 +642,14 @@ export default {
       console.log('delete rule')
       this.$axios.delete('/api/rule/delete/' + this.ruleData.id).then(res => {
         if (res.data.flag) {
-          alert('删除成功')
+          this.openMsg('删除成功！')
           this.$router.push('/rule')
+        } else {
+          this.openMsg(res.data.msg)
         }
-        console.log(res)
+      }).catch(error => {
+        console.log(error)
+        this.openMsg('发送请求失败！')
       })
     },
     goSearch () {
@@ -704,7 +749,6 @@ export default {
         shiftcycle: this.shiftCycle,
         shiftrule: this.shiftRule
       }
-      console.log(this.shiftCont)
       this.showShift = !this.showShift
     },
     getShift (msg) {
@@ -746,36 +790,6 @@ export default {
 <style scoped>
   .attendance{
     height:100%;
-  }
-
-  .heading {
-    display: inline-flex;
-    width:100%;
-    height:45px;
-    background:inherit;
-    background-color:rgb(26, 138, 190);
-    box-sizing:border-box;
-    border-width:1px;
-    text-align: center;
-  }
-
-  .black {
-    width:10%;
-  }
-  .title {
-    width:80%;
-  }
-  .more{
-    width:10%;
-  }
-  .common {
-    position: inherit;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    margin: auto;
-    color:white;
   }
 
   .commonpiece{

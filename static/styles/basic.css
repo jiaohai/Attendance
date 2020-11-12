@@ -26,3 +26,36 @@
   width:15%;
   text-align: right;
 }
+
+button{
+  background-color:white;
+  border-width:inherit;
+}
+button:focus{
+  background: white;
+  outline: none;
+}
+.bottoming {
+  position:fixed;
+  display:flex;
+  flex:0;
+  width:100%;
+  height:40px;
+  bottom:0px;
+  background-color:white;
+}
+.bottomchildre{
+  display: grid;
+  margin-top:5px;
+  width: 100%;
+}
+.colortext{
+  color: rgb(26, 138, 190);
+}
+.colorcommon{
+  color: rgb(170, 170, 170);
+}
+
+.el-message-box{
+  max-width: 50%;
+}

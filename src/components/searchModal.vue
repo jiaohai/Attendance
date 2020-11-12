@@ -179,7 +179,10 @@ export default {
       parentCheckedID: [],
       tempexist: this.existlist,
       departAndUser: [],
-      optionData: {},
+      optionData: {
+        departs: [],
+        users: []
+      },
       deparstId: [],
       usersId: []
     }
@@ -286,7 +289,6 @@ export default {
       this.issearch = !this.issearch
     },
     getDepartment (item) {
-      console.log(item)
       const temppartlist = []
       for (let i = 0; i < this.depatmentlist.length; i++) {
         if (this.depatmentlist[i].id === item.id) {
@@ -299,7 +301,6 @@ export default {
       this.getOptions(item.departmentId)
     },
     getNextLevel (item) {
-      console.log(item)
       if (item === 0) {
         this.parentChecked = false
         this.parentCheckedID = []
@@ -390,36 +391,6 @@ export default {
     width: 100%;
   }
 
-  /* .heading {
-    display: inline-flex;
-    width:100%;
-    height:45px;
-    background:inherit;
-    background-color:rgb(26, 138, 190);
-    box-sizing:border-box;
-    border-width:1px;
-    text-align: center;
-  }
-
-  .black {
-    width:10%;
-  }
-  .title {
-    width:80%;
-  }
-  .more{
-    width:10%;
-  }
-  .common {
-    position: inherit;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    margin: auto;
-    color:white;
-  } */
-
   .commonpiece{
     width: 100%;
     height: 40px;
@@ -507,12 +478,6 @@ export default {
   }
 
   .bottoming {
-    position:fixed;
-    display:flex;
-    flex:0;
-    width:100%;
-    height:40px;
-    bottom:0px;
     background-color: rgb(248, 248, 248);
   }
   .checkedlist{
@@ -541,12 +506,5 @@ export default {
     margin-top: 10px;
     width: 100%;
     height: calc(100% - 55px);
-  }
-
-  .colortext{
-    color: rgb(26, 138, 190);
-  }
-  .colorcommon{
-    color: rgb(170, 170, 170);
   }
 </style>

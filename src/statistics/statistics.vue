@@ -109,8 +109,10 @@ export default {
     this.getRecordOutData()
   },
   created: function () {
-    this.userId = this.$route.query.userId
-    this.authority = parseInt(this.$route.query.authority)
+    // this.userId = this.$route.query.userId
+    // this.authority = parseInt(this.$route.query.authority)
+    this.userId = sessionStorage.getItem('userId')
+    this.authority = parseInt(sessionStorage.getItem('authority'))
     if (this.authority > 1) {
       this.showfoot = true
     }
@@ -120,6 +122,10 @@ export default {
     } else if (this.authority === 3) {
       this.showR = true
     } else if (this.authority === 4) {
+      this.showA = true
+    } else if (this.authority === 5) {
+      this.showS = true
+      this.showR = true
       this.showA = true
     }
   },

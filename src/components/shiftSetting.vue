@@ -2,6 +2,14 @@
   <div class="modal-backdrop">
     <div class="attendance">
       <div class="heading">
+        <div class="title" style="align-items:center;">{{ titlename }}</div>
+        <div class="opete" style="align-items:center;">
+          <button @click="saveShift" >确定</button>
+          <button @click="closeSelf" >返回</button>
+        </div>
+      </div>
+      <hr style="margin-top: 0px"/>
+      <!-- <div class="heading">
         <div class="black common" @click="closeSelf">
           <i class="fa fa-arrow-left" />
         </div>
@@ -9,7 +17,7 @@
         <div class="more common" @click="saveShift">
           <span>确定</span>
         </div>
-      </div>
+      </div> -->
       <div class="commonpiece" @click="editShift('shift')">
         <div class="titlehead" style="display: inline-flex; width:100%;">
           <div class="titles">
@@ -40,17 +48,17 @@
       </div>
       <div class="commonpiece">
         <div class="titlehead" style="display: inline-flex; width:100%;">
-          <div class="titles">
-            <span>编辑排班</span>
+          <div class="titles" style="width: 70%;">
+            <span>编辑排班（敬请期待）</span>
           </div>
-          <div class="descrip" >
-            <!-- <span class="spanstyle" >{{ existlist.shiftcycle.length }}个周期</span> -->
+          <!-- <div class="descrip" >
+            <span class="spanstyle" >{{ existlist.shiftcycle.length }}个周期</span>
           </div>
-          <i class="fa fastyle fa-angle-right" />
+          <i class="fa fastyle fa-angle-right" /> -->
         </div>
       </div>
     </div>
-    <data-list v-if="showShiftdata" :existlist="editData" :selectType="selectData" :dataType="edittype" @getdata="getEditdata" v-on:closelist="closeEditshift"></data-list>
+    <data-list v-if="showShiftdata" :titlename="setName" :existlist="editData" :selectType="selectData" :dataType="edittype" @getdata="getEditdata" v-on:closelist="closeEditshift"></data-list>
   </div>
 </template>
 
@@ -79,6 +87,7 @@ export default {
   data () {
     return {
       inputvlue: '',
+      setName: '',
       showShiftdata: false,
       showModal: false,
       edittype: this.dataType,
@@ -105,19 +114,20 @@ export default {
     editShift (type) {
       this.edittype = type
       if (type === 'shift') {
+        this.setName = '班次'
         this.editData = this.tempexist.shiftlist
       } else {
         if (this.tempexist.shiftlist.length === 0) {
-          alert('请先设置班次')
+          this.openMsg('请先设置班次！')
           return
         }
+        this.setName = '周期'
         this.selectData = this.tempexist.shiftlist
         this.editData = this.tempexist.shiftcycle
       }
       this.showShiftdata = !this.showShiftdata
     },
     getEditdata (msg) {
-      console.log('3333333333')
       if (this.edittype === 'shift') {
         this.tempexist.shiftlist = msg
       } else {
@@ -126,6 +136,13 @@ export default {
     },
     closeEditshift () {
       this.showShiftdata = !this.showShiftdata
+    },
+    openMsg (message) {
+      this.$confirm(message, '提示', {
+        showCancelButton: false,
+        showConfirmButton: false,
+        type: 'warning'
+      }).then(() => {}).catch(() => {})
     }
   }
 }
@@ -147,36 +164,6 @@ export default {
   .attendance{
     height:100%;
     width: 100%;
-  }
-
-  .heading {
-    display: inline-flex;
-    width:100%;
-    height:45px;
-    background:inherit;
-    background-color:rgb(26, 138, 190);
-    box-sizing:border-box;
-    border-width:1px;
-    text-align: center;
-  }
-
-  .black {
-    width:10%;
-  }
-  .title {
-    width:80%;
-  }
-  .more{
-    width:10%;
-  }
-  .common {
-    position: inherit;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    margin: auto;
-    color:white;
   }
 
   .commonpiece{

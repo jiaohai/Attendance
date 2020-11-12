@@ -1,7 +1,7 @@
 <template>
   <div class="modal-backdrop">
     <div class="attendance">
-      <div class="heading">
+      <!-- <div class="heading">
         <div class="black common" @click="closeSelf">
           <i class="fa fa-arrow-left" />
         </div>
@@ -9,7 +9,15 @@
         <div class="more common" @click="saveHspday">
           <span>确定</span>
         </div>
+      </div> -->
+      <div class="heading">
+        <div class="title" style="align-items:center;">{{ titlename }}</div>
+        <div class="opete" style="align-items:center;">
+          <button @click="saveHspday" >确定</button>
+          <button @click="closeSelf" >返回</button>
+        </div>
       </div>
+      <hr style="margin-top: 0px"/>
       <div class="contentbody" >
         <div class="commonpiece">
           <div class="titlehead" style="display: inline-flex; width:100%;">
@@ -179,36 +187,6 @@ export default {
   .attendance{
     height:100%;
     width: 100%;
-  }
-
-  .heading {
-    display: inline-flex;
-    width:100%;
-    height:45px;
-    background:inherit;
-    background-color:rgb(26, 138, 190);
-    box-sizing:border-box;
-    border-width:1px;
-    text-align: center;
-  }
-
-  .black {
-    width:10%;
-  }
-  .title {
-    width:80%;
-  }
-  .more{
-    width:10%;
-  }
-  .common {
-    position: inherit;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    margin: auto;
-    color:white;
   }
 
   .contentbody{
