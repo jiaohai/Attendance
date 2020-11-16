@@ -66,8 +66,9 @@
         <div class="showmpa">显示打卡地址</div>
         <div class="checkbutton">
           <div class="buttonline">
-            <button class="workbutton">
-              <span>外出打卡</span>
+            <button class="workbutton" @click="checkOutRecord">
+              <el-row><span>外出打卡</span></el-row>
+              <span>第{{outCount}}次外出</span>
             </button>
           </div>
         </div>
@@ -97,6 +98,7 @@
 <script>
 
 import moment from 'moment'
+import { checkRecordOut } from '../api/record/record'
 
 export default {
   name: 'check',
@@ -118,7 +120,7 @@ export default {
       recordTime: null,
       showmore: false,
       showworkcheck: true,
-      showoutcheck: false,
+      showoutcheck: true,
       showfoot: false,
       showS: false,
       showR: false,
@@ -149,7 +151,15 @@ export default {
           name: '',
           id: ''
         }
-      }
+      },
+      recordOut: {
+        employeeId: 'liyuanyuan'/*sessionStorage.getItem('userId')*/,
+        reason: '测试测试',
+        image: '',
+        longtitude: 29.0,
+        latitude: 336.0
+      },
+      outCount: 1
     }
   },
   created: async function () {
@@ -455,8 +465,15 @@ export default {
       } catch(err) {
         this.openMsg('打卡失败！')
       }
-      
+
       this.clocking = false
+    },
+    checkOutRecord () {
+      this.outCount += 1
+      debugger
+      checkRecordOut(this.recordOut).then(res => {
+        let data = res.data.data
+      })
     },
     gocheck () {
       if (this.$route.path === '/check') {
