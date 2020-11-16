@@ -1,44 +1,44 @@
 <template>
   <div class="attendance">
     <div class="heading">
-      <div class="black common" @click="goBackThing">
-        <i class="fa fa-arrow-left" />
-      </div>
-      <div class="title common" style="align-items:center;">{{ msg }}</div>
-      <div class="more common">
-        月报
+      <div class="title" style="align-items:center;">{{ msg }}</div>
+      <div class="opete" style="align-items:center;">
+        <button @click="goBackThing" >返回</button>
       </div>
     </div>
-    <div class="heading" style="height: 60px">
+    <hr style="margin-top: 0px; margin-bottom: 0px;"/>
+    <div class="monthheading" style="height: 60px">
       <monthesSlider @change="getSelectDate"></monthesSlider>
     </div>
-    <div class="statisticspiece">
-      <span class="stcspan">上下班统计·人</span>
-      <div class="cotentinfo">
-        <el-row>
-          <div class="vol-data">
-            <div id="myChart" :style="{width:'100%',height:'200px'}">
+    <div class="contentbody">
+      <div class="statisticspiece">
+        <span class="stcspan">上下班统计·人</span>
+        <div class="cotentinfo">
+          <el-row>
+            <div class="vol-data">
+              <div id="myChart" :style="{width:'100%',height:'200px'}">
+              </div>
             </div>
-          </div>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>迟到: <span style="color: #F56C6C;font-weight: 700">{{ifLate}}</span></el-col>
-          <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>缺卡: <span style="color: #F56C6C;font-weight: 700">{{ifAbsent}}</span></el-col>
-          <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>早退: <span style="color: #F56C6C;font-weight: 700">{{ifLeaveEarly}}</span></el-col>
-          <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>正常: <span style="color: #67C23A;font-weight: 700">{{normal}}</span></el-col>
-<!--          <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>异常: <span style="color: #F56C6C;font-weight: 700">{{error}}</span></el-col>-->
-          <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>缺勤: <span style="color: #E6A23C;font-weight: 700">{{absence}}</span></el-col>
-        </el-row>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>迟到: <span style="color: #F56C6C;font-weight: 700">{{ifLate}}</span></el-col>
+            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>缺卡: <span style="color: #F56C6C;font-weight: 700">{{ifAbsent}}</span></el-col>
+            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>早退: <span style="color: #F56C6C;font-weight: 700">{{ifLeaveEarly}}</span></el-col>
+            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>正常: <span style="color: #67C23A;font-weight: 700">{{normal}}</span></el-col>
+  <!--          <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>异常: <span style="color: #F56C6C;font-weight: 700">{{error}}</span></el-col>-->
+            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>缺勤: <span style="color: #E6A23C;font-weight: 700">{{absence}}</span></el-col>
+          </el-row>
+        </div>
       </div>
-    </div>
-    <div class="statisticspiece">
-      <span class="stcspan">加班统计·人</span>
-      <div class="cotentinfo">
+      <div class="statisticspiece" v-if="false">
+        <span class="stcspan">加班统计·人</span>
+        <div class="cotentinfo">
+        </div>
       </div>
-    </div>
-    <div class="statisticspiece">
-      <span class="stcspan">假勤统计·人</span>
-      <div class="cotentinfo">
+      <div class="statisticspiece" v-if="false">
+        <span class="stcspan">假勤统计·人</span>
+        <div class="cotentinfo">
+        </div>
       </div>
     </div>
   </div>
@@ -223,7 +223,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  .heading {
+  .monthheading {
     display: inline-flex;
     width:100%;
     height:45px;
@@ -234,34 +234,15 @@ export default {
     text-align: center;
   }
 
-  .black {
-    width:10%;
-  }
-  .title {
-    width:80%;
-  }
-  .more{
-    width:10%;
-  }
-  .common {
-    position: inherit;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    margin: auto;
-    color:white;
+  .contentbody{
+    height: calc(100% - 108px);
+    overflow-y: scroll;
+    overflow-x: hidden;
   }
 
-  button{
-    background-color:white;
-    border-width:inherit;
-  }
-  button:focus{
-    /* color: #fff; */
-    /* background: #0a90f5; */
-    background: white;
-    outline: none;
+  ::-webkit-scrollbar {
+    height: 0;
+    width: 0;
   }
 
   .statisticspiece{

@@ -1,48 +1,49 @@
 <template>
   <div class="attendance">
     <div class="heading">
-      <div class="black common" @click="goBackThing">
-        <i class="fa fa-arrow-left" />
-      </div>
-      <div class="title common" style="align-items:center;">{{ msg }}</div>
-      <div class="more common" @click="goAllreport">
-        月报
+      <div class="title" style="align-items:center;">{{ msg }}</div>
+      <div class="opete" style="align-items:center;">
+        <button @click="goAllreport" >月报</button>
+        <button @click="goBackThing" >返回</button>
       </div>
     </div>
-    <Calendar @transferDay="getSelectDate"></Calendar>
-    <div class="statisticspiece">
-      <span class="stcspan">上下班统计</span>
-      <div class="cotentinfo">
-        <el-row>
-          <div class="vol-data">
-            <div id="myChart" :style="{width:'100%',height:'200px'}">
-            </div>
-          </div>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="6" :offset = "2"><div class="grid-content bg-purple"></div>正常:<span style="color: #67C23A;font-weight: 700">{{normal}}</span></el-col>
-          <el-col :span="6" :offset = "2"><div class="grid-content bg-purple"></div>异常:<span style="color: #F56C6C;font-weight: 700">{{error}}</span></el-col>
-          <el-col :span="6" :offset = "2"><div class="grid-content bg-purple"></div>缺勤:<span style="color: #E6A23C;font-weight: 700">{{absence}}</span></el-col>
-        </el-row>
-      </div>
-    </div>
-    <div class="statisticspiece">
-      <span class="stcspan">外出统计</span>
-      <div class="cotentinfo">
-        <template>
-          <el-row :gutter="40">
-            <el-col :span="4" :offset = "2" v-for="item in recordOutList" :key="item.name">
-              <div class="grid-content">
-                <div style="text-align: center">
-                  <el-avatar :src=item.avatar></el-avatar>
-                </div>
-                <div style="text-align: center">
-                  {{item.name}}
-                </div>
+    <hr style="margin-top: 0px; margin-bottom: 0px;"/>
+    <div class="contentbody">
+      <Calendar @transferDay="getSelectDate"></Calendar>
+      <div class="statisticspiece">
+        <span class="stcspan">上下班统计</span>
+        <div class="cotentinfo">
+          <el-row>
+            <div class="vol-data">
+              <div id="myChart" :style="{width:'100%',height:'200px'}">
               </div>
-            </el-col>
+            </div>
           </el-row>
-        </template>
+          <el-row :gutter="20">
+            <el-col :span="6" :offset = "2"><div class="grid-content bg-purple"></div>正常:<span style="color: #67C23A;font-weight: 700">{{normal}}</span></el-col>
+            <el-col :span="6" :offset = "2"><div class="grid-content bg-purple"></div>异常:<span style="color: #F56C6C;font-weight: 700">{{error}}</span></el-col>
+            <el-col :span="6" :offset = "2"><div class="grid-content bg-purple"></div>缺勤:<span style="color: #E6A23C;font-weight: 700">{{absence}}</span></el-col>
+          </el-row>
+        </div>
+      </div>
+      <div class="statisticspiece" v-if="false">
+        <span class="stcspan">外出统计</span>
+        <div class="cotentinfo">
+          <template>
+            <el-row :gutter="40">
+              <el-col :span="4" :offset = "2" v-for="item in recordOutList" :key="item.name">
+                <div class="grid-content">
+                  <div style="text-align: center">
+                    <el-avatar :src=item.avatar></el-avatar>
+                  </div>
+                  <div style="text-align: center">
+                    {{item.name}}
+                  </div>
+                </div>
+              </el-col>
+            </el-row>
+          </template>
+        </div>
       </div>
     </div>
     <div class="bottoming" v-if="showfoot">
@@ -264,25 +265,25 @@ export default {
       if (this.$route.path === '/check') {
         return
       }
-      this.$router.push({path: '/check', query:{userId: this.userId, authority: this.authority}})
+      this.$router.push('/check')
     },
     gostatistics () {
       if (this.$route.path === '/statistics') {
         return
       }
-      this.$router.push({path: '/statistics', query:{userId: this.userId, authority: this.authority}})
+      this.$router.push('/statistics')
     },
     gorule () {
       if (this.$route.path === '/rule') {
         return
       }
-      this.$router.push({path: '/rule', query:{userId: this.userId, authority: this.authority}})
+      this.$router.push('/rule')
     },
     gosetting () {
       if (this.$route.path === '/addadmin') {
         return
       }
-      this.$router.push({path: '/addadmin', query: {userId: this.userId, authority: this.authority}})
+      this.$router.push('/addadmin')
     },
     goAllreport () {
       this.$router.push('/allreport')
@@ -293,45 +294,15 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  .heading {
-    display: inline-flex;
-    width:100%;
-    height:45px;
-    background:inherit;
-    background-color:rgb(26, 138, 190);
-    box-sizing:border-box;
-    border-width:1px;
-    text-align: center;
+  .contentbody{
+    height: calc(100% - 86px);
+    overflow-y: scroll;
+    overflow-x: hidden;
   }
 
-  .black {
-    width:10%;
-  }
-  .title {
-    width:80%;
-  }
-  .more{
-    width:10%;
-  }
-  .common {
-    position: inherit;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    margin: auto;
-    color:white;
-  }
-
-  button{
-    background-color:white;
-    border-width:inherit;
-  }
-  button:focus{
-    /* color: #fff; */
-    /* background: #0a90f5; */
-    background: white;
-    outline: none;
+  ::-webkit-scrollbar {
+    height: 0;
+    width: 0;
   }
 
   .statisticspiece{
@@ -353,26 +324,6 @@ export default {
     margin-top: 10px;
   }
 
-  .bottoming {
-    position:fixed;
-    display:flex;
-    flex:0;
-    width:100%;
-    height:40px;
-    bottom:0px;
-    background-color:white;
-  }
-  .bottomchildre{
-    display: grid;
-    margin-top:5px;
-    width: 100%;
-  }
-  .colortext{
-    color: rgb(26, 138, 190);
-  }
-  .colorcommon{
-    color: rgb(170, 170, 170);
-  }
   .el-row {
     margin-bottom: 20px;
     /*&:last-child {*/

@@ -96,6 +96,7 @@ export default {
       showSearch: false,
       showInput: false,
       onlyUser: false,
+      editAuthority: false,
       marktype: '',
       inputTxt: '',
       existList: {
@@ -177,6 +178,9 @@ export default {
     getAdminId () {
       var adminId = []
       for (var index in this.newGroup.admins) {
+        if (this.newGroup.admins[index].employeeId === this.userID) {
+          this.editAuthority = true
+        }
         adminId.push(this.newGroup.admins[index].employeeId)
       }
       return adminId.toString()
@@ -232,13 +236,16 @@ export default {
         }).then(res => {
           if (res.data.flag) {
             this.openMsg('修改成功')
+            this.updataAuthority()
             this.$router.go(0)
             // this.$router.push('/addadmin')
           } else {
+            this.editAuthority = false
             this.openMsg(res.data.msg)
           }
         }).catch(error => {
           console.log(error)
+          this.editAuthority = false
           this.openMsg('发送请求失败！')
         })
       } else {
@@ -254,15 +261,26 @@ export default {
         }).then(res => {
           if (res.data.flag) {
             this.openMsg('创建成功')
+            this.updataAuthority()
             this.$router.go(0)
             // this.$router.push('/addadmin')
           } else {
+            this.editAuthority = false
             this.openMsg(res.data.msg)
           }
         }).catch(error => {
           console.log(error)
+          this.editAuthority = false
           this.openMsg('发送请求失败！')
         })
+      }
+    },
+    updataAuthority () {
+      var oldAuthority = sessionStorage.getItem('authority')
+      if (oldAuthority === '4' && this.editAuthority) {
+        sessionStorage.setItem('authority', 5)
+      } else if (oldAuthority === '5' && !this.editAuthority) {
+        sessionStorage.setItem('authority', 4)
       }
     },
     delGroup () {

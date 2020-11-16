@@ -143,25 +143,25 @@ export default {
       if (this.$route.path === '/check') {
         return
       }
-      this.$router.push({path: '/check', query: {userId: this.userId, authority: this.authority}})
+      this.$router.push('/check')
     },
     gostatistics () {
       if (this.$route.path === '/statistics') {
         return
       }
-      this.$router.push({path: '/statistics', query: {userId: this.userId, authority: this.authority}})
+      this.$router.push('/statistics')
     },
     gorule () {
       if (this.$route.path === '/rule') {
         return
       }
-      this.$router.push({path: '/rule', query: {userId: this.userId, authority: this.authority}})
+      this.$router.push('/rule')
     },
     gosetting () {
       if (this.$route.path === '/addadmin') {
         return
       }
-      this.$router.push({path: '/addadmin', query: {userId: this.userId, authority: this.authority}})
+      this.$router.push('/addadmin')
     },
     showEditGroup (item, type) {
       console.log(type)

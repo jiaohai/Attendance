@@ -509,6 +509,7 @@ export default {
       } else {
         this.$axios.get('/api/rule/findRuleInfo/' + ruleInfo.id).then(res => {
           if (res.data.flag) {
+            console.log(res.data.data)
             this.ruleData = res.data.data
             this.ruletpye = this.ruleData.ruleType
             this.rulename = this.ruleData.ruleName
@@ -608,6 +609,15 @@ export default {
       // this.ruleData.shfit = this.shiftData
       // this.ruleData.shiftCycle = this.shiftCycle
       this.ruleData.places = this.places
+      this.ruleData.supervisors = this.moreFactor.supervisors
+      this.ruleData.whiteList = this.moreFactor.whiteList
+      this.ruleData.workRemind = this.moreFactor.remind.workRemind
+      this.ruleData.offWorkRemind = this.moreFactor.remind.offWorkRemind
+      this.ruleData.special = this.moreFactor.special
+      this.ruleData.lateSign = this.moreFactor.lateSign
+      this.ruleData.expiration = this.moreFactor.expiration
+      this.ruleData.lateSignCount = this.moreFactor.lateSignCount
+      this.ruleData.split = this.moreFactor.workBorder
       this.ruleData.creator = sessionStorage.getItem('userId')
       console.log(this.ruleData)
       if (this.ruleData.id) {
