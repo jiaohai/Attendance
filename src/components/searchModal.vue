@@ -6,7 +6,8 @@
         <div class="opete" style="align-items:center;">
           <button @click="saveSearch(false)" v-if="isedit" >取消</button>
           <button @click="editList" v-if="isshowExist && !isedit" >编辑</button>
-          <button @click="seveData" >返回</button>
+          <button @click="seveData" v-if="!showadd">返回</button>
+          <button @click="returnData" v-if="showadd">返回</button>
         </div>
       </div>
       <hr style="margin-top: 0px"/>
@@ -46,12 +47,16 @@
         </div>
         <div class="options">
           <div class="alloption" v-for="(itemd, indexd) in optionData.departs" :key="'fitst' + indexd">
-            <i class="fa fa-circle-o circle" v-if="deparstId.indexOf(itemd.departmentId) === -1 && !parentChecked && !onlyUser" @click="changeCheck(itemd, 'depart')"/>
-            <i class="fa fa-check-circle circle " v-if="deparstId.indexOf(itemd.departmentId) > -1 && !parentChecked  && !onlyUser" @click="changeCheckDel(itemd, 'depart')"/>
-            <i class="fa fa-check-circle circle " v-if="parentChecked  && !onlyUser" />
+            <i class="fa fa-circle-o circle" v-if="deparstId.indexOf(itemd.departmentId) === -1 && newDeparts.indexOf(itemd.departmentId) === -1 && !parentChecked && !onlyUser" @click="changeCheck(itemd, 'depart')"/>
+            <i class="fa fa-check-circle circleex " v-if="deparstId.indexOf(itemd.departmentId) > -1 && !onlyUser" @click="changeCheckDel(itemd, 'depart')"/>
+            <i class="fa fa-check-circle circlege " v-if="newDeparts.indexOf(itemd.departmentId) > -1 && !onlyUser" @click="changeCheckDel(itemd, 'depart')"/>
+            <i class="fa fa-check-circle circleex " v-if="deparstId.indexOf(itemd.departmentId) === -1  && newDeparts.indexOf(itemd.departmentId) === -1 && parentChecked  && !onlyUser" />
+            <!-- <i class="fa fa-check-circle circleex " v-if="deparstId.indexOf(itemd.departmentId) > -1 && !parentChecked  && !onlyUser" @click="changeCheckDel(itemd, 'depart')"/>
+            <i class="fa fa-check-circle circlege " v-if="newDeparts.indexOf(itemd.departmentId) > -1 && !parentChecked  && !onlyUser" @click="changeCheckDel(itemd, 'depart')"/>
+            <i class="fa fa-check-circle circleex " v-if="parentChecked  && !onlyUser" /> -->
             <div class="user" @click="getNextLevel(itemd)">
               <div >
-                <i class="fa fa-folder fa-2x" style="width: 30px; height: 30px;" />
+                <i class="fa fa-folder fa-2x fastylee" style="width: 30px; height: 30px;" />
               </div>
               <div style="margin: 5px auto auto 0px;">
                 <span style="padding-left: 10px;margin-top: 5px;">{{ itemd.name }}</span>
@@ -62,9 +67,13 @@
             </div>
           </div>
           <div class="alloption" v-for="(itemo, indexo) in optionData.users" :key="'second' + indexo">
-            <i class="fa fa-circle-o circle" v-if="usersId.indexOf(itemo.employeeId) === -1 && !parentChecked" @click="changeCheck(itemo, 'user')"/>
-            <i class="fa fa-check-circle circle " v-if="usersId.indexOf(itemo.employeeId) > -1 && !parentChecked" @click="changeCheckDel(itemo, 'user')"/>
-            <i class="fa fa-check-circle circle " v-if="parentChecked  && !onlyUser" />
+            <i class="fa fa-circle-o circle" v-if="usersId.indexOf(itemo.employeeId) === -1 && newUsers.indexOf(itemo.employeeId) === -1 && !parentChecked" @click="changeCheck(itemo, 'user')"/>
+            <i class="fa fa-check-circle circleex " v-if="usersId.indexOf(itemo.employeeId) > -1 && !parentChecked" @click="changeCheckDel(itemo, 'user')"/>
+            <i class="fa fa-check-circle circlege " v-if="newUsers.indexOf(itemo.employeeId) > -1" @click="changeCheckDel(itemo, 'user')"/>
+            <i class="fa fa-check-circle circleex " v-if="parentChecked " />
+            <!-- <i class="fa fa-check-circle circlege " v-if="usersId.indexOf(itemo.employeeId) > -1 && !parentChecked" @click="changeCheckDel(itemo, 'user')"/>
+            <i class="fa fa-check-circle circlege " v-if="newUsers.indexOf(itemo.employeeId) > -1 && !parentChecked" @click="changeCheckDel(itemo, 'user')"/>
+            <i class="fa fa-check-circle circleex " v-if="parentChecked  && !onlyUser" /> -->
             <div class="user">
               <div >
                 <img :src="itemo.avatar" width="30" height="30" />
@@ -78,7 +87,7 @@
       </div>
       <div class="bottoming" v-if="showadd">
         <div class="checkedlist">
-          <div v-for="(itemi, indexi) in tempexist.departs" :key="'third' + indexi" style="margin: auto 0px auto 5px;">
+          <div v-for="(itemi, indexi) in addDeparts" :key="'third' + indexi" style="margin: auto 0px auto 5px;">
             <div class="checker">
               <div style="padding: 5px;">
                 <i class="fa fa-folder fa-1x" />
@@ -86,13 +95,13 @@
               </div>
             </div>
           </div>
-          <div v-for="(itemu, indexu) in tempexist.users" :key="'foutth' + indexu" style="margin: auto 0px auto 5px;">
+          <div v-for="(itemu, indexu) in addUsers" :key="'foutth' + indexu" style="margin: auto 0px auto 5px;">
             <div class="checker">
               <img :src="itemu.avatar" width="30" height="30" />
             </div>
           </div>
         </div>
-        <div class="determin" style="margin: auto;" @click="seveData">
+        <div class="determin" style="margin: auto;" @click="returnData">
           <span>确定</span>
         </div>
       </div>
@@ -107,7 +116,7 @@
           <div class="alloption" v-for="(iteme, indexe) in tempexist.departs" :key="'fivth' + indexe">
             <div class="user">
               <div >
-                <i class="fa fa-folder fa-2x" v-if="!onlyUser" style="width: 30px; height: 30px;" />
+                <i class="fa fa-folder fa-2x fastylee" v-if="!onlyUser" style="width: 30px; height: 30px;" />
               </div>
               <div style="margin: 5px auto auto 0px;">
                 <span style="padding-left: 10px;margin-top: 5px;">{{ iteme.name }}</span>
@@ -183,6 +192,10 @@ export default {
         departs: [],
         users: []
       },
+      addDeparts: [],
+      addUsers: [],
+      newDeparts: [],
+      newUsers: [],
       deparstId: [],
       usersId: []
     }
@@ -221,9 +234,28 @@ export default {
       this.$emit('closesearch')
     },
     addDate () {
+      this.getDepartment({name: '通讯录', isdepantment: false, id: 0})
       this.isshowExist = false
       this.isedit = false
       this.showadd = true
+    },
+    returnData () {
+      for (let i = 0; i < this.addDeparts.length; i++) {
+        this.tempexist.departs.push(this.addDeparts[i])
+        this.deparstId.push(this.addDeparts[i].departmentId)
+      }
+      for (let i = 0; i < this.addUsers.length; i++) {
+        this.tempexist.users.push(this.addUsers[i])
+        this.usersId.push(this.addUsers[i].employeeId)
+      }
+      this.isshowExist = true
+      this.isedit = true
+      this.showadd = false
+      this.parentChecked = false
+      this.addDeparts = []
+      this.addUsers = []
+      this.newDeparts = []
+      this.newUsers = []
     },
     seveData () {
       this.$emit('getsearch', this.tempexist)
@@ -290,15 +322,26 @@ export default {
     },
     getDepartment (item) {
       const temppartlist = []
+      var tempParentId = []
       for (let i = 0; i < this.depatmentlist.length; i++) {
-        if (this.depatmentlist[i].id === item.id) {
+        if (this.depatmentlist[i].id !== item.id) {
           temppartlist.push(this.depatmentlist[i])
+        } else {
           break
         }
-        temppartlist.push(this.depatmentlist[i])
+        // temppartlist.push(this.depatmentlist[i])
       }
+      for (let i = 0; i < this.parentCheckedID.length; i++) {
+        if (this.parentCheckedID[i] !== item.departmentId) {
+          tempParentId.push(this.parentCheckedID[i])
+        } else {
+          break
+        }
+        // temppartlist.push(this.depatmentlist[i])
+      }
+      this.parentCheckedID = tempParentId
       this.depatmentlist = temppartlist
-      this.getOptions(item.departmentId)
+      this.getNextLevel(item)
     },
     getNextLevel (item) {
       if (item === 0) {
@@ -306,39 +349,55 @@ export default {
         this.parentCheckedID = []
         this.getOptions('')
       } else {
-        if (this.parentChecked) {
-          this.parentCheckedID.push(item.departmentId)
-        }
-        if (this.deparstId.indexOf(item.departmentId) > -1) {
+        if (this.deparstId.indexOf(item.departmentId) > -1 || this.newDeparts.indexOf(item.departmentId) > -1) {
           this.parentCheckedID.push(item.departmentId)
           this.parentChecked = true
-        }
-        if (this.parentCheckedID.indexOf(item.departmentId) === -1 && this.parentChecked) {
-          this.parentChecked = true
+        } else {
+          if (this.parentCheckedID.indexOf(item.parentId) > -1) {
+            this.parentCheckedID.push(item.departmentId)
+            this.parentChecked = true
+          } else {
+            this.parentChecked = false
+          }
         }
         this.depatmentlist.push(item)
         this.getOptions(item.departmentId)
       }
     },
     changeCheckDel (item, type) {
+      var tempData = []
+      var tempIds = []
       if (type === 'depart') {
-        this.tempexist.departs.splice(this.tempexist.departs.indexOf(item, 1))
-        this.deparstId.splice(this.deparstId.indexOf(item.departmentId, 1))
+        for (let i = 0; i < this.addDeparts.length; i++) {
+          if (this.addDeparts[i].departmentId !== item.departmentId) {
+            tempData.push(this.addDeparts[i])
+            tempIds.push(this.addDeparts[i].departmentId)
+          }
+        }
+        this.addDeparts = tempData
+        this.newDeparts = tempIds
       } else {
-        this.tempexist.users.splice(this.tempexist.users.indexOf(item, 1))
-        this.usersId.splice(this.usersId.indexOf(item.employeeId, 1))
+        for (let i = 0; i < this.addUsers.length; i++) {
+          if (this.addUsers[i].employeeId !== item.employeeId) {
+            tempData.push(this.addUsers[i])
+            tempIds.push(this.addUsers[i].employeeId)
+          }
+        }
+        this.addUsers = tempData
+        this.newUsers = tempIds
       }
     },
     changeCheck (item, type) {
       if (type === 'depart') {
-        this.tempexist.departs.push(item)
-        this.deparstId.push(item.departmentId)
+        this.addDeparts.push(item)
+        this.newDeparts.push(item.departmentId)
       } else {
-        this.tempexist.users.push(item)
-        this.usersId.push(item.employeeId)
+        this.addUsers.push(item)
+        this.newUsers.push(item.employeeId)
       }
     },
     refreshExist () {
+      this.parentChecked = false
       this.deparstId = []
       this.usersId = []
       for (let i = 0; i < this.tempexist.departs.length; i++) {
@@ -352,7 +411,7 @@ export default {
       var tempWorData = []
       if (type === 'depart') {
         for (let i = 0; i < this.tempexist.departs.length; i++) {
-          if (this.tempexist.departs[i] !== item) {
+          if (this.tempexist.departs[i].departmentId !== item.departmentId) {
             tempWorData.push(this.tempexist.departs[i])
           }
         }
@@ -360,7 +419,7 @@ export default {
         // this.tempexist.departs.splice(this.tempexist.departs.indexOf(item.departmentId, 1))
       } else {
         for (let i = 0; i < this.tempexist.users.length; i++) {
-          if (this.tempexist.users[i] !== item) {
+          if (this.tempexist.users[i].employeeId !== item.employeeId) {
             tempWorData.push(this.tempexist.users[i])
           }
         }
@@ -408,6 +467,9 @@ export default {
     margin: auto 10px auto 10px;
     color: rgb(165, 165, 165);
   }
+  .fastylee{
+    color: rgba(21, 164, 221)
+  }
   .spanstyle{
     margin: auto;
     margin-right: 10px;
@@ -453,8 +515,20 @@ export default {
   }
   .circle{
     font-size: x-large;
+    color: darkgrey;
     margin: auto 0px auto 0px;
   }
+  .circlege{
+    font-size: x-large;
+    color: rgb(34, 156, 226);
+    margin: auto 0px auto 0px;
+  }
+  .circleex{
+    font-size: x-large;
+    color: rgb(146, 206, 230);
+    margin: auto 0px auto 0px;
+  }
+
   .alloption{
     display: inline-flex;
     margin: 5px auto 0px 0px;

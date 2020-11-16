@@ -227,8 +227,13 @@ export default {
       this.showRemind = !this.showRemind
     },
     editBoder () {
-      this.editHour = this.tempexist.workBorder.split(':')[0]
-      this.editMinute = this.tempexist.workBorder.split(':')[1]
+      if (this.tempexist.workBorder) {
+        this.editHour = this.tempexist.workBorder.split(':')[0]
+        this.editMinute = this.tempexist.workBorder.split(':')[1]
+      } else {
+        this.editHour = '12'
+        this.editMinute = '00'
+      }
       this.showBoder = !this.showBoder
     },
     getBoder (msg) {

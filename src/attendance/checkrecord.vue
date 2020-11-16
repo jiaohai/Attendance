@@ -1,14 +1,13 @@
 <template>
   <div class="attendance">
     <div class="heading">
-      <div class="black common" @click="goBackThing">
-        <i class="fa fa-arrow-left" />
-      </div>
-      <div class="title common" style="align-items:center;">{{ msg }}</div>
-      <div class="more common" @click="goSingleReport">
-        月报
+      <div class="title" style="align-items:center;">{{ msg }}</div>
+      <div class="opete" style="align-items:center;">
+        <button @click="goSingleReport" >月报</button>
+        <button @click="goBackThing" >返回</button>
       </div>
     </div>
+    <hr style="margin-top: 0px; margin-bottom: 0px;"/>
     <Calendar @transferDay="getSelectDate"></Calendar>
     <div class="uncommonpiece" @click="goRule" v-if="ifShow">
       <div class="rulecotent">
@@ -16,11 +15,11 @@
         <span class="contentspan secondspan">打卡规则:{{ checkrule }} | 工作时长:{{ worktime }}</span>
       </div>
       <div class="rightside">
-        <i class="fa fastyle fa-chevron-right" />
+        <i class="fa fa-angle-right" />
       </div>
     </div>
-    <div v-if="!ifShow" style="height: 100%;width: 100%">
-      <p style="color:#a5a5a5;position: absolute;top: 65%;left: 45%">无打卡记录</p>
+    <div v-if="!ifShow" style="height: 100%;width: 100%; text-align: center;">
+      <p style="color:#a5a5a5">无打卡记录</p>
     </div>
     <div class="block">
       <el-timeline v-for="(item, index_) in activities" :key="index_">
@@ -256,36 +255,6 @@ export default {
     height:100%;
   }
 
-  .heading {
-    display: inline-flex;
-    width:100%;
-    height:45px;
-    background:inherit;
-    background-color:rgb(26, 138, 190);
-    box-sizing:border-box;
-    border-width:1px;
-    text-align: center;
-  }
-
-  .black {
-    width:10%;
-  }
-  .title {
-    width:80%;
-  }
-  .more{
-    width:10%;
-  }
-  .common {
-    position: inherit;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    margin: auto;
-    color:white;
-  }
-
   .uncommonpiece{
     display:inline-flex;
     width: 100%;
@@ -299,11 +268,13 @@ export default {
     margin-left: 20px;
     margin-top: 10px;
     margin-bottom: 10px;
-    width: calc(80% - 20px);
+    width: calc(90% - 20px);
   }
+
   .rightside{
-    width: 20%;
-    text-align: right;
+    width: 10%;
+    margin: auto;
+    text-align: center;
   }
   .fastyle{
     margin-top:50%;

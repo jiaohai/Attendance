@@ -3,6 +3,9 @@
     <div class="miding" v-if="!showCheckInfo">
       <el-main v-loading="!showCheckInfo" style="height: 100%;"></el-main>
     </div>
+    <div class="miding" v-if="userError">
+      <span>用户身份获取失败，请退出应用！！</span>
+    </div>
     <div class="miding" v-show="showCheckInfo">
       <div class="manner">
         <button class="work-check check" @click="changeCheckTpye">
@@ -100,6 +103,7 @@ export default {
   data () {
     return {
       msg: '打卡',
+      userError: false,
       showCheckInfo: true,
       checkmassege: '加载中....',
       showIsCheck: false,
@@ -158,10 +162,12 @@ export default {
           sessionStorage.setItem('authority', res.data.data.authority)
         } else {
           this.openMsg(res.data.msg + '，身份验证失败！！请重新进入此应用。')
+          this.userError = true
           return
         }
       } catch (err) {
         this.openMsg('发送身份验证的请求失败！！请重新进入此应用。')
+        this.userError = true
         return
       }
     }
@@ -205,7 +211,7 @@ export default {
           }
           for (let i = 0; i < this.userData.position.length; i++) {
             let pos = this.userData.position[i]
-            this.range = this.getRange(26, 109, pos.latitude, pos.longtitude)
+            this.range = this.getRange(29, 106, pos.latitude, pos.longtitude)
             if ((this.range * 1000) < (parseInt(pos.range) - 10)) {
               this.checkPlace = pos.id
               break
@@ -230,57 +236,6 @@ export default {
         this.checkmassege = '获取信息失败，不能打卡'
         this.showCheckInfo = true
       })
-      // var res = await this.$axios.get('/api/rule/attendance/', {
-      //   params: {
-      //     employeeId: this.userId
-      //   }
-      // })
-      // if (res.data.flag) {
-      //   this.userData = res.data.data
-      //   if (this.userData.isAttendance) {
-      //     this.showIsCheck = true
-      //     this.checkmassege = this.userData.type === 0 ? '上班打卡' : '下班打卡'
-      //     if (this.userData.record.length !== 0) {
-      //       this.recordData = this.userData.record[0]
-      //       if (parseInt(this.recordData.status) === 0) {
-      //         this.recordTime = this.userData.type === 0 ? moment(this.recordData.reachRecord).format('HH:mm') : moment(this.recordData.leaveRecord).format('HH:mm')
-      //         this.recordStatus = '正常'
-      //       } else if (parseInt(this.recordData.status) === 1) {
-      //         this.recordTime = moment(this.recordData.reachRecord).format('HH:mm')
-      //         this.recordStatus = '迟到'
-      //       } else if (parseInt(this.recordData.status) === 2) {
-      //         this.recordTime = moment(this.recordData.leaveRecord).format('HH:mm')
-      //         this.recordStatus = '早退'
-      //       }
-      //       this.checkmassege = '更新打卡'
-      //       this.showRecoed = true
-      //       this.recordType = this.userData.type === 0 ? '上班打卡' : '下班打卡'
-      //     }
-      //   } else {
-      //     this.showIsCheck = false
-      //     this.checkmassege = '今天不上班，好好休息'
-      //     return
-      //   }
-      //   for (let i = 0; i < this.userData.position.length; i++) {
-      //     let pos = this.userData.position[i]
-      //     this.checkPlace = pos.id
-      //     this.range = this.getRange(26, 109, pos.latitude, pos.longtitude)
-      //     if ((this.range * 1000) < parseInt(pos.range)) {
-      //       this.checkPlace = pos.id
-      //       break
-      //     }
-      //   }
-      //   if (this.checkPlace === null) {
-      //     this.showIsCheck = false
-      //     this.openMsg('不在打卡范围！！')
-      //     this.checkmassege = '不在打卡范围，不能打卡'
-      //   }
-      //   this.showCheckInfo = true
-      // } else {
-      //   this.openMsg('获取打卡信息失败！！')
-      //   this.checkmassege = '获取信息失败，不能打卡'
-      //   this.showCheckInfo = true
-      // }
     },
     getCheckInfo () {
       // this.userId = sessionStorage.getItem('userId')
@@ -456,109 +411,6 @@ export default {
                 _this.checkmassege = '获取信息失败，不能打卡'
                 _this.showCheckInfo = true
               })
-              // var res = await _this.$axios.get('/api/rule/attendance/', {
-              //   params: {
-              //     employeeId: _this.userId
-              //   }
-              // })
-              // if (res.data.flag) {
-              //   _this.openMsg(res.data.data.record)
-              //   _this.userData = res.data.data
-              //   if (_this.userData.isAttendance) {
-              //     _this.showIsCheck = true
-              //     _this.checkmassege = _this.userData.type === 0 ? '上班打卡' : '下班打卡'
-              //     if (_this.userData.record.length !== 0) {
-              //       _this.recordData = _this.userData.record[0]
-              //       if (_this.recordData.leaveRecord === null && parseInt(_this.recordData.lateCount) > 0) {
-              //         _this.recordTime =  moment(_this.recordData.reachRecord).format('HH:mm')
-              //         _this.recordStatus = '迟到'
-              //         _this.recordType = '上班打卡'
-              //       } else if (_this.recordData.leaveRecord !== null && parseInt(_this.recordData.ifLeaveEarliy) > 0) {
-              //         _this.recordTime = moment(_this.recordData.leaveRecord).format('HH:mm')
-              //         _this.recordStatus = '早退'
-              //         _this.recordType = '下班打卡'
-              //       } else {
-              //         _this.recordStatus = '正常'
-              //         _this.recordTime = _this.recordData.leaveRecord === null ? moment(_this.recordData.reachRecord).format('HH:mm') : moment(_this.recordData.leaveRecord).format('HH:mm')
-              //         _this.recordType = _this.recordData.leaveRecord === null ? '上班打卡' : '下班打卡'
-              //       }
-              //       _this.checkmassege = '更新打卡'
-              //       _this.showRecoed = true
-              //     }
-              //   } else {
-              //     _this.showIsCheck = false
-              //     this.checkmassege = '今天不上班，好好休息'
-              //   }
-              //   for (let i = 0; i < _this.userData.position.length; i++) {
-              //     let pos = _this.userData.position[i]
-              //     _this.range = _this.getRange(latitude, longitude, pos.latitude, pos.longtitude)
-              //     if ((_this.range * 1000) < (parseInt(pos.range) - 10)) {
-              //       _this.checkPlace = pos.id
-              //       break
-              //     }
-              //   }
-              //   if (_this.checkPlace === null && _this.userData.position.length > 0) {
-              //     _this.showIsCheck = false
-              //     _this.openMsg('不在打卡范围！！')
-              //     _this.checkmassege = '不在打卡范围，不能打卡'
-              //   }
-              //   _this.showCheckInfo = true
-              // } else {
-              //   _this.showIsCheck = false
-              //   _this.openMsg('获取打卡信息失败！！')
-              //   _this.checkmassege = '获取信息失败，不能打卡'
-              //   _this.showCheckInfo = true
-              //   return
-              // }
-              // try {
-              //   let res = await _this.$axios.get('/api/rule/attendance/', {
-              //     params: {
-              //       employeeId: _this.userId
-              //     }
-              //   })
-              //   if (res.data.flag) {
-              //     _this.userData = res.data.data
-              //     if (_this.userData.isAttendance) {
-              //       _this.showIsCheck = true
-              //       _this.checkmassege = _this.userData.type === 0 ? '上班打卡' : '下班打卡'
-              //       if (_this.userData.record.length !== 0) {
-              //         _this.recordData = _this.userData.record[-1]
-              //         if (_this.recordData.status === 0) {
-              //           _this.recordTime = _this.userData.type === 0 ? moment(_this.recordData.reachRecord).format('HH:mm') : moment(_this.recordData.leaveRecord).format('HH:mm')
-              //           _this.recordStatus = '正常'
-              //         } else if (_this.recordData.status === 1) {
-              //           _this.recordTime = moment(_this.recordData.reachRecord).format('HH:mm')
-              //           _this.recordStatus = '迟到'
-              //         } else if (_this.recordData.status === 2) {
-              //           _this.recordTime = moment(_this.recordData.leaveRecord).format('HH:mm')
-              //           _this.recordStatus = '早退'
-              //         }
-              //         _this.recordType = _this.userData.type === 0 ? '上班打卡' : '下班打卡'
-              //       }
-              //     } else {
-              //       _this.showIsCheck = false
-              //     }
-              //     for (let i = 0; i < _this.userData.position.length; i++) {
-              //       let pos = _this.userData.position[i]
-              //       _this.range = _this.getRange(latitude, longitude, pos.latitude, pos.longtitude)
-              //       if ((_this.range * 1000) < parseInt(pos.range)) {
-              //         _this.checkPlace = pos.id
-              //         break
-              //       }
-              //     }
-              //     _this.showCheckInfo = true
-              //   } else {
-              //     _this.openMsg('获取打卡信息失败！！')
-              //     _this.checkmassege = '获取信息失败，不能打卡'
-              //     _this.showCheckInfo = true
-              //     return
-              //   }
-              // } catch (err) {
-              //   _this.openMsg('获取打卡信息失败！')
-              //   _this.checkmassege = '获取信息失败，不能打卡'
-              //   _this.showCheckInfo = true
-              //   return
-              // }
             },
             fail: function () {
               _this.openMsg('地图加载失败失败！')
@@ -610,25 +462,25 @@ export default {
       if (this.$route.path === '/check') {
         return
       }
-      this.$router.push({path: '/check', query: {userId: this.userId, authority: this.authority}})
+      this.$router.push('/check')
     },
     gostatistics () {
       if (this.$route.path === '/statistics') {
         return
       }
-      this.$router.push({path: '/statistics', query: {userId: this.userId, authority: this.authority}})
+      this.$router.push('/statistics')
     },
     gorule () {
       if (this.$route.path === '/rule') {
         return
       }
-      this.$router.push({path: '/rule', query: {userId: this.userId, authority: this.authority}})
+      this.$router.push('/rule')
     },
     gosetting () {
       if (this.$route.path === '/addadmin') {
         return
       }
-      this.$router.push({path: '/addadmin', query: {userId: this.userId, authority: this.authority}})
+      this.$router.push('/addadmin')
     }
   },
   mounted () {

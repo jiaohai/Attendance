@@ -87,13 +87,14 @@ export default {
     editRemindTime (type) {
       this.remindType = type
       if (this.remindType === 'stime') {
-        this.inputTime = this.tempexist.workRemind === 0 ? '' : this.tempexist.workRemind + ''
+        this.inputTime = this.tempexist.workRemind + ''
       } else {
-        this.inputTime = this.tempexist.offWorkRemind === 0 ? '' : this.tempexist.offWorkRemind + ''
+        this.inputTime = this.tempexist.offWorkRemind + ''
       }
       this.isEditTime = !this.isEditTime
     },
     getRemindTime (msg) {
+      console.log(msg)
       if (this.remindType === 'stime') {
         this.tempexist.workRemind = parseInt(msg)
       } else {

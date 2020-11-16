@@ -9,5 +9,5 @@ export function count (yearMonth, employeeId) {
 }
 
 export function findById (id) {
-  return get('/rule/findById', {id})
+  return get('/api/rule/findById', {id})
 }
