@@ -1,11 +1,11 @@
-import { get, post } from '@/utils/request-api'
+import { get } from '../../utils/request-api'
 
 export function getRecordByDate (recordDate) {
   return get('/record/getRecordByDate', {recordDate})
 }
 
-export function getRecordOutByTime (recordTime) {
-  return get('/recordOut/getRecordOutByTime', {recordTime})
+export function getRecordOutByTime (recordTime,employeeId) {
+  return get('/recordOut/getRecordOutByTime', {recordTime,employeeId})
 }
 
 export function getRecordCountByTimeForECharts (recordTime) {
@@ -16,7 +16,3 @@ export function getRecordCountByTime (recordTime) {
   return get('/record/getRecordCountByTime', {recordTime})
 }
 
-export function checkRecordOut (recordOut) {
-  debugger
-  return post('/recordOut/add', recordOut)
-}
