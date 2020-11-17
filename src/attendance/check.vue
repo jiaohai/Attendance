@@ -539,7 +539,7 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
+<style scoped>
   .manner {
     display: flex;
     height: 35px;
@@ -653,6 +653,11 @@ export default {
   .map{
     width: 100%;
     height: 100%;
+  }
+
+  /deep/ .el-divider {
+    background-color: #DCDFE6;
+    position: relative;
   }
 
   /deep/ .el-divider--horizontal {
