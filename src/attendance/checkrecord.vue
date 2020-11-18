@@ -65,6 +65,17 @@ export default {
   components: {
     Calendar
   },
+
+  props : {
+    userId: {
+      type: String,
+      default: ''
+    },
+    checkDate: {
+      type: Date,
+      default : new Date()
+    }
+  },
   mounted () {
     // 个人打卡详情
     this.getData()

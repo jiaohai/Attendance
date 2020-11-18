@@ -35,7 +35,7 @@
         @row-click="selectRow"
         @selection-change="handleSelection">
         <el-table-column property="status"></el-table-column>
-        <el-table-column property="key" v-if="false"></el-table-column>
+        <el-table-column property="value" v-if="false"></el-table-column>
         <el-table-column
           type="selection"
           width="55">
@@ -49,6 +49,7 @@
       :data="tableData"
       highlight-current-row
       @current-change="handleCurrentChange"
+      @row-click="openDetail"
       style="width: 100%">
       <el-table-column
         property="name"
@@ -64,14 +65,23 @@
         property="status"
         label="">
       </el-table-column>
+      <el-table-column
+        property="employeeId"
+        label=""
+        disabled="">
+      </el-table-column>
     </el-table>
     <search-modal v-if="showSearch" :titlename="'编辑人员'" :existlist="attendanceData" @getsearch="getSearch" v-on:closesearch="closeSearch"></search-modal>
+
+    <check-record :userId="x" :checkDate="x"></check-record>
   </div>
 </template>
 
 <script>
 
 import searchModal from '../components/searchModal'
+
+import checkRecord from '../attendance/checkrecord'
 
 export default {
   name: 'recordDetail',
@@ -80,15 +90,19 @@ export default {
     return {
       showSearch: false,
       tableData: [{
+        employeeId:'liyuanyuan',
         name: '李元元',
         status: '迟到,早退'
       }, {
+        employeeId:'lyy',
         name: 'lyy',
         status: '正常'
       }, {
+        employeeId:'wangxiaohu',
         name: '王小虎',
         status: '早退'
       }, {
+        employeeId:'wangdahu',
         name: '王大虎',
         status: '迟到'
       }],
@@ -104,19 +118,19 @@ export default {
       class_status: '',
       gridData: [{
         status: '正常',
-        key: '0'
+        value: '0'
       }, {
         status: '迟到',
-        key: '1'
+        value: '1'
       }, {
         status: '早退',
-        key: '2'
+        value: '2'
       }, {
         status: '缺卡',
-        key: '3'
+        value: '3'
       }, {
         status: '旷工',
-        key: '4'
+        value: '4'
       }],
       selected: [],
       attendanceData: {
@@ -125,7 +139,18 @@ export default {
       }
     }
   },
+  props : {
+    status:{
+      type: String,
+      default: ''
+    },
+    checkDate: {
+      type: Date,
+      default : new Date()
+    }
+  },
   components: {
+    checkRecord,
     searchModal
   },
   mounted () {
@@ -135,6 +160,9 @@ export default {
   },
 
   methods: {
+    openDetail () {
+
+    },
     getSearch (msg) {
       this.attendanceData = msg
     },
@@ -237,7 +265,7 @@ export default {
     padding-left: 0;
     padding-right: 0;
   }
-  
+
   /deep/ .el-page-header__content {
     font-size: 14px;
     color: #303133;
