@@ -135,7 +135,7 @@ export default {
       recordTime: null,
       showmore: false,
       showworkcheck: true,
-      showoutcheck: true,
+      showoutcheck: false,
       ifShow: true,
       showfoot: false,
       showS: false,
