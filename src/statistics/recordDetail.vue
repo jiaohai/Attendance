@@ -1,79 +1,90 @@
-<template>
-  <div>
-    <el-page-header @back="goBack" content="上下班明细" title="">
-    </el-page-header>
-    <el-row :gutter="20">
-      <el-col :span="9" :offset="2">
-        <el-button type="text" @click="changeDepart">部门
-          <i :class="class_dep"></i>
-        </el-button>
-      </el-col>
-      <el-col :span="9" :offset="2">
-        <el-button type="text" @click="selectStatus">状态
-          <i :class="class_status"></i>
-        </el-button>
-      </el-col>
-    </el-row>
-    <!--状态抽屉-->
-    <el-drawer
-      :visible.sync="drawer"
-      :direction="direction"
-      :before-close="handleClose">
-      <el-row :gutter="20" :class="myRow">
+<template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
+  <div style="height: 100%;width: 100%" v-if="showNext">
+    <template>
+      <el-page-header @back="goBack" content="上下班明细" title="">
+      </el-page-header>
+      <el-row :gutter="20">
         <el-col :span="9" :offset="2">
-          <el-button type="text" @click="closeDrawer"><span>取消</span>
+          <el-button type="text" @click="changeDepart">部门
+            <i :class="class_dep"></i>
           </el-button>
         </el-col>
         <el-col :span="9" :offset="2">
-          <el-button type="text" @click="submit"><span>确认</span>
+          <el-button type="text" @click="selectStatus">状态
+            <i :class="class_status"></i>
           </el-button>
         </el-col>
       </el-row>
+      <!--状态抽屉-->
+      <el-drawer
+        :visible.sync="drawer"
+        :direction="direction"
+        :before-close="handleClose">
+        <el-row :gutter="20" :class="myRow">
+          <el-col :span="9" :offset="2">
+            <el-button type="text" @click="closeDrawer"><span>取消</span>
+            </el-button>
+          </el-col>
+          <el-col :span="9" :offset="2">
+            <el-button type="text" @click="submit"><span>确认</span>
+            </el-button>
+          </el-col>
+        </el-row>
+        <el-table
+          ref="multipleTable"
+          :data="gridData"
+          @row-click="selectRow"
+          @selection-change="handleSelection">
+          <el-table-column property="status"></el-table-column>
+          <el-table-column property="value" v-if="false"></el-table-column>
+          <el-table-column
+            type="selection"
+            width="55">
+          </el-table-column>
+        </el-table>
+      </el-drawer>
+
+      <!--数据-->
       <el-table
-        ref="multipleTable"
-        :data="gridData"
-        @row-click="selectRow"
-        @selection-change="handleSelection">
-        <el-table-column property="status"></el-table-column>
-        <el-table-column property="value" v-if="false"></el-table-column>
+        ref="singleTable"
+        :data="tableData"
+        highlight-current-row
+        @current-change="handleCurrentChange"
+        @row-click="openDetail"
+        style="width: 100%">
         <el-table-column
-          type="selection"
-          width="55">
+          property="avatar"
+          width="50">
+          <template slot-scope="scope">
+            <el-avatar :src="scope.row.avatar" ></el-avatar>
+          </template>
+        </el-table-column>
+        <el-table-column
+          property="name"
+          label=""
+          width="550">
+        </el-table-column>
+        <el-table-column
+          property="status"
+          label="">
+        </el-table-column>
+        <el-table-column
+          property="employeeId"
+          label=""
+          v-if="false">
         </el-table-column>
       </el-table>
-    </el-drawer>
+    </template>
+    <template>
+      <!--部门-->
+      <search-modal v-if="showSearch" :titlename="'编辑人员'" :existlist="attendanceData" @getsearch="getSearch" v-on:closesearch="closeSearch"></search-modal>
+    </template>
 
-    <!--数据-->
-    <el-table
-      ref="singleTable"
-      :data="tableData"
-      highlight-current-row
-      @current-change="handleCurrentChange"
-      @row-click="openDetail"
-      style="width: 100%">
-      <el-table-column
-        property="name"
-        width="50">
-        <el-avatar src="http://wework.qpic.cn/bizmail/ibVp64SEPsDZXiakEkJTdlVrnbl9dpjCURT40mDQUmicjHYs5xe0hl3Jw/0"></el-avatar>
-      </el-table-column>
-      <el-table-column
-        property="name"
-        label=""
-        width="550">
-      </el-table-column>
-      <el-table-column
-        property="status"
-        label="">
-      </el-table-column>
-      <el-table-column
-        property="employeeId"
-        label=""
-        disabled="">
-      </el-table-column>
-    </el-table>
-    <search-modal v-if="showSearch" :titlename="'编辑人员'" :existlist="attendanceData" @getsearch="getSearch" v-on:closesearch="closeSearch"></search-modal>
+    <template>
+      <!--打卡详情-->
+      <check-record :userId="this.employeeId" :checkDate="this.checkDate" v-if="showCheckRecord"></check-record>
+    </template>
 
-    <check-record :userId="x" :checkDate="x"></check-record>
   </div>
 </template>
 
@@ -88,25 +99,35 @@ export default {
 
   data () {
     return {
+      showNext: true,
+      showCheckRecord: false,
       showSearch: false,
+      employeeId: '',
       tableData: [{
         employeeId:'liyuanyuan',
         name: '李元元',
-        status: '迟到,早退'
+        status: '迟到,早退',
+        avatar: 'http://wework.qpic.cn/bizmail/ibVp64SEPsDZXiakEkJTdlVrnbl9dpjCURT40mDQUmicjHYs5xe0hl3Jw/0'
       }, {
         employeeId:'lyy',
         name: 'lyy',
-        status: '正常'
+        status: '正常',
+        avatar: 'http://wework.qpic.cn/bizmail/ibVp64SEPsDZXiakEkJTdlVrnbl9dpjCURT40mDQUmicjHYs5xe0hl3Jw/0'
       }, {
         employeeId:'wangxiaohu',
         name: '王小虎',
-        status: '早退'
+        status: '早退',
+        avatar: 'http://wework.qpic.cn/bizmail/ibVp64SEPsDZXiakEkJTdlVrnbl9dpjCURT40mDQUmicjHYs5xe0hl3Jw/0'
       }, {
         employeeId:'wangdahu',
         name: '王大虎',
-        status: '迟到'
+        status: '迟到',
+        avatar: 'http://wework.qpic.cn/bizmail/ibVp64SEPsDZXiakEkJTdlVrnbl9dpjCURT40mDQUmicjHYs5xe0hl3Jw/0'
       }],
-      currentRow: null,
+      currentRow: {
+        employeeId: '',
+        name: ''
+      },
       myRow: 'myRow',
       direction: 'btt',
       drawer: false,
@@ -147,6 +168,10 @@ export default {
     checkDate: {
       type: Date,
       default : new Date()
+    },
+    data: {
+      type: [],
+      default: []
     }
   },
   components: {
@@ -161,7 +186,8 @@ export default {
 
   methods: {
     openDetail () {
-
+      this.showCheckRecord = true
+      this.employeeId = this.currentRow.employeeId
     },
     getSearch (msg) {
       this.attendanceData = msg
