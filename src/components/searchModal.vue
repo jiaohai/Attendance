@@ -11,18 +11,6 @@
         </div>
       </div>
       <hr style="margin-top: 0px"/>
-      <!-- <div class="heading">
-        <div class="black common" @click="seveData">
-          <i class="fa fa-arrow-left" />
-        </div>
-        <div class="title common" style="align-items:center;">{{ titlename }}</div>
-        <div class="more common" @click="saveSearch(false)" v-if="isedit">
-          <span>取消</span>
-        </div>
-        <div class="more common" @click="editList" v-if="isshowExist && !isedit">
-          <span>编辑</span>
-        </div>
-      </div> -->
       <div class="commonpiece" v-if="showadd">
         <div class="titlehead" style="display: inline-flex; width:100%;" v-if="issearch">
           <div style="width: 100%; display: inline-flex;">
@@ -42,11 +30,15 @@
             <i class="fa fa-angle-right" v-if="depatmentlist.length !== indexl + 1" />
           </span>
         </div>
-        <div class="options" v-if="optionData.departs.length === 0 && optionData.users.length === 0">
+        <div class="options" v-if="optionData.departs.length === 0 && optionData.users.length === 0 && !isLoad">
           没有数据，请重新输入
         </div>
-        <div class="options">
+        <div class="options" v-if="isLoad">
+          <el-main v-loading="isLoad" style="height: 100%;"></el-main>
+        </div>
+        <div class="options" v-if="!isLoad">
           <div class="alloption" v-for="(itemd, indexd) in optionData.departs" :key="'fitst' + indexd">
+            <div>
             <i class="fa fa-circle-o circle" v-if="deparstId.indexOf(itemd.departmentId) === -1 && newDeparts.indexOf(itemd.departmentId) === -1 && !parentChecked && !onlyUser" @click="changeCheck(itemd, 'depart')"/>
             <i class="fa fa-check-circle circleex " v-if="deparstId.indexOf(itemd.departmentId) > -1 && !onlyUser" @click="changeCheckDel(itemd, 'depart')"/>
             <i class="fa fa-check-circle circlege " v-if="newDeparts.indexOf(itemd.departmentId) > -1 && !onlyUser" @click="changeCheckDel(itemd, 'depart')"/>
@@ -54,6 +46,7 @@
             <!-- <i class="fa fa-check-circle circleex " v-if="deparstId.indexOf(itemd.departmentId) > -1 && !parentChecked  && !onlyUser" @click="changeCheckDel(itemd, 'depart')"/>
             <i class="fa fa-check-circle circlege " v-if="newDeparts.indexOf(itemd.departmentId) > -1 && !parentChecked  && !onlyUser" @click="changeCheckDel(itemd, 'depart')"/>
             <i class="fa fa-check-circle circleex " v-if="parentChecked  && !onlyUser" /> -->
+            </div>
             <div class="user" @click="getNextLevel(itemd)">
               <div >
                 <i class="fa fa-folder fa-2x fastylee" style="width: 30px; height: 30px;" />
@@ -172,6 +165,7 @@ export default {
     return {
       inputvlue: '',
       checked: true,
+      isLoad: true,
       depatmentlist: [
         {
           name: '通讯录',
@@ -269,7 +263,9 @@ export default {
       this.existlist = this.tempexist
     },
     getSearchOptions (item) {
+      this.isLoad = true
       if (this.inputvlue === '') {
+        this.isLoad = false
         return
       }
       this.$axios.get('/groupApi/depart/userAndDepart/Search/', {
@@ -279,12 +275,15 @@ export default {
       }).then(res => {
         if (res.data.flag) {
           this.optionData = res.data.data
+          this.isLoad = false
         } else {
           this.openMsg(res.data.msg)
+          this.isLoad = false
         }
       }).catch(error => {
         console.log(error)
         this.openMsg('发送请求失败！')
+        this.isLoad = false
       })
     },
     getOptions (item) {
@@ -306,12 +305,15 @@ export default {
       }).then(res => {
         if (res.data.flag) {
           this.optionData = res.data.data
+          this.isLoad = false
         } else {
           this.openMsg(res.data.msg)
+          this.isLoad = false
         }
       }).catch(error => {
         console.log(error)
         this.openMsg('发送请求失败！')
+        this.isLoad = false
       })
     },
     editList () {
@@ -321,6 +323,7 @@ export default {
       this.issearch = !this.issearch
     },
     getDepartment (item) {
+      this.isLoad = true
       const temppartlist = []
       var tempParentId = []
       for (let i = 0; i < this.depatmentlist.length; i++) {
@@ -344,6 +347,7 @@ export default {
       this.getNextLevel(item)
     },
     getNextLevel (item) {
+      this.isLoad = true
       if (item === 0) {
         this.parentChecked = false
         this.parentCheckedID = []

@@ -8,7 +8,10 @@
       </div>
     </div>
     <hr style="margin-top: 0px"/>
-    <div class="contentbody" v-loading="false" style="height: calc(100% - 86px);">
+    <div class="contentbody" style="height: calc(100% - 86px);" v-if="isLoad">
+      <el-main v-loading="isLoad" style="height: 100%;"></el-main>
+    </div>
+    <div class="contentbody" v-loading="false" style="height: calc(100% - 86px);" v-show="!isLoad">
       <div class="uncommonpiece" v-if="attendanceList.length === 0">
         <div class="rulecotent">
           <span class="contentspan">没有数据，请新建考勤组</span>
@@ -57,6 +60,7 @@ export default {
   data () {
     return {
       msg: '考勤组设置',
+      isLoad: true,
       showcheck: true,
       showstatistics: true,
       showrule: true,
@@ -96,7 +100,6 @@ export default {
     if (this.authority > 1) {
       this.showfoot = true
     }
-    console.log(this.authority)
     if (this.authority === 2) {
       this.showS = true
     } else if (this.authority === 3) {
@@ -121,12 +124,15 @@ export default {
       this.$axios.get('/groupApi/group/groupAndDepart?creatorId=' + this.userId).then(res => {
         if (res.data.flag) {
           this.attendanceList = res.data.data.allGroup
+          this.isLoad = false
         } else {
           this.openMsg(res.data.msg)
+          this.isLoad = false
         }
       }).catch(error => {
         console.log(error)
         this.openMsg('发送请求失败！')
+        this.isLoad = false
       })
     },
     openMsg (message) {
@@ -164,7 +170,6 @@ export default {
       this.$router.push('/addadmin')
     },
     showEditGroup (item, type) {
-      console.log(type)
       this.editGroupData = {
         id: item.id,
         name: item.name,
@@ -213,11 +218,11 @@ export default {
     margin-left: 20px;
     margin-top: 10px;
     margin-bottom: 10px;
-    width: calc(80% - 20px);
+    width: calc(90% - 20px);
   }
   .rightside{
-    width: 20%;
-    text-align: right;
+    width: 10%;
+    text-align: center;
     margin: auto;
   }
   .fastyle{

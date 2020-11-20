@@ -8,7 +8,10 @@
       </div>
     </div>
     <hr style="margin-top: 0px"/>
-    <div class="contentbody" style="height: calc(100% - 86px);">
+    <div class="contentbody" style="height: calc(100% - 86px);" v-if="isLoad">
+      <el-main v-loading="isLoad" style="height: 100%;"></el-main>
+    </div>
+    <div class="contentbody" style="height: calc(100% - 86px);" v-show="!isLoad">
       <div class="uncommonpiece" v-if="ruledata.length === 0">
         <div class="rulecotent">
           <span class="contentspan">没有打卡规则，请添加打卡规则</span>
@@ -31,7 +34,7 @@
           <span class="contentspan secondspan" v-if="item.places.length > 0">位置 {{ item.places[0].name }}</span>
         </div>
         <div class="rightside">
-          <i class="fa fastyle fa-angle-right" />
+          <i class="fa fa-angle-right" />
         </div>
       </div>
     </div>
@@ -68,6 +71,7 @@ export default {
       showstatistics: true,
       showrule: true,
       showsetting: true,
+      isLoad: true,
       ruledata: [],
       newData: {
         id: null,
@@ -238,15 +242,16 @@ export default {
     getInit () {
       this.$axios.get('/api/rule/ruleList?creatorId=' + this.userId).then(res => {
         if (res.data.flag) {
-          console.log(res.data.data)
           this.ruledata = res.data.data
-          console.log(this.ruledata)
+          this.isLoad = false
         } else {
           this.openMsg(res.data.msg)
+          this.isLoad = false
         }
       }).catch(error => {
         console.log(error)
         this.openMsg('发送请求失败！')
+        this.isLoad = false
       })
     }
   }
@@ -275,11 +280,12 @@ export default {
     margin-left: 20px;
     margin-top: 10px;
     margin-bottom: 10px;
-    width: calc(80% - 20px);
+    width: calc(90% - 20px);
   }
   .rightside{
-    width: 20%;
-    text-align: right;
+    width: 10%;
+    text-align: center;
+    margin: auto;
   }
   .fastyle{
     margin-top:53%;
