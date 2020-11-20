@@ -657,7 +657,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).catch(err => err)
-      if(confirmResult === 'confirm'){
+      if (confirmResult === 'confirm'){
         console.log('delete rule')
         this.$axios.delete('/api/rule/delete/' + this.ruleData.id).then(res => {
           if (res.data.flag) {

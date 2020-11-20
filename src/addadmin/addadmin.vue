@@ -173,9 +173,9 @@ export default {
       this.editGroupData = {
         id: item.id,
         name: item.name,
-        admins: type === 'new'?[]:item.admins,
-        departs: type === 'new'?[]:item.departs,
-        users: type === 'new'?[]:item.users,
+        admins: type === 'new' ? [] : item.admins,
+        departs: type === 'new' ? [] : item.departs,
+        users: type === 'new' ? [] : item.users,
         descrise: item.descrise
       }
       if (type === 'edit') { this.needEdit = true }

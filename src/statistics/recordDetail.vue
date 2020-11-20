@@ -1,6 +1,6 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
-  <div style="height: 100%;width: 100%" v-if="showNext">
-    <template>
+  <div style="height: 100%;width: 100%">
+    <template v-if="showNext">
       <el-page-header @back="goBack" content="上下班明细" title="">
       </el-page-header>
       <el-row :gutter="20">
@@ -21,11 +21,11 @@
         :direction="direction"
         :before-close="handleClose">
         <el-row :gutter="20" :class="myRow">
-          <el-col :span="9" :offset="2">
+          <el-col :span="4" :offset="2">
             <el-button type="text" @click="closeDrawer"><span>取消</span>
             </el-button>
           </el-col>
-          <el-col :span="9" :offset="2">
+          <el-col :span="9" :offset="9">
             <el-button type="text" @click="submit"><span>确认</span>
             </el-button>
           </el-col>
@@ -43,7 +43,6 @@
           </el-table-column>
         </el-table>
       </el-drawer>
-
       <!--数据-->
       <el-table
         ref="singleTable"
@@ -82,7 +81,7 @@
 
     <template>
       <!--打卡详情-->
-      <check-record :userId="this.employeeId" :checkDate="this.checkDate" v-if="showCheckRecord"></check-record>
+      <check-record @close='closeCheckRecord' :userId="this.employeeId" :checkDate="this.checkDate" :if-show-month-report="false" :go-back="false" v-if="showCheckRecord"></check-record>
     </template>
 
   </div>
@@ -131,6 +130,7 @@ export default {
       myRow: 'myRow',
       direction: 'btt',
       drawer: false,
+      showModal: false,
       disableDep: true,
       disableStatus: true,
       class_up: 'el-select__caret el-input__icon el-icon-arrow-up',
@@ -185,8 +185,13 @@ export default {
   },
 
   methods: {
+    closeCheckRecord () {
+      this.showCheckRecord = false
+      this.showNext = true
+    },
     openDetail () {
       this.showCheckRecord = true
+      this.showNext = false
       this.employeeId = this.currentRow.employeeId
     },
     getSearch (msg) {

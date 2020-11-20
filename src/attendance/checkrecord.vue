@@ -3,8 +3,8 @@
     <div class="heading">
       <div class="title" style="align-items:center;">{{ msg }}</div>
       <div class="opete" style="align-items:center;">
-        <button @click="goSingleReport" >月报</button>
-        <button @click="goBackThing" >返回</button>
+        <button @click="goSingleReport" v-if="ifShowMonthReport">月报</button>
+        <button @click="goBackThing">返回</button>
       </div>
     </div>
     <hr style="margin-top: 0px; margin-bottom: 0px;"/>
@@ -67,6 +67,14 @@ export default {
   },
 
   props : {
+    goBack: {
+      type:Boolean,
+      default: true
+    },
+    ifShowMonthReport: {
+      type: Boolean,
+      default: true
+    },
     userId: {
       type: String,
       default: ''
@@ -249,7 +257,11 @@ export default {
       return currentDate
     },
     goBackThing () {
-      window.history.go(-1)
+      if (this.goBack){
+        window.history.go(-1)
+      } else {
+        this.$emit('close')
+      }
     },
     goRule () {
       this.$router.push('/checkrule')

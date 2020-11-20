@@ -296,7 +296,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).catch(err => err)
-      if(confirmResult === 'confirm'){
+      if (confirmResult === 'confirm'){
         this.$axios.post('/groupApi/group/delete/' + this.newGroup.id).then(res => {
           if (res.data.flag) {
             this.openMsg('删除成功')
@@ -309,7 +309,7 @@ export default {
           this.openMsg('发送请求失败！')
         })
       } else {
-        this.$message.info("删除失败")
+        this.$message.info('删除失败')
       }
     }
   }

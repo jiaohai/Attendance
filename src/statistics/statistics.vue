@@ -140,13 +140,13 @@ export default {
       let myChart = this.$echarts.init(document.getElementById('myChart'))
       let option = {
         grid: {
-          left: "3%",
-          right: "3%",
-          bottom: "3%",
+          left: '3%',
+          right: '3%',
+          bottom: '3%',
           containLabel: true
         },
         tooltip: {
-          show:false,
+          show:false
         },
         legend: {
           orient: 'vertical',
@@ -158,14 +158,14 @@ export default {
             name: '上下班统计',
             type: 'pie',
             hoverAnimation: false,
-            radius: ["60%", "47%"],
-            center: ["50%", "50%"],
+            radius: ['60%', '47%'],
+            center: ['50%', '50%'],
             label: {
               show: false,
-              textStyle:{color:'#3c4858',fontSize:"12"}
+              textStyle:{color:'#3c4858', fontSize:'12'}
             },
             labelLine:{
-              show: false,
+              show: false
             },
             data: this.recordDataList
           }
@@ -178,7 +178,7 @@ export default {
         const obj = {}
         const itemStyle = {}
         obj.value = 0
-        obj.name = '正常'+  0 + '人'
+        obj.name = '正常' + 0 + '人'
         itemStyle.color = '#67C23A'
         obj.itemStyle = itemStyle
         this.recordDataList.push(obj)
