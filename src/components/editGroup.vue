@@ -14,6 +14,7 @@
           <div class="titlehead" style="display: inline-flex; width:100%;">
             <div class="titles">
               <span>考勤组名称</span>
+              <span style="color: #ff0000">*</span>
             </div>
             <div class="descrip" style="display: inline-flex;">
               <span class="spanstyle">{{ newGroup.name }}</span>
@@ -25,6 +26,7 @@
           <div class="titlehead" style="display: inline-flex; width:100%;">
             <div class="titles">
               <span>考勤组范围</span>
+              <span style="color: #ff0000">*</span>
             </div>
             <div class="descrip">
               <span class="spanstyle" v-for="(item, index) in newGroup.departs" :key="'d' + index" >{{ item.name }}</span>
@@ -37,6 +39,7 @@
           <div class="titlehead" style="display: inline-flex; width:100%;">
             <div class="titles">
               <span>考勤组管理员</span>
+              <span style="color: #ff0000">*</span>
             </div>
             <div class="descrip">
               <span class="spanstyle" v-for="(item, index) in newGroup.admins" :key="'a' + index" >{{ item.name }}</span>
@@ -115,6 +118,9 @@ export default {
   },
   methods: {
     closeSelf () {
+      this.existdate.admins = []
+      this.existdate.departs = []
+      this.existdate.users = []
       this.$emit('closeedit')
     },
     saveGrup () {
@@ -283,18 +289,28 @@ export default {
         sessionStorage.setItem('authority', 4)
       }
     },
-    delGroup () {
-      this.$axios.post('/groupApi/group/delete/' + this.newGroup.id).then(res => {
-        if (res.data.flag) {
-          this.openMsg('删除成功')
-          this.$router.go(0)
-        } else {
-          this.openMsg(res.data.msg)
-        }
-      }).catch(error => {
-        console.log(error)
-        this.openMsg('发送请求失败！')
-      })
+    async delGroup () {
+      // this.confirm
+      const confirmResult = await this.$confirm('此操作将永久删除此考勤组，是否确认？', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+      if(confirmResult === 'confirm'){
+        this.$axios.post('/groupApi/group/delete/' + this.newGroup.id).then(res => {
+          if (res.data.flag) {
+            this.openMsg('删除成功')
+            this.$router.go(0)
+          } else {
+            this.openMsg(res.data.msg)
+          }
+        }).catch(error => {
+          console.log(error)
+          this.openMsg('发送请求失败！')
+        })
+      } else {
+        this.$message.info("删除失败")
+      }
     }
   }
 }

@@ -12,6 +12,7 @@
       <div class="titlehead" style="display: inline-flex; width:100%;">
         <div class="titles">
           <span>规则类型</span>
+          <span style="color:red">*</span>
         </div>
         <div class="descrip">
           <span class="spanstyle">{{ ruletpye }}</span>
@@ -26,6 +27,7 @@
       <div class="titlehead" style="display: inline-flex; width:100%;">
         <div class="titles">
           <span>规则名称</span>
+          <span style="color:red">*</span>
         </div>
         <div class="descrip">
           <span class="spanstyle">{{ rulename }}</span>
@@ -37,6 +39,7 @@
       <div class="titlehead" style="display: inline-flex; width:100%;">
         <div class="titles">
           <span>打卡人员</span>
+          <span style="color:red">*</span>
         </div>
         <div class="descrip">
           <span class="spanstyle" v-for="(item, index) in attendanceData.departs" :key="'d' + index" >{{ item.name }}</span>
@@ -49,11 +52,10 @@
       <div class="titlehead" style="display: inline-flex; width:100%;">
         <div class="titles">
           <span>打卡时间</span>
+          <span style="color:red">*</span>
         </div>
         <div class="descrip" style="display: inline-flex; text-overflow: unset; overflow-x: scroll;" v-if="scheduleData.length === 0">
-          <div>
-            <span class="spanstyle">未设置</span>
-          </div>
+          <span class="spanstyle">未设置不能为空</span>
         </div>
         <div class="descrip" style="display: inline-flex; text-overflow: unset; overflow-x: scroll;" v-if="scheduleData.length > 0">
           <div v-for="(item, index) in scheduleData" :key="index">
@@ -95,9 +97,10 @@
       <div class="titlehead" style="display: inline-flex; width:100%;">
         <div class="titles">
           <span>打卡位置</span>
+          <span style="color:red">*</span>
         </div>
         <div class="descrip" style="display: inline-flex;">
-          <span class="spanstyle" v-if="places.length === 0">未设置</span>
+          <span class="spanstyle" v-if="places.length === 0">未设置不能为空</span>
           <span class="spanstyle" v-if="places.length === 1">{{ ruleData.places[0].name }}</span>
           <span class="spanstyle" v-if="places.length > 1">{{ ruleData.places[0].name }}等{{ ruleData.places.length }}个地点</span>
         </div>
@@ -648,19 +651,28 @@ export default {
         })
       }
     },
-    deleteRule () {
-      console.log('delete rule')
-      this.$axios.delete('/api/rule/delete/' + this.ruleData.id).then(res => {
-        if (res.data.flag) {
-          this.openMsg('删除成功！')
-          this.$router.push('/rule')
-        } else {
-          this.openMsg(res.data.msg)
-        }
-      }).catch(error => {
-        console.log(error)
-        this.openMsg('发送请求失败！')
-      })
+    async deleteRule () {
+      const confirmResult = await this.$confirm('此操作将永久删除该规则，是否确认？', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+      if(confirmResult === 'confirm'){
+        console.log('delete rule')
+        this.$axios.delete('/api/rule/delete/' + this.ruleData.id).then(res => {
+          if (res.data.flag) {
+            this.openMsg('删除成功！')
+            this.$router.push('/rule')
+          } else {
+            this.openMsg(res.data.msg)
+          }
+        }).catch(error => {
+          console.log(error)
+          this.openMsg('发送请求失败！')
+        })
+      } else {
+        this.$message.info('删除失败')
+      }
     },
     goSearch () {
       this.$router.push('/search')
