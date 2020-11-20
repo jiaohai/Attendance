@@ -21,12 +21,12 @@
             </div>
           </el-row>
           <el-row :gutter="20">
-            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>迟到: <span style="color: #F56C6C;font-weight: 700">{{ifLate}}</span></el-col>
-            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>缺卡: <span style="color: #F56C6C;font-weight: 700">{{ifAbsent}}</span></el-col>
-            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>早退: <span style="color: #F56C6C;font-weight: 700">{{ifLeaveEarly}}</span></el-col>
-            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>正常: <span style="color: #67C23A;font-weight: 700">{{normal}}</span></el-col>
+            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>迟到: <span style="color: #F56C6C;font-weight: 700" @click="openDetail('1')">{{ifLate}}</span></el-col>
+            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>缺卡: <span style="color: #F56C6C;font-weight: 700" @click="openDetail('2')">{{ifAbsent}}</span></el-col>
+            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>早退: <span style="color: #F56C6C;font-weight: 700" @click="openDetail('3')">{{ifLeaveEarly}}</span></el-col>
+            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>正常: <span style="color: #67C23A;font-weight: 700" @click="openDetail('0')">{{normal}}</span></el-col>
   <!--          <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>异常: <span style="color: #F56C6C;font-weight: 700">{{error}}</span></el-col>-->
-            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>缺勤: <span style="color: #E6A23C;font-weight: 700">{{absence}}</span></el-col>
+            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>缺勤: <span style="color: #E6A23C;font-weight: 700" @click="openDetail('4')">{{absence}}</span></el-col>
           </el-row>
         </div>
       </div>
@@ -41,11 +41,13 @@
         </div>
       </div>
     </div>
+    <record-detail :status="this.status" :check-date="this.date" v-if="ifSHow"></record-detail>
   </div>
 </template>
 
 <script>
 
+import recordDetail from './recordDetail'
 import monthesSlider from '../components/monthesSlider'
 import { getRecordCountByTime } from '../api/record/record'
 
@@ -53,6 +55,8 @@ export default {
   name: 'allreport',
   data () {
     return {
+      ifSHow: false,
+      status: '',
       msg: '月报',
       date: new Date(),
       recordDataList: [],
@@ -69,9 +73,14 @@ export default {
     this.getRecordCountByTime()
   },
   components: {
+    recordDetail,
     monthesSlider
   },
   methods: {
+    openDetail (status) {
+      this.status = status
+      this.ifSHow = true
+    },
     goBackThing () {
       window.history.go(-1)
     },

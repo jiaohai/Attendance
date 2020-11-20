@@ -63,15 +63,31 @@
         </div>
       </div>
       <div class="operate" v-if="showoutcheck">
-        <div class="showmpa">显示打卡地址</div>
-        <div class="checkbutton">
-          <div class="buttonline">
-            <button class="workbutton">
-              <span>外出打卡</span>
-            </button>
+        <div v-if="ifShow" style="height: 100%;width: 100%">
+          <div class="showmpa">显示打卡地址</div>
+          <div class="checkbutton">
+            <div class="buttonline">
+              <button class="workbutton" @click="checkOutRecord">
+                <el-row><span>外出打卡</span></el-row>
+                <span>第{{outCount}}次外出</span>
+              </button>
+            </div>
+          </div>
+          <div class="massege">人员信息</div>
+        </div>
+        <div v-if="!ifShow" style="height: 100%;width: 100%">
+          <div class="">
+            <img src="../img/success.png" style="width: 30%;height: 30%">
+            <p style="color: #67C23A;font-weight: bolder">外出打卡成功</p>
+          </div>
+          <el-divider></el-divider>
+          <div class="massege">
+            <el-row>
+              <el-col :span="9" :offset="2"><span>时间</span></el-col>
+              <el-col :span="9" :offset="2"><span>{{time}}</span></el-col>
+            </el-row>
           </div>
         </div>
-        <div class="massege">人员信息</div>
       </div>
     </div>
     <div class="bottoming" v-if="showfoot">
@@ -97,6 +113,7 @@
 <script>
 
 import moment from 'moment'
+import { getRecordOutByTime } from '../api/record/record'
 
 export default {
   name: 'check',
@@ -119,6 +136,7 @@ export default {
       showmore: false,
       showworkcheck: true,
       showoutcheck: false,
+      ifShow: true,
       showfoot: false,
       showS: false,
       showR: false,
@@ -149,7 +167,16 @@ export default {
           name: '',
           id: ''
         }
-      }
+      },
+      recordOut: {
+        employeeId: sessionStorage.getItem('userId'),
+        reason: '',
+        image: '',
+        longtitude: 29.0,
+        latitude: 336.0
+      },
+      outCount: 1,
+      time: null
     }
   },
   created: async function () {
@@ -455,8 +482,28 @@ export default {
       } catch(err) {
         this.openMsg('打卡失败！')
       }
-      
+
       this.clocking = false
+    },
+    // 外出打卡
+    async checkOutRecord () {
+      let res = await this.$axios.post('/recordOut/add', this.recordOut)
+      if (res.data.flag){
+        this.ifShow = !this.ifShow
+        let date = new Date()
+        let spl = ':'
+        let hour = date.getHours()
+        let minutes = date.getMinutes()
+        if (hour >= 1 && hour <= 9) {
+          hour = '0' + hour
+        }
+        if (minutes >= 0 && minutes <= 9) {
+          minutes = '0' + minutes
+        }
+        this.time =  hour + spl + minutes
+      } else {
+        this.openMsg('打卡失败！')
+      }
     },
     gocheck () {
       if (this.$route.path === '/check') {
@@ -484,12 +531,15 @@ export default {
     }
   },
   mounted () {
+    getRecordOutByTime(new Date(),sessionStorage.getItem('userId')).then(res => {
+      this.outCount = res.data.data.length + 1
+    })
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
+<style scoped>
   .manner {
     display: flex;
     height: 35px;
@@ -603,5 +653,17 @@ export default {
   .map{
     width: 100%;
     height: 100%;
+  }
+
+  /deep/ .el-divider {
+    background-color: #DCDFE6;
+    position: relative;
+  }
+
+  /deep/ .el-divider--horizontal {
+    display: block;
+    height: 1px;
+    width: 50%;
+    margin: 24px 200px;
   }
 </style>

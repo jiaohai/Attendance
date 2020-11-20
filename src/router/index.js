@@ -13,6 +13,7 @@ const device = r => require.ensure([], () => r(require('../attendance/device')),
 
 const statistics = r => require.ensure([], () => r(require('../statistics/statistics')), 'statistics')
 const allreport = r => require.ensure([], () => r(require('../statistics/allreport')), 'allreport')
+const recordDetail = r => require.ensure([], () => r(require('../statistics/recordDetail')), 'recordDetail')
 
 const rule = r => require.ensure([], () => r(require('../rule/rule')), 'rule')
 const addrule = r => require.ensure([], () => r(require('../rule/addrule')), 'addrule')
@@ -104,6 +105,11 @@ export default new Router({
       path: '/addadmin',
       name: 'addadmin',
       component: addadmin
+    },
+    {
+      path: '/recordDetail',
+      name: 'recordDetail',
+      component: recordDetail
     }
     // {
     //   path: '/',

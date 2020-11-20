@@ -20,9 +20,11 @@
             </div>
           </el-row>
           <el-row :gutter="20">
-            <el-col :span="6" :offset = "2"><div class="grid-content bg-purple"></div>正常:<span style="color: #67C23A;font-weight: 700">{{normal}}</span></el-col>
-            <el-col :span="6" :offset = "2"><div class="grid-content bg-purple"></div>异常:<span style="color: #F56C6C;font-weight: 700">{{error}}</span></el-col>
-            <el-col :span="6" :offset = "2"><div class="grid-content bg-purple"></div>缺勤:<span style="color: #E6A23C;font-weight: 700">{{absence}}</span></el-col>
+            <el-col :span="6" :offset = "2"><div class="grid-content bg-purple"></div>迟到:<span style="color: #F56C6C;font-weight: 700">{{late}}</span></el-col>
+            <el-col :span="6" :offset = "2"><div class="grid-content bg-purple"></div>早退:<span style="color: #E6A23C;font-weight: 700">{{leaveEarly}}</span></el-col>
+            <!--<el-col :span="6" :offset = "2" @click=""><div class="grid-content bg-purple"></div>正常:<span style="color: #67C23A;font-weight: 700">{{normal}}</span></el-col>
+            <el-col :span="6" :offset = "2" @click=""><div class="grid-content bg-purple"></div>异常:<span style="color: #F56C6C;font-weight: 700">{{error}}</span></el-col>-->
+            <el-col :span="6" :offset = "2"><div class="grid-content bg-purple"></div>缺卡:<span style="color: #E6A23C;font-weight: 700">{{absence}}</span></el-col>
           </el-row>
         </div>
       </div>
@@ -83,6 +85,8 @@ export default {
       showstatistics: true,
       showrule: true,
       showsetting: true,
+      late: 0,
+      leaveEarly: 0,
       normal: 0,
       error: 0,
       absence: 0,
@@ -135,36 +139,33 @@ export default {
       console.log(this.recordDataList)
       let myChart = this.$echarts.init(document.getElementById('myChart'))
       let option = {
+        grid: {
+          left: "3%",
+          right: "3%",
+          bottom: "3%",
+          containLabel: true
+        },
         tooltip: {
-          trigger: 'item',
-          formatter: '{a} <br/>{b}: {c} ({d}%)'
+          show:false,
         },
         legend: {
           orient: 'vertical',
           left: 10,
-          data: ['正常', '异常', '缺勤']
+          data: ['正常' + this.normal + '人', '异常' + this.error + '人']
         },
-        // 设置饼状图每个颜色块的颜色
-        // color : [ 'red', 'green', 'yellow' ],
         series: [
           {
             name: '上下班统计',
             type: 'pie',
-            radius: [50, 70],
-            avoidLabelOverlap: false,
+            hoverAnimation: false,
+            radius: ["60%", "47%"],
+            center: ["50%", "50%"],
             label: {
               show: false,
-              position: 'center'
+              textStyle:{color:'#3c4858',fontSize:"12"}
             },
-            emphasis: {
-              label: {
-                show: true,
-                fontSize: '30',
-                fontWeight: 'bold'
-              }
-            },
-            labelLine: {
-              show: false
+            labelLine:{
+              show: false,
             },
             data: this.recordDataList
           }
@@ -177,7 +178,7 @@ export default {
         const obj = {}
         const itemStyle = {}
         obj.value = 0
-        obj.name = '正常'
+        obj.name = '正常'+  0 + '人'
         itemStyle.color = '#67C23A'
         obj.itemStyle = itemStyle
         this.recordDataList.push(obj)
@@ -186,52 +187,59 @@ export default {
         const obj = {}
         const itemStyle = {}
         obj.value = 0
-        obj.name = '异常'
+        obj.name = '异常' + 0 + '人'
         itemStyle.color = '#F56C6C'
         obj.itemStyle = itemStyle
         this.recordDataList.push(obj)
       }
-      if (!this.inArray(recordDataList, '缺勤')){
-        const obj = {}
-        const itemStyle = {}
-        obj.value = 0
-        obj.name = '缺勤'
-        itemStyle.color = '#E6A23C'
-        obj.itemStyle = itemStyle
-        this.recordDataList.push(obj)
-      }
+      // if (!this.inArray(recordDataList, '缺勤')){
+      //   const obj = {}
+      //   const itemStyle = {}
+      //   obj.value = 0
+      //   obj.name = '缺勤'
+      //   itemStyle.color = '#E6A23C'
+      //   obj.itemStyle = itemStyle
+      //   this.recordDataList.push(obj)
+      // }
       // 绘制echarts
       this.drawLine()
     },
     // 获取上下班统计
     getData (){
       getRecordByDate(this.recordDate).then(res => {
-        // const employeeId = res.headers.userid
-        // console.log(employeeId)
-        const list = []
-        for (let item in res.data.data){
-          const obj = {}
-          const itemStyle = {}
-          if (res.data.data[item].status === '0'){
-            this.normal = res.data.data[item].count
-            res.data.data[item].status = '正常'
-            itemStyle.color = '#67C23A'
-          } else if (res.data.data[item].status === '2'){
-            this.error = res.data.data[item].count
-            res.data.data[item].status = '异常'
-            itemStyle.color = '#F56C6C'
-          } else {
-            this.absence = res.data.data[item].count
-            res.data.data[item].status = '缺勤'
-            itemStyle.color = '#E6A23C'
+        if (res.data.flag){
+          let data = res.data.data
+          this.late = data.late
+          this.leaveEarly = data.leaveEarly
+          this.absence = data.absence
+          this.normal = data.normal
+          this.error = data.error
+          const list = []
+          for (let key in data){
+            const obj = {}
+            const itemStyle = {}
+            if (key === 'normal'){
+              obj.value = data[key]
+              obj.name = '正常' + this.normal + '人'
+              itemStyle.color = '#67C23A'
+              obj.itemStyle = itemStyle
+              list.push(obj)
+            } else if (key === 'error'){
+              obj.value = data[key]
+              obj.name = '异常' + this.error + '人'
+              itemStyle.color = '#F56C6C'
+              obj.itemStyle = itemStyle
+              list.push(obj)
+            }
           }
-          obj.value = res.data.data[item].count
-          obj.name = res.data.data[item].status
-          obj.itemStyle = itemStyle
-          list.push(obj)
+          // let other =  0
+          // for (let index in list){
+          //   other += list[index].value;
+          // }
+          // list.push({value:other, name:'__other', itemStyle:{normal:{color:'rgba(0,0,0,0)'}}});
+          this.recordDataList = list
+          this.checkData(this.recordDataList)
         }
-        this.recordDataList = list
-        this.checkData(this.recordDataList)
       })
     },
     // 获取外出统计
@@ -243,7 +251,7 @@ export default {
     // 判断数组中的元素是否包含search
     inArray (array, search) {
       for (let i in array) {
-        if (array[i].name === search) {
+        if (array[i].name.split(search).length > 1) {
           return true
         }
       }
@@ -254,6 +262,8 @@ export default {
       this.normal = 0
       this.error = 0
       this.absence = 0
+      this.late = 0
+      this.leaveEarly = 0
       // 重新加载数据
       this.getData()
       this.getRecordOutData()

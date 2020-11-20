@@ -65,6 +65,17 @@ export default {
   components: {
     Calendar
   },
+
+  props : {
+    userId: {
+      type: String,
+      default: ''
+    },
+    checkDate: {
+      type: Date,
+      default : null
+    }
+  },
   mounted () {
     // 个人打卡详情
     this.getData()
@@ -88,6 +99,12 @@ export default {
      * 加载数据
      */
     getData () {
+      if (this.userId !== '' && this.userId != null){
+        this.employeeId = this.userId
+      }
+      if (this.checkDate !== '' && this.checkDate != null){
+        this.recordDate = this.checkDate
+      }
       recordDate(this.recordDate, this.employeeId).then(res => {
         // 获取当前日期 yyyy-MM-dd
         let cur = this.getNowDate()
