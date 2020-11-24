@@ -248,7 +248,7 @@ export default {
         }
       })
     },
-    formatDate(date) {
+    formatDate (date) {
       return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
     },
     // 获取外出统计

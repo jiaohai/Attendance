@@ -14,20 +14,27 @@
       <div class="statisticspiece">
         <span class="stcspan">上下班统计·人</span>
         <div class="cotentinfo">
-          <el-row>
+          <van-row>
             <div class="vol-data">
               <div id="myChart" :style="{width:'100%',height:'200px'}">
               </div>
             </div>
-          </el-row>
-          <el-row :gutter="20">
-            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>迟到: <span style="color: #F56C6C;font-weight: 700" @click="openDetail('1')">{{ifLate}}</span></el-col>
-            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>缺卡: <span style="color: #F56C6C;font-weight: 700" @click="openDetail('2')">{{ifAbsent}}</span></el-col>
-            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>早退: <span style="color: #F56C6C;font-weight: 700" @click="openDetail('3')">{{ifLeaveEarly}}</span></el-col>
-            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>正常: <span style="color: #67C23A;font-weight: 700" @click="openDetail('0')">{{normal}}</span></el-col>
-  <!--          <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>异常: <span style="color: #F56C6C;font-weight: 700">{{error}}</span></el-col>-->
-            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>缺勤: <span style="color: #E6A23C;font-weight: 700" @click="openDetail('4')">{{absence}}</span></el-col>
-          </el-row>
+          </van-row>
+<!--          <el-row :gutter="20">-->
+<!--            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>迟到: <span style="color: #F56C6C;font-weight: 700" @click="openDetail('1')">{{ifLate}}</span></el-col>-->
+<!--            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>缺卡: <span style="color: #F56C6C;font-weight: 700" @click="openDetail('2')">{{ifAbsent}}</span></el-col>-->
+<!--            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>早退: <span style="color: #F56C6C;font-weight: 700" @click="openDetail('3')">{{ifLeaveEarly}}</span></el-col>-->
+<!--            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>正常: <span style="color: #67C23A;font-weight: 700" @click="openDetail('0')">{{normal}}</span></el-col>-->
+<!--  &lt;!&ndash;          <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>异常: <span style="color: #F56C6C;font-weight: 700">{{error}}</span></el-col>&ndash;&gt;-->
+<!--            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>缺勤: <span style="color: #E6A23C;font-weight: 700" @click="openDetail('4')">{{absence}}</span></el-col>-->
+<!--          </el-row>-->
+          <van-row>
+            <van-col span="6" offset="2">迟到: <span style="color: #F56C6C;font-weight: 700" @click="openDetail('1')">{{ifLate}}</span></van-col>
+            <van-col span="6" offset="2">缺卡: <span style="color: #F56C6C;font-weight: 700" @click="openDetail('2')">{{ifAbsent}}</span></van-col>
+            <van-col span="6" offset="2">早退: <span style="color: #F56C6C;font-weight: 700" @click="openDetail('3')">{{ifLeaveEarly}}</span></van-col>
+<!--            <van-col span="6" offset="2">全勤: <span style="color: #67C23A;font-weight: 700" @click="openDetail('0')">{{normal}}</span></van-col>-->
+            <van-col span="6" offset="2">旷工: <span style="color: #F56C6C;font-weight: 700" @click="openDetail('4')">{{absence}}</span></van-col>
+          </van-row>
         </div>
       </div>
       <div class="statisticspiece" v-if="false">
@@ -49,7 +56,8 @@
 
 import recordDetail from './recordDetail'
 import monthesSlider from '../components/monthesSlider'
-import { getRecordCountByTime } from '../api/record/record'
+import { getRecordCountByTime,
+  getRecordCountByTimeForECharts} from '../api/record/record'
 
 export default {
   name: 'allreport',
@@ -69,7 +77,7 @@ export default {
     }
   },
   mounted (){
-    // this.getRecordCountByTimeForECharts()
+    this.getRecordCountByTimeForECharts()
     this.getRecordCountByTime()
   },
   components: {
@@ -77,9 +85,36 @@ export default {
     monthesSlider
   },
   methods: {
+    getRecordCountByTimeForECharts () {
+      getRecordCountByTimeForECharts(this.date).then(res => {
+        const list = []
+        const record = res.data.data
+        for (let item in record) {
+          const obj = {}
+          const itemStyle = {}
+          if (item === 'normal'){
+            itemStyle.color = '#67C23A'
+            obj.name = '全勤' + record[item] + '人'
+            obj.value = record[item]
+            obj.itemStyle = itemStyle
+            this.normal = record[item]
+          } else if (item === 'error'){
+            itemStyle.color = '#F56C6C'
+            obj.name = '异常' + record[item] + '人'
+            obj.value = record[item]
+            obj.itemStyle = itemStyle
+            this.error = record[item]
+          }
+          list.push(obj)
+        }
+        this.recordDataList = list
+        // 绘制echarts
+        this.drawLine()
+      })
+    },
     openDetail (status) {
       this.status = status
-      this.ifSHow = true
+      this.ifSHow = false
     },
     goBackThing () {
       window.history.go(-1)
@@ -89,13 +124,12 @@ export default {
       let myChart = this.$echarts.init(document.getElementById('myChart'))
       let option = {
         tooltip: {
-          trigger: 'item',
-          formatter: '{a} <br/>{b}: {c} ({d}%)'
+          show:false
         },
         legend: {
           orient: 'vertical',
           left: 10,
-          data: ['正常', '迟到', '旷工', '早退', '缺卡']
+          data: ['全勤' + this.normal + '人', '异常' + this.error + '人']
         },
         // 设置饼状图每个颜色块的颜色
         // color : [ 'red', 'green', 'yellow' ],
@@ -103,20 +137,14 @@ export default {
           {
             name: '上下班统计',
             type: 'pie',
-            radius: ['50', '70'],
-            avoidLabelOverlap: false,
+            hoverAnimation: false,
+            radius: ['60%', '47%'],
+            center: ['50%', '50%'],
             label: {
               show: false,
-              position: 'center'
+              textStyle:{color:'#3c4858', fontSize:'12'}
             },
-            emphasis: {
-              label: {
-                show: true,
-                fontSize: '30',
-                fontWeight: 'bold'
-              }
-            },
-            labelLine: {
+            labelLine:{
               show: false
             },
             data: this.recordDataList
@@ -126,61 +154,24 @@ export default {
       myChart.setOption(option)
     },
     getRecordCountByTime (){
-      //  这里测试用10月份的 this.date
       getRecordCountByTime(this.date).then(res => {
-        // debugger
-        const list = []
-        const record = res.data.data[0]
+        const record = res.data.data
         for (let item in record){
-          const obj = {}
-          const itemStyle = {}
           if (item === 'ifLeaveEarliy'){
-            itemStyle.color = '#F56C6C'
-            obj.name = '早退'
-            obj.value = record[item]
-            // obj.itemStyle = itemStyle
+            this.ifLeaveEarly = record[item].length
           } else if (item === 'normal'){
-            itemStyle.color = '#67C23A'
-            obj.name = '正常'
-            obj.value = record[item]
-            obj.itemStyle = itemStyle
+            this.normal = record[item].length
           } else if (item === 'absent'){
-            itemStyle.color = '#E6A23C'
-            obj.name = '旷工'
-            obj.value = record[item]
-            obj.itemStyle = itemStyle
+            this.absence = record[item].length
           } else if (item === 'lateCount'){
-            itemStyle.color = '#F56C6C'
-            obj.name = '迟到'
-            obj.value = record[item]
-            // obj.itemStyle = itemStyle
+            this.ifLate = record[item].length
           } else if (item === 'ifAbsence'){
-            itemStyle.color = '#F56C6C'
-            obj.name = '缺卡'
-            obj.value = record[item]
-            // obj.itemStyle = itemStyle
+            this.ifAbsent = record[item].length
           }
-          list.push(obj)
         }
-        this.ifLate = res.data.data[0].lateCount
-        this.ifAbsent = res.data.data[0].ifAbsence
-        this.ifLeaveEarly = res.data.data[0].ifLeaveEarliy
-        this.absence = res.data.data[0].absent
-        this.normal = res.data.data[0].normal
-        this.recordDataList = list
-        // 绘制echarts
-        this.drawLine()
       })
     },
 
-    // getRecordCountByTime (){
-    //   //  这里测试用10月份的 this.date
-    //   getRecordCountByTime(this.date).then(res => {
-    //     this.ifLate = res.data.data[0].lateCount
-    //     this.ifAbsent = res.data.data[0].ifAbsence
-    //     this.ifLeaveEarly = res.data.data[0].ifLeaveEarliy
-    //   })
-    // },
     checkData (recordDataList){
       if (!this.inArray(recordDataList, '0')){
         const obj = {}
@@ -224,6 +215,13 @@ export default {
     getSelectDate (msg) {
       console.log(msg)
       this.date = msg
+      this.normal = 0
+      this.error = 0
+      this.absence = 0
+      this.ifLate = 0
+      this.ifAbsent = 0
+      this.ifLeaveEarly = 0
+      this.getRecordCountByTimeForECharts()
       this.getRecordCountByTime()
     }
   }

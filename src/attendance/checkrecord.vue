@@ -8,7 +8,8 @@
       </div>
     </div>
     <hr style="margin-top: 0px; margin-bottom: 0px;"/>
-    <Calendar @transferDay="getSelectDate"></Calendar>
+<!--    <Calendar @transferDay="getSelectDate"></Calendar>-->
+    <new-calendar @selectDay="getSelectDate"></new-calendar>
     <div class="uncommonpiece" @click="goRule" v-if="ifShow">
       <div class="rulecotent">
         <span class="contentspan">上下班打卡</span>
@@ -41,6 +42,7 @@
 import Vue from 'vue'
 // import Calendar from 'vue-calendar-component'
 import Calendar from '../components/calendar'
+import newCalendar from "../components/newcalendar";
 
 import { recordDate,
   findById } from '../api/record/checkRecord'
@@ -63,7 +65,8 @@ export default {
     }
   },
   components: {
-    Calendar
+    Calendar,
+    newCalendar
   },
 
   props : {
@@ -113,7 +116,7 @@ export default {
       if (this.checkDate !== '' && this.checkDate != null){
         this.recordDate = this.checkDate
       }
-      recordDate(this.recordDate, this.employeeId).then(res => {
+      recordDate(this.recordDate, 'liyuanyuan'/*this.employeeId*/).then(res => {
         // 获取当前日期 yyyy-MM-dd
         let cur = this.getNowDate()
         let curSencond = this.getNowDateSecond()
@@ -198,7 +201,11 @@ export default {
             if ((record[item].reachRecord == null || record[item].reachRecord === '') || (record[item].leaveRecord == null || record[item].leaveRecord === '')){
               this.worktime = '-'
             } else {
-              workTimeCount = workTimeCount + parseInt((Date.parse(cur + ' ' + record[item].leaveRecord + ':00') - Date.parse(cur + ' ' + record[item].reachRecord + ':00')) / parseInt(1000 * 3600))
+              let end = cur + ' ' + record[item].leaveRecord + ':00'
+              let start = cur + ' ' + record[item].reachRecord + ':00'
+              let newEnd = end.replace(reg,'/')
+              let newStart = start.replace(reg,'/')
+              workTimeCount = parseInt((Date.parse(newEnd) - Date.parse(newStart)) / parseInt(1000 * 3600))
               this.worktime = workTimeCount + '小时'
             }
           }
@@ -270,7 +277,7 @@ export default {
       this.$router.push('/singlereport')
     },
     getSelectDate (msg) {
-      this.recordDate = msg.date
+      this.recordDate = msg
       // 重新加载数据
       this.getData()
     }

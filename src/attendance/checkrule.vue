@@ -166,7 +166,6 @@ export default {
       let employeeId = sessionStorage.getItem('userId')
       this.checkUser(employeeId)
       findRuleInfoByRuleId(this.$cookieStore.getCookie('ruleId')).then(res => {
-        // debugger
         console.log(res.data.data)
         // 回填数据
         let this_ = this

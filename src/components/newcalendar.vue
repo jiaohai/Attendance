@@ -20,7 +20,7 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       date: '',
       show: false,
@@ -30,21 +30,21 @@ export default {
       yearAndMonth: '',
       lastDayThisMonth: '1971/07/01',
       firstDayThisMonth: '1971/07/30'
-    };
+    }
   },
-  mounted() {
+  mounted () {
     this.year = new Date().getFullYear()
     this.month = new Date().getMonth() + 1
     this.yearAndMonth = this.year + '年' + this.month + '月'
     this.getFirstAndLastDayThisMonth()
   },
   methods: {
-    formatDate(date) {
+    formatDate (date) {
       return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
     },
     selectDay (item) {
       let date = this.formatDate(item)
-      if (date == null || typeof(date)=='undefined'){
+      if (date == null || typeof (date) === 'undefined'){
         this.$message.error('invalid date')
       } else {
         let split = '-'
@@ -62,7 +62,7 @@ export default {
         this.$emit('selectDay', this.date)
       }
     },
-    onClickLeft() {
+    onClickLeft () {
       if (this.month === 1){
         this.month = 12
         this.year = this.year - 1
@@ -71,10 +71,10 @@ export default {
       }
       let date = new Date()
       date.setFullYear(this.year)
-      date.setMonth(this.month-1)
+      date.setMonth(this.month - 1)
       this.getFirstAndLastDayThisMonth(date)
     },
-    onClickRight() {
+    onClickRight () {
       if (this.month === 12){
         this.month = 1
         this.year = this.year + 1
@@ -83,20 +83,20 @@ export default {
       }
       let date = new Date()
       date.setFullYear(this.year)
-      date.setMonth(this.month-1)
+      date.setMonth(this.month - 1)
       this.getFirstAndLastDayThisMonth(date)
     },
 
     getFirstAndLastDayThisMonth (date) {
-      if (date == null || typeof(date)=='undefined'){
+      if (date == null || typeof (date) === 'undefined'){
         date = new Date()
       }
-      let currentMonth=date.getMonth()
-      let nextMonth=++currentMonth
-      let nextMonthFirstDay=new Date(date.getFullYear(),nextMonth,1)
-      let oneDay=1000*60*60*24
-      let lastTime = new Date(nextMonthFirstDay-oneDay)
-      let month = parseInt(lastTime.getMonth()+1)
+      let currentMonth = date.getMonth()
+      let nextMonth = ++currentMonth
+      let nextMonthFirstDay = new Date(date.getFullYear(), nextMonth, 1)
+      let oneDay = 1000 * 60 * 60 * 24
+      let lastTime = new Date(nextMonthFirstDay - oneDay)
+      let month = parseInt(lastTime.getMonth() + 1)
       this.year = date.getFullYear()
       this.month = month
       let day = lastTime.getDate()
@@ -113,7 +113,6 @@ export default {
   }
 }
 </script>
-
 
 <style scoped>
   /deep/ .van-calendar__selected-day {
