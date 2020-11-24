@@ -25,9 +25,9 @@
             <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>迟到: <span style="color: #F56C6C;font-weight: 700">{{ifLate}}</span></el-col>
             <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>缺卡: <span style="color: #F56C6C;font-weight: 700">{{ifAbsent}}</span></el-col>
             <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>早退: <span style="color: #F56C6C;font-weight: 700">{{ifLeaveEarly}}</span></el-col>
-            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>正常: <span style="color: #67C23A;font-weight: 700">{{normal}}</span></el-col>
+<!--            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>正常: <span style="color: #67C23A;font-weight: 700">{{normal}}</span></el-col>-->
   <!--          <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>异常: <span style="color: #F56C6C;font-weight: 700">{{error}}</span></el-col>-->
-            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>缺勤: <span style="color: #E6A23C;font-weight: 700">{{absence}}</span></el-col>
+            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>旷工: <span style="color: #E6A23C;font-weight: 700">{{absence}}</span></el-col>
           </el-row>
         </div>
       </div>
@@ -81,32 +81,25 @@ export default {
       let myChart = this.$echarts.init(document.getElementById('myChart'))
       let option = {
         tooltip: {
-          trigger: 'item',
-          formatter: '{a} <br/>{b}: {c} ({d}%)'
+          show:false
         },
         legend: {
           orient: 'vertical',
           left: 10,
-          data: ['正常', '迟到', '旷工', '缺卡', '早退']
+          data: ['正常' + this.normal + '天', '异常' + this.error + '天' ]
         },
         series: [
           {
             name: '上下班统计',
             type: 'pie',
-            radius: ['50', '70'],
-            avoidLabelOverlap: false,
+            hoverAnimation: false,
+            radius: ['60%', '47%'],
+            center: ['50%', '50%'],
             label: {
               show: false,
-              position: 'center'
+              textStyle:{color:'#3c4858', fontSize:'12'}
             },
-            emphasis: {
-              label: {
-                show: true,
-                fontSize: '30',
-                fontWeight: 'bold'
-              }
-            },
-            labelLine: {
+            labelLine:{
               show: false
             },
             data: this.recordDataList
@@ -116,41 +109,44 @@ export default {
       myChart.setOption(option)
     },
     getData () {
-      count(this.date, this.employeeId).then(res => {
+      count(this.date, 'liyuanyuan'/*this.employeeId*/).then(res => {
         const list = []
         const record = res.data.data.record
+        const single = res.data.data.single
         for (let item in record){
           const obj = {}
-          const itemStyle = {}
           obj.name = record[item]
           if (item === 'leaveEarliy'){
-            itemStyle.color = '#F56C6C'
-            obj.name = '早退'
-            obj.value = record[item]
+            this.ifLeaveEarly = record[item]
           } else if (item === 'normol'){
-            itemStyle.color = '#67C23A'
-            obj.name = '正常'
-            obj.value = record[item]
+            this.normal = record[item]
           } else if (item === 'absenceAll'){
-            itemStyle.color = '#E6A23C'
-            obj.name = '旷工'
-            obj.value = record[item]
+            this.absence = record[item]
           } else if (item === 'late'){
-            itemStyle.color = '#F56C6C'
-            obj.name = '迟到'
-            obj.value = record[item]
+            this.ifLate = record[item]
           } else if (item === 'absence'){
+            this.ifAbsent = record[item]
+          }
+        }
+
+        for (let item in single){
+          const obj = {}
+          const itemStyle = {}
+          if (item === 'error'){
             itemStyle.color = '#F56C6C'
-            obj.name = '缺卡'
-            obj.value = record[item]
+            obj.name = '异常' + single[item] + '天'
+            obj.value = single[item]
+            obj.itemStyle = itemStyle
+            this.error = single[item]
+          } else if (item === 'normal'){
+            itemStyle.color = '#67C23A'
+            obj.name = '正常'+ single[item] + '天'
+            obj.value = single[item]
+            obj.itemStyle = itemStyle
+            this.normal = single[item]
           }
           list.push(obj)
         }
-        this.ifLate = res.data.data.record.late
-        this.ifAbsent = res.data.data.record.absence
-        this.ifLeaveEarly = res.data.data.record.leaveEarliy
-        this.absence = res.data.data.record.absenceAll
-        this.normal = res.data.data.record.normol
         this.recordDataList = list
         this.drawLine()
       })
