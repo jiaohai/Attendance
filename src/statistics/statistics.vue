@@ -9,7 +9,8 @@
     </div>
     <hr style="margin-top: 0px; margin-bottom: 0px;"/>
     <div class="contentbody">
-      <Calendar @transferDay="getSelectDate"></Calendar>
+<!--      <Calendar @transferDay="getSelectDate"></Calendar>-->
+      <new-calendar @selectDay="getSelectDate"></new-calendar>
       <div class="statisticspiece">
         <span class="stcspan">上下班统计</span>
         <div class="cotentinfo">
@@ -70,7 +71,10 @@
 </template>
 
 <script>
+
 import Calendar from '../components/calendar'
+import newCalendar from '../components/newcalendar'
+
 import {
   getRecordByDate,
   getRecordOutByTime
@@ -90,7 +94,7 @@ export default {
       normal: 0,
       error: 0,
       absence: 0,
-      recordDate: new Date(),
+      recordDate: '',
       recordDataList: [],
       statusArr: ['正常', '异常', '缺勤'],
       items:[
@@ -107,9 +111,11 @@ export default {
     }
   },
   components: {
-    Calendar
+    Calendar,
+    newCalendar
   },
   mounted () {
+    this.recordDate = this.formatDate(new Date())
     this.getData()
     this.getRecordOutData()
   },
@@ -242,6 +248,9 @@ export default {
         }
       })
     },
+    formatDate(date) {
+      return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+    },
     // 获取外出统计
     getRecordOutData (){
       getRecordOutByTime(this.recordDate).then(res => {
@@ -258,7 +267,7 @@ export default {
       return false
     },
     getSelectDate (msg) {
-      this.recordDate = msg.date
+      this.recordDate = msg
       this.normal = 0
       this.error = 0
       this.absence = 0
