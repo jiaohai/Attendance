@@ -109,7 +109,7 @@ export default {
       myChart.setOption(option)
     },
     getData () {
-      count(this.date, 'liyuanyuan'/*this.employeeId*/).then(res => {
+      count(this.date, this.employeeId).then(res => {
         const list = []
         const record = res.data.data.record
         const single = res.data.data.single

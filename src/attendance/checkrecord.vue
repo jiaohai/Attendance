@@ -116,7 +116,7 @@ export default {
       if (this.checkDate !== '' && this.checkDate != null){
         this.recordDate = this.checkDate
       }
-      recordDate(this.recordDate, 'liyuanyuan'/*this.employeeId*/).then(res => {
+      recordDate(this.recordDate, this.employeeId).then(res => {
         // 获取当前日期 yyyy-MM-dd
         let cur = this.getNowDate()
         let curSencond = this.getNowDateSecond()
