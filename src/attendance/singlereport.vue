@@ -4,7 +4,7 @@
       <div class="title" style="align-items:center;">{{ msg }}</div>
       <div class="opete" style="align-items:center;">
         <!-- <button @click="goSingleReport" >月报</button> -->
-        <button @click="goBackThing" >返回</button>
+        <button @click="goBackThing">返回</button>
       </div>
     </div>
     <hr style="margin-top: 0px; margin-bottom: 0px;"/>
@@ -22,12 +22,20 @@
             </div>
           </el-row>
           <el-row :gutter="20">
-            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>迟到: <span style="color: #F56C6C;font-weight: 700">{{ifLate}}</span></el-col>
-            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>缺卡: <span style="color: #F56C6C;font-weight: 700">{{ifAbsent}}</span></el-col>
-            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>早退: <span style="color: #F56C6C;font-weight: 700">{{ifLeaveEarly}}</span></el-col>
-<!--            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>正常: <span style="color: #67C23A;font-weight: 700">{{normal}}</span></el-col>-->
-  <!--          <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>异常: <span style="color: #F56C6C;font-weight: 700">{{error}}</span></el-col>-->
-            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>旷工: <span style="color: #E6A23C;font-weight: 700">{{absence}}</span></el-col>
+            <el-col :span="6" :offset="2">
+              <div class="grid-content bg-purple"></div>
+              迟到: <span style="color: #F56C6C;font-weight: 700">{{ ifLate }}</span></el-col>
+            <el-col :span="6" :offset="2">
+              <div class="grid-content bg-purple"></div>
+              缺卡: <span style="color: #F56C6C;font-weight: 700">{{ ifAbsent }}</span></el-col>
+            <el-col :span="6" :offset="2">
+              <div class="grid-content bg-purple"></div>
+              早退: <span style="color: #F56C6C;font-weight: 700">{{ ifLeaveEarly }}</span></el-col>
+            <!--            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>正常: <span style="color: #67C23A;font-weight: 700">{{normal}}</span></el-col>-->
+            <!--          <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>异常: <span style="color: #F56C6C;font-weight: 700">{{error}}</span></el-col>-->
+            <el-col :span="6" :offset="2">
+              <div class="grid-content bg-purple"></div>
+              旷工: <span style="color: #E6A23C;font-weight: 700">{{ absence }}</span></el-col>
           </el-row>
         </div>
       </div>
@@ -49,7 +57,7 @@
 
 import monthesSlider from '../components/monthesSlider'
 
-import { count } from '../api/record/checkRecord'
+import {count} from '../api/record/checkRecord'
 
 export default {
   name: 'singlereport',
@@ -76,17 +84,17 @@ export default {
     this.getData()
   },
   methods: {
-    drawLine (){
+    drawLine () {
       console.log(this.recordDataList)
       let myChart = this.$echarts.init(document.getElementById('myChart'))
       let option = {
         tooltip: {
-          show:false
+          show: false
         },
         legend: {
           orient: 'vertical',
           left: 10,
-          data: ['正常' + this.normal + '天', '异常' + this.error + '天' ]
+          data: ['正常' + this.normal + '天', '异常' + this.error + '天']
         },
         series: [
           {
@@ -97,9 +105,9 @@ export default {
             center: ['50%', '50%'],
             label: {
               show: false,
-              textStyle:{color:'#3c4858', fontSize:'12'}
+              textStyle: {color: '#3c4858', fontSize: '12'}
             },
-            labelLine:{
+            labelLine: {
               show: false
             },
             data: this.recordDataList
@@ -113,34 +121,34 @@ export default {
         const list = []
         const record = res.data.data.record
         const single = res.data.data.single
-        for (let item in record){
+        for (let item in record) {
           const obj = {}
           obj.name = record[item]
-          if (item === 'leaveEarliy'){
+          if (item === 'leaveEarliy') {
             this.ifLeaveEarly = record[item]
-          } else if (item === 'normol'){
+          } else if (item === 'normol') {
             this.normal = record[item]
-          } else if (item === 'absenceAll'){
+          } else if (item === 'absenceAll') {
             this.absence = record[item]
-          } else if (item === 'late'){
+          } else if (item === 'late') {
             this.ifLate = record[item]
-          } else if (item === 'absence'){
+          } else if (item === 'absence') {
             this.ifAbsent = record[item]
           }
         }
 
-        for (let item in single){
+        for (let item in single) {
           const obj = {}
           const itemStyle = {}
-          if (item === 'error'){
+          if (item === 'error') {
             itemStyle.color = '#F56C6C'
             obj.name = '异常' + single[item] + '天'
             obj.value = single[item]
             obj.itemStyle = itemStyle
             this.error = single[item]
-          } else if (item === 'normal'){
+          } else if (item === 'normal') {
             itemStyle.color = '#67C23A'
-            obj.name = '正常'+ single[item] + '天'
+            obj.name = '正常' + single[item] + '天'
             obj.value = single[item]
             obj.itemStyle = itemStyle
             this.normal = single[item]
@@ -187,44 +195,46 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  .monthheading {
-    display: inline-flex;
-    width:100%;
-    height:45px;
-    background:inherit;
-    background-color:rgb(26, 138, 190);
-    box-sizing:border-box;
-    border-width:1px;
-    text-align: center;
-  }
+.monthheading {
+  display: inline-flex;
+  width: 100%;
+  height: 45px;
+  background: inherit;
+  background-color: rgb(26, 138, 190);
+  box-sizing: border-box;
+  border-width: 1px;
+  text-align: center;
+}
 
-  .contentbody{
-    height: calc(100% - 109px);
-    overflow-y: scroll;
-    overflow-x: hidden;
-  }
+.contentbody {
+  height: calc(100% - 109px);
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
 
-  ::-webkit-scrollbar {
-    height: 0;
-    width: 0;
-  }
+::-webkit-scrollbar {
+  height: 0;
+  width: 0;
+}
 
-  .statisticspiece{
-    display:inline-grid;
-    width: 98%;
-    margin:auto;
-    margin-top:10px;
-    text-align:left;
-    background-color: white;
-  }
-  .cotentinfo{
-    margin-top: 10px;
-    margin-bottom: 10px;
-    width: 100%;
-    min-height: 100px;
-  }
-  .stcspan{
-    margin-left: 20px;
-    margin-top: 10px;
-  }
+.statisticspiece {
+  display: inline-grid;
+  width: 98%;
+  margin: auto;
+  margin-top: 10px;
+  text-align: left;
+  background-color: white;
+}
+
+.cotentinfo {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 100%;
+  min-height: 100px;
+}
+
+.stcspan {
+  margin-left: 20px;
+  margin-top: 10px;
+}
 </style>
