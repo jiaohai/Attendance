@@ -103,7 +103,14 @@ export default {
       findById(id).then(res => {
         let rule = res.data.data
         this.checkrule = rule.name
+        this.ruleType = rule.type
         this.$cookieStore.setCookie('ruleId', rule.id)
+        // 这里不知道为什么全局变量设置不进去 偏方
+        if (rule.type === '自由上下班'){
+          this.$cookieStore.setCookie('ruleType', '1')
+        } else {
+          this.$cookieStore.setCookie('ruleType', '2')
+        }
       })
     },
     /**
@@ -121,7 +128,6 @@ export default {
         let cur = this.getNowDate()
         let curSencond = this.getNowDateSecond()
         let reg = new RegExp('-', 'g')
-        console.log(res.data.data)
         // 每次加载数据前清空
         this.activities = []
         const record = res.data.data.Record
@@ -133,6 +139,8 @@ export default {
         } else {
           this.ifShow = false
         }
+        debugger
+        let ruleType = this.$cookieStore.getCookie('ruleType')
         for (let item in record){
           const arr = []
           const obj = {}
@@ -140,9 +148,25 @@ export default {
           let workTimeCount = 0
           obj.timestamp = record[item].startTime
           obj1.timestamp = record[item].endTime
-          // let o1 = Date.parse(cur.replace(reg, '/'))
-          // let o2 = Date.parse((record[item].createTime).replace(reg, '/'))
-          if (Date.parse(cur.replace(reg, '/')) < Date.parse((record[item].createTime).replace(reg, '/'))){
+          if (ruleType === '1'){
+            if (record[item].reachRecord !== null && record[item].reachRecord !== ''){
+              obj.content = '<b>上班</b><br/>上班打卡(' + record[item].reachRecord + ')'
+            } else {
+              obj.content = '<b style="color: #a5a5a5">上班</b>'
+            }
+            if (record[item].leaveRecord !== null && record[item].leaveRecord !== ''){
+              obj1.content = '<b>下班</b><br/>下班打卡(' + record[item].leaveRecord + ')'
+            } else {
+              obj1.content = '<b style="color: #a5a5a5">下班</b>'
+            }
+            if ((record[item].reachRecord !== null && record[item].reachRecord !== '') && (record[item].leaveRecord !== null && record[item].leaveRecord !== '')){
+              workTimeCount = workTimeCount + parseInt((Date.parse(cur + ' ' + record[item].leaveRecord + ':00') - Date.parse(cur + ' ' + record[item].reachRecord + ':00')) / parseInt(1000 * 3600))
+              this.worktime = workTimeCount + '小时'
+            } else {
+              this.worktime = '-'
+            }
+          } else {
+            if (Date.parse(cur.replace(reg, '/')) < Date.parse((record[item].createTime).replace(reg, '/'))){
             obj.content = '<b style="color: #a5a5a5">上班</b>'
             obj1.content = '<b style="color: #a5a5a5">下班</b>'
             this.worktime = '-'
@@ -208,8 +232,7 @@ export default {
               workTimeCount = parseInt((Date.parse(newEnd) - Date.parse(newStart)) / parseInt(1000 * 3600))
               this.worktime = workTimeCount + '小时'
             }
-          }
-
+          }}
           arr.push(obj)
           arr.push(obj1)
           this.activities.push(arr)
