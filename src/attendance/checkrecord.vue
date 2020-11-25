@@ -174,7 +174,11 @@ export default {
             obj1.content = '<b style="color: #a5a5a5">下班</b>'
           }
           if ((record[item].reachRecord !== null && record[item].reachRecord !== '') && (record[item].leaveRecord !== null && record[item].leaveRecord !== '')) {
-            workTimeCount = workTimeCount + parseInt((Date.parse(cur + ' ' + record[item].leaveRecord + ':00') - Date.parse(cur + ' ' + record[item].reachRecord + ':00')) / parseInt(1000 * 3600))
+            let end = cur + ' ' + record[item].leaveRecord + ':00'
+            let start = cur + ' ' + record[item].reachRecord + ':00'
+            let newEnd = end.replace(reg, '/')
+            let newStart = start.replace(reg, '/')
+            workTimeCount = parseInt((Date.parse(newEnd) - Date.parse(newStart)) / parseInt(1000 * 3600))
             this.worktime = workTimeCount + '小时'
           } else {
             this.worktime = '-'
@@ -204,7 +208,11 @@ export default {
             if ((record[item].reachRecord == null || record[item].reachRecord === '') || (record[item].leaveRecord == null || record[item].leaveRecord === '')) {
               this.worktime = '-'
             } else {
-              workTimeCount = workTimeCount + parseInt((Date.parse(cur + ' ' + record[item].leaveRecord + ':00') - Date.parse(cur + ' ' + record[item].reachRecord + ':00')) / parseInt(1000 * 3600))
+              let end = cur + ' ' + record[item].leaveRecord + ':00'
+              let start = cur + ' ' + record[item].reachRecord + ':00'
+              let newEnd = end.replace(reg, '/')
+              let newStart = start.replace(reg, '/')
+              workTimeCount = parseInt((Date.parse(newEnd) - Date.parse(newStart)) / parseInt(1000 * 3600))
               this.worktime = workTimeCount + '小时'
             }
           } else {
