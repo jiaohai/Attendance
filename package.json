@@ -14,14 +14,15 @@
     "axios": "^0.20.0",
     "echarts": "^4.9.0",
     "element-ui": "^2.13.2",
-    "vant": "^2.11.0",
     "font-awesome": "^4.7.0",
     "mobile-detect": "^1.4.4",
     "moment": "^2.22.2",
+    "vant": "^2.11.0",
     "vue": "^2.5.2",
     "vue-js-modal": "^2.0.0-rc.6",
     "vue-router": "^3.0.1",
-    "vue-touch": "^2.0.0-beta.4"
+    "vue-touch": "^2.0.0-beta.4",
+    "vuex": "^3.6.0"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

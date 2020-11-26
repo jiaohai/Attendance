@@ -5,6 +5,7 @@ import App from './App'
 import router from './router'
 import VueTouch from 'vue-touch'
 import Axios from 'axios'
+import store from '@/store'
 import 'font-awesome/css/font-awesome.css'
 import '../static/jquery-1.11.1/jquery.min.js'
 import '../static/styles/basic.css'
@@ -31,6 +32,7 @@ Vue.prototype.$axios = Axios
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
+  store,
   router,
   components: { App },
   template: '<App/>'

@@ -180,6 +180,9 @@ export default {
     }
   },
   created: async function () {
+    sessionStorage.setItem('userId', 'liulixi')
+    sessionStorage.setItem('authority', 5)
+
     if (this.$route.query.userId && this.$route.query.authority) {
       sessionStorage.setItem('userId', this.$route.query.userId)
       sessionStorage.setItem('authority', this.$route.query.authority)
@@ -385,6 +388,9 @@ export default {
               var longitude = res.longitude // 经度，浮点数，范围为180 ~ -180。
               // var speed = res.speed // 速度，以米/每秒计
               // var accuracy = res.accuracy // 位置精度
+
+              this.$store.commit('setPosition',latitude,longtitude)
+
               _this.showMapImg = 'https://apis.map.qq.com/ws/staticmap/v2/?center=' + latitude + ',' + longitude + '&zoom=18&size=500*300&maptype=roadmap&scale=2&markers=size:large|color:red|' + latitude + ',' + longitude + '&key=5YSBZ-W75KG-VLGQC-I24FQ-GT4A7-O4FBE'
               _this.loading = false
               _this.$axios.get('/rule/attendance/', { params: {
@@ -547,131 +553,131 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  .manner {
-    display: flex;
-    height: 35px;
-  }
-  .check {
-    width: 100%;
-    height: 100%;
-  }
+.manner {
+  display: flex;
+  height: 35px;
+}
+.check {
+  width: 100%;
+  height: 100%;
+}
 
-  .attendance{
-    height:100%;
-  }
-  .miding{
-    height: calc(100% - 40px);
-    padding-bottom:40px;
-    background-color:rgb(245, 245, 245);
-  }
-  .operate{
-    height: calc(98% - 35px);
-    margin: 2%;
-    background-color: white;
-  }
+.attendance {
+  height: 100%;
+}
+.miding {
+  height: calc(100% - 40px);
+  padding-bottom: 40px;
+  background-color: rgb(245, 245, 245);
+}
+.operate {
+  height: calc(98% - 35px);
+  margin: 2%;
+  background-color: white;
+}
 
-  .selectpart{
-    position: fixed;
-    z-index:2;
-    width:100%;
-    height:100%;
-    top:0;
-    right:0;
-  }
-  .cover{
-    position: fixed;
-    width:100%;
-    height: 100%;
-    background:#000;
-    opacity: 0;
-  }
-  .selectlist{
-    position: absolute;
-    z-index:100;
-    top:60px;
-    right:15px;
-    background:rgb(26, 138, 190);
-    border-radius:5px;
-  }
-  ul{
-    padding-left: 10px;
-    padding-right: 10px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-  }
-  .menu_li{
-    color: black;
-    display: flex;
-    text-decoration: blink;
-  }
-  .selectext{
-    /*padding-left: 5px;*/
-    /*padding-bottom: 5px;*/
-  }
+.selectpart {
+  position: fixed;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  right: 0;
+}
+.cover {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  opacity: 0;
+}
+.selectlist {
+  position: absolute;
+  z-index: 100;
+  top: 60px;
+  right: 15px;
+  background: rgb(26, 138, 190);
+  border-radius: 5px;
+}
+ul {
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.menu_li {
+  color: black;
+  display: flex;
+  text-decoration: blink;
+}
+.selectext {
+  /*padding-left: 5px;*/
+  /*padding-bottom: 5px;*/
+}
 
-  .showmpa{
-    width:100%;
-    height:40%;
-    background-color:rgb(231, 221, 226);
-  }
-  .checkbutton{
-    width:100%;
-    height:30%;
-    display: inline-grid;
-  }
-  .buttonline{
-    /* float: left; */
-    /* font: 14px/10px Arial, Verdana, sans-serif; */
-    color: #FFF;
-    background-color: #06b11c;
-    width: 30vw;
-    height: 30vw;
-    /* padding: 10px; */
-    margin: auto;
-    /* -webkit-border-radius: 60px; */
-    /* -moz-border-radius: 60px; */
-    border-radius: 50%;
-  }
-  .workbutton{
-    color: black;
-    width: 84%;
-    height: 84%;
-    padding: 0px;
-    margin: 8%;
-    text-align: center;
-    -webkit-border-radius: 60px;
-    -moz-border-radius: 60px;
-    border-radius: 50%;
-    font-size: 14px;
-    font-weight: bold;
-  }
-  .massege{
-    width:100%;
-    height: 15%;
-  }
-  .record{
-    width:100%;
-    height: 5%;
-  }
+.showmpa {
+  width: 100%;
+  height: 40%;
+  background-color: rgb(231, 221, 226);
+}
+.checkbutton {
+  width: 100%;
+  height: 30%;
+  display: inline-grid;
+}
+.buttonline {
+  /* float: left; */
+  /* font: 14px/10px Arial, Verdana, sans-serif; */
+  color: #fff;
+  background-color: #06b11c;
+  width: 30vw;
+  height: 30vw;
+  /* padding: 10px; */
+  margin: auto;
+  /* -webkit-border-radius: 60px; */
+  /* -moz-border-radius: 60px; */
+  border-radius: 50%;
+}
+.workbutton {
+  color: black;
+  width: 84%;
+  height: 84%;
+  padding: 0px;
+  margin: 8%;
+  text-align: center;
+  -webkit-border-radius: 60px;
+  -moz-border-radius: 60px;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: bold;
+}
+.massege {
+  width: 100%;
+  height: 15%;
+}
+.record {
+  width: 100%;
+  height: 5%;
+}
 
-  .el-message-box{
-    max-width: 50%;
-  }
+.el-message-box {
+  max-width: 50%;
+}
 
-  .map{
-    width: 100%;
-    height: 100%;
-  }
+.map {
+  width: 100%;
+  height: 100%;
+}
 
-  /deep/ .el-divider {
-    background-color: #DCDFE6;
-    position: relative;
-  }
+/deep/ .el-divider {
+  background-color: #dcdfe6;
+  position: relative;
+}
 
-  /deep/ .el-divider--horizontal {
-    display: block;
-    height: 1px;
-    width: 50%;
-    margin: 24px 200px;
-  }
+/deep/ .el-divider--horizontal {
+  display: block;
+  height: 1px;
+  width: 50%;
+  margin: 24px 200px;
+}
 </style>

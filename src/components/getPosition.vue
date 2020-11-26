@@ -32,7 +32,7 @@
       <hr style="margin-top: 0px"/>
       <div class="optioncont" v-if="editPlace">
         <iframe id="mapPage" width="100%" height="100%" frameborder=0
-          src="https://apis.map.qq.com/tools/locpicker?search=1&type=1&key=5YSBZ-W75KG-VLGQC-I24FQ-GT4A7-O4FBE&referer=myapp">
+          src="https://apis.map.qq.com/tools/locpicker?search=1&type=1&key=5YSBZ-W75KG-VLGQC-I24FQ-GT4A7-O4FBE&referer=myapp&coord=" + {{this.$store.coord}}>
         </iframe>
       </div>
       <div class="bottoming" v-if="editPlace">
