@@ -510,7 +510,7 @@ export default {
         }
         this.places = this.ruleData.places
       } else {
-        this.$axios.get('/rule/findRuleInfo/' + ruleInfo.id).then(res => {
+        this.$axios.get('/wxkq/rule/findRuleInfo/' + ruleInfo.id).then(res => {
           if (res.data.flag) {
             console.log(res.data.data)
             this.ruleData = res.data.data
@@ -625,7 +625,7 @@ export default {
       console.log(this.ruleData)
       if (this.ruleData.id) {
         console.log('update rule')
-        this.$axios.put('/rule/update/', this.ruleData).then(res => {
+        this.$axios.put('/wxkq/rule/update/', this.ruleData).then(res => {
           if (res.data.flag) {
             this.openMsg('修改成功！')
             this.$router.push('/rule')
@@ -638,7 +638,7 @@ export default {
         })
       } else {
         console.log('create rule')
-        this.$axios.post('/rule/add/', this.ruleData).then(res => {
+        this.$axios.post('/wxkq/rule/add/', this.ruleData).then(res => {
           if (res.data.flag) {
             this.openMsg('创建成功！')
             this.$router.push('/rule')
@@ -659,7 +659,7 @@ export default {
       }).catch(err => err)
       if (confirmResult === 'confirm'){
         console.log('delete rule')
-        this.$axios.delete('/rule/delete/' + this.ruleData.id).then(res => {
+        this.$axios.delete('/wxkq/rule/delete/' + this.ruleData.id).then(res => {
           if (res.data.flag) {
             this.openMsg('删除成功！')
             this.$router.push('/rule')

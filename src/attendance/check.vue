@@ -180,8 +180,8 @@ export default {
     }
   },
   created: async function () {
-    sessionStorage.setItem('userId', 'liulixi')
-    sessionStorage.setItem('authority', 5)
+    // sessionStorage.setItem('userId', 'liulixi')
+    // sessionStorage.setItem('authority', 5)
 
     if (this.$route.query.userId && this.$route.query.authority) {
       sessionStorage.setItem('userId', this.$route.query.userId)
@@ -193,7 +193,7 @@ export default {
     if (sessionStorage.getItem('userId') === null) {
       // this.openMsg('获取身份')
       try {
-        let res = await this.$axios.get('/user/login/authorize/login?code=' + this.$route.query.code + '&state=' + this.$route.query.state)
+        let res = await this.$axios.get('/wxkq/user/login/authorize/login?code=' + this.$route.query.code + '&state=' + this.$route.query.state)
         if (res.data.flag) {
           sessionStorage.setItem('userId', res.data.data.userId)
           sessionStorage.setItem('authority', res.data.data.authority)
@@ -216,7 +216,7 @@ export default {
   },
   methods: {
     async testCheckInfo () {
-      this.$axios.get('/rule/attendance/', { params: {
+      this.$axios.get('/wxkq/rule/attendance/', { params: {
         employeeId: this.userId
       }}).then(res => {
         if (res.data.flag) {
@@ -298,7 +298,7 @@ export default {
         this.userId = localStorage.getItem('userId')
       }
       try {
-        let res = await this.$axios.get('/rule/attendance/', {
+        let res = await this.$axios.get('/wxkq/rule/attendance/', {
           params: {
             employeeId: this.userId
           }
@@ -360,7 +360,7 @@ export default {
     getSignKey () {
       /* eslint-disable*/
       var _this = this
-      this.$axios.get('/user/ticket/getSign/', {params: {
+      this.$axios.get('/wxkq/user/ticket/getSign/', {params: {
         url: window.location.href
       }}).then(res => {
         if (res.data.flag) {
@@ -393,7 +393,7 @@ export default {
 
               _this.showMapImg = 'https://apis.map.qq.com/ws/staticmap/v2/?center=' + latitude + ',' + longitude + '&zoom=18&size=500*300&maptype=roadmap&scale=2&markers=size:large|color:red|' + latitude + ',' + longitude + '&key=5YSBZ-W75KG-VLGQC-I24FQ-GT4A7-O4FBE'
               _this.loading = false
-              _this.$axios.get('/rule/attendance/', { params: {
+              _this.$axios.get('/wxkq/rule/attendance/', { params: {
                 employeeId: _this.userId
               }}).then(userres => {
                 if (userres.data.flag) {
@@ -469,7 +469,7 @@ export default {
       this.clocking = true
       var nowTime = moment().format('YYYY-MM-DD HH:mm:ss')
       try {
-        let res = await this.$axios.put('/record/clockIn/', {
+        let res = await this.$axios.put('/wxkq/record/clockIn/', {
           employeeId: this.userId,
           recordTime: nowTime,
           type: this.userData.type,
@@ -500,7 +500,7 @@ export default {
     },
     // 外出打卡
     async checkOutRecord () {
-      let res = await this.$axios.post('/recordOut/add', this.recordOut)
+      let res = await this.$axios.post('/wxkq/recordOut/add', this.recordOut)
       if (res.data.flag){
         this.ifShow = !this.ifShow
         let date = new Date()

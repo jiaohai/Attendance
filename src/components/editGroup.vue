@@ -229,7 +229,7 @@ export default {
       //   users: this.getUserId()
       // }
       if (this.isEditGroup) {
-        this.$axios.post('/user/group/update/', {
+        this.$axios.post('/wxkq/user/group/update/', {
           group: {
             id: this.newGroup.id,
             creator: this.userID,
@@ -255,7 +255,7 @@ export default {
           this.openMsg('发送请求失败！')
         })
       } else {
-        this.$axios.post('/user/group/add/', {
+        this.$axios.post('/wxkq/user/group/add/', {
           group: {
             groupName: this.newGroup.name,
             creator: this.userID,
@@ -297,7 +297,7 @@ export default {
         type: 'warning'
       }).catch(err => err)
       if (confirmResult === 'confirm'){
-        this.$axios.post('/user/group/delete/' + this.newGroup.id).then(res => {
+        this.$axios.post('/wxkq/user/group/delete/' + this.newGroup.id).then(res => {
           if (res.data.flag) {
             this.openMsg('删除成功')
             this.$router.go(0)

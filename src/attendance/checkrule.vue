@@ -247,7 +247,7 @@ export default {
     },
     // 给头像，员工名赋值
     checkUser (employeeId) {
-      this.$axios.get('/user/login/getUserInfo?userId=' + employeeId).then(res => {
+      this.$axios.get('/wxkq/user/login/getUserInfo?userId=' + employeeId).then(res => {
         if (res.data.flag) {
           this.avatarurl = res.data.data.employee.avatar
           this.username = res.data.data.employee.name

@@ -121,7 +121,7 @@ export default {
   },
   methods: {
     getAttendce () {
-      this.$axios.get('/user/group/groupAndDepart?creatorId=' + this.userId).then(res => {
+      this.$axios.get('/wxkq/user/group/groupAndDepart?creatorId=' + this.userId).then(res => {
         if (res.data.flag) {
           this.attendanceList = res.data.data.allGroup
           this.isLoad = false

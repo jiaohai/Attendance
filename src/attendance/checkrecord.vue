@@ -128,7 +128,7 @@ export default {
       if (this.checkDate !== '' && this.checkDate != null) {
         this.recordDate = this.checkDate
       }
-      let res = await this.$axios.get('/record/recordDate', {
+      let res = await this.$axios.get('/wxkq/record/recordDate', {
         params: {
           recordDate: this.recordDate,
           employeeId: this.employeeId
@@ -142,7 +142,7 @@ export default {
       this.activities = []
       const record = res.data.data.Record
       if (record.length > 0) {
-        let re = await this.$axios.get('/rule/findById/', {
+        let re = await this.$axios.get('/wxkq/rule/findById/', {
           params: {
             id: record[0].ruleId
           }
