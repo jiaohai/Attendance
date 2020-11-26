@@ -110,7 +110,6 @@ export default {
         this.ruleType = rule.type
         this.$cookieStore.setCookie('ruleId', rule.id)
         // 这里不知道为什么全局变量设置不进去 偏方
-        debugger
         this.$cookieStore.delCookie('ruleType')
         if (rule.type === '自由上下班') {
           this.$cookieStore.setCookie('ruleType', '1')
