@@ -268,7 +268,7 @@ export default {
         this.isLoad = false
         return
       }
-      this.$axios.get('/groupApi/depart/userAndDepart/Search/', {
+      this.$axios.get('/user/depart/userAndDepart/Search/', {
         params: {
           searchKey: this.inputvlue
         }
@@ -300,7 +300,7 @@ export default {
           type: 'group'
         }
       }
-      this.$axios.get('/groupApi/depart/findNextDepAndEmp/', {
+      this.$axios.get('/user/depart/findNextDepAndEmp/', {
         params: paramsData
       }).then(res => {
         if (res.data.flag) {

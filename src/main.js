@@ -14,6 +14,14 @@ import '../static/styles/basic.css'
 import ElementUI from 'element-ui'
 import echarts from 'echarts'
 import 'element-ui/lib/theme-chalk/index.css'
+import Vant from 'vant'
+import 'vant/lib/index.css'
+
+Vue.use(Vant)
+
+// import { Calendar } from 'vant'
+// Vue.use(Calendar)
+
 Vue.use(ElementUI)
 Vue.prototype.$echarts = echarts
 

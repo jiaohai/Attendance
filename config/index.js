@@ -10,7 +10,36 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    proxyTable: {
+      '/rule': {
+        target: 'http://118.24.111.58:12002//wxkq',
+        changeOrigin: true,
+        //pathRewrite: {
+          //'^/api': ''
+        //}
+      },
+      '/user': {
+        target: 'http://118.24.111.58:12001//wxkq',
+        changeOrigin: true,
+        // pathRewrite: {
+        //   '^/groupApi': ''
+        // }
+      },
+      '/record': {
+        target: 'http://118.24.111.58:12003//wxkq',
+        changeOrigin: true,
+        // pathRewrite: {
+        //   '^/groupApi': ''
+        // }
+      },
+      '/recordOut': {
+        target: 'http://118.24.111.58:12003//wxkq',
+        changeOrigin: true,
+        // pathRewrite: {
+        //   '^/groupApi': ''
+        // }
+      }
+    },
 
     // Various Dev Server settings
     host: '0.0.0.0', // can be overwritten by process.env.HOST
@@ -50,7 +79,7 @@ module.exports = {
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/',
+    assetsPublicPath: './',
 
     /**
      * Source Maps

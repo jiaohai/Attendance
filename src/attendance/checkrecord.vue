@@ -143,7 +143,7 @@ export default {
       this.activities = []
       const record = res.data.data.Record
       if (record.length > 0) {
-        let re = await this.$axios.get('/api/rule/findById/', {
+        let re = await this.$axios.get('/rule/findById/', {
           params: {
             id: record[0].ruleId
           }
@@ -151,6 +151,7 @@ export default {
         let rule = re.data.data
         this.checkrule = rule.name
         this.ruleType = rule.type
+        this.$cookieStore.setCookie('ruleId', rule.id)
         this.ifShow = true
       } else {
         this.ifShow = false

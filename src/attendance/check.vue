@@ -180,10 +180,17 @@ export default {
     }
   },
   created: async function () {
+    if (this.$route.query.userId && this.$route.query.authority) {
+      sessionStorage.setItem('userId', this.$route.query.userId)
+      sessionStorage.setItem('authority', this.$route.query.authority)
+      this.getCheckInfo()
+      this.testCheckInfo()
+      return
+    }
     if (sessionStorage.getItem('userId') === null) {
       // this.openMsg('获取身份')
       try {
-        let res = await this.$axios.get('/groupApi/authorize/login?code=' + this.$route.query.code + '&state=' + this.$route.query.state)
+        let res = await this.$axios.get('/user/login/authorize/login?code=' + this.$route.query.code + '&state=' + this.$route.query.state)
         if (res.data.flag) {
           sessionStorage.setItem('userId', res.data.data.userId)
           sessionStorage.setItem('authority', res.data.data.authority)
@@ -206,7 +213,7 @@ export default {
   },
   methods: {
     async testCheckInfo () {
-      this.$axios.get('/api/rule/attendance/', { params: {
+      this.$axios.get('/rule/attendance/', { params: {
         employeeId: this.userId
       }}).then(res => {
         if (res.data.flag) {
@@ -265,8 +272,8 @@ export default {
       })
     },
     getCheckInfo () {
-      // this.userId = sessionStorage.getItem('userId')
-      // this.authority = parseInt(sessionStorage.getItem('authority'))
+      this.userId = sessionStorage.getItem('userId')
+      this.authority = parseInt(sessionStorage.getItem('authority'))
       if (this.authority > 1) {
         this.showfoot = true
       }
@@ -288,7 +295,7 @@ export default {
         this.userId = localStorage.getItem('userId')
       }
       try {
-        let res = await this.$axios.get('/api/rule/attendance/', {
+        let res = await this.$axios.get('/rule/attendance/', {
           params: {
             employeeId: this.userId
           }
@@ -350,7 +357,7 @@ export default {
     getSignKey () {
       /* eslint-disable*/
       var _this = this
-      this.$axios.get('/groupApi/getSign/', {params: {
+      this.$axios.get('/user/ticket/getSign/', {params: {
         url: window.location.href
       }}).then(res => {
         if (res.data.flag) {
@@ -380,7 +387,7 @@ export default {
               // var accuracy = res.accuracy // 位置精度
               _this.showMapImg = 'https://apis.map.qq.com/ws/staticmap/v2/?center=' + latitude + ',' + longitude + '&zoom=18&size=500*300&maptype=roadmap&scale=2&markers=size:large|color:red|' + latitude + ',' + longitude + '&key=5YSBZ-W75KG-VLGQC-I24FQ-GT4A7-O4FBE'
               _this.loading = false
-              _this.$axios.get('/api/rule/attendance/', { params: {
+              _this.$axios.get('/rule/attendance/', { params: {
                 employeeId: _this.userId
               }}).then(userres => {
                 if (userres.data.flag) {
@@ -598,8 +605,8 @@ export default {
     text-decoration: blink;
   }
   .selectext{
-    padding-left: 5px;
-    padding-bottom: 5px;
+    /*padding-left: 5px;*/
+    /*padding-bottom: 5px;*/
   }
 
   .showmpa{
@@ -609,7 +616,7 @@ export default {
   }
   .checkbutton{
     width:100%;
-    height:40%;
+    height:30%;
     display: inline-grid;
   }
   .buttonline{
@@ -626,6 +633,7 @@ export default {
     border-radius: 50%;
   }
   .workbutton{
+    color: black;
     width: 84%;
     height: 84%;
     padding: 0px;

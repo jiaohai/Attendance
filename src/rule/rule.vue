@@ -240,7 +240,7 @@ export default {
       this.$router.push('/addadmin')
     },
     getInit () {
-      this.$axios.get('/api/rule/ruleList?creatorId=' + this.userId).then(res => {
+      this.$axios.get('/rule/ruleList?creatorId=' + this.userId).then(res => {
         if (res.data.flag) {
           this.ruledata = res.data.data
           this.isLoad = false
