@@ -361,7 +361,7 @@ export default {
       /* eslint-disable*/
       var _this = this
       this.$axios.get('/wxkq/user/ticket/getSign/', {params: {
-        url: window.location.href
+        url: window.location.href.split('#')[0]
       }}).then(res => {
         if (res.data.flag) {
           _this.signKey = res.data.data
@@ -389,7 +389,7 @@ export default {
               // var speed = res.speed // 速度，以米/每秒计
               // var accuracy = res.accuracy // 位置精度
 
-              this.$store.commit('setPosition',latitude,longtitude)
+              // this.$store.commit('setPosition',latitude,longtitude)
 
               _this.showMapImg = 'https://apis.map.qq.com/ws/staticmap/v2/?center=' + latitude + ',' + longitude + '&zoom=18&size=500*300&maptype=roadmap&scale=2&markers=size:large|color:red|' + latitude + ',' + longitude + '&key=5YSBZ-W75KG-VLGQC-I24FQ-GT4A7-O4FBE'
               _this.loading = false
@@ -469,7 +469,7 @@ export default {
       this.clocking = true
       var nowTime = moment().format('YYYY-MM-DD HH:mm:ss')
       try {
-        let res = await this.$axios.put('/wxkq/record/clockIn/', {
+        let res = await this.$axios.post('/wxkq/record/clockIn/', {
           employeeId: this.userId,
           recordTime: nowTime,
           type: this.userData.type,
