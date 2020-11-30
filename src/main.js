@@ -13,7 +13,7 @@ import '../static/styles/basic.css'
 // import '../static/qywx/jweixin-1.2.0.js'
 
 import element from '../src/element/index'
-import echarts from 'echarts'
+import echarts from '../src/echart/index'
 import 'element-ui/lib/theme-chalk/index.css'
 import vant from '../src/vant/index'
 import 'vant/lib/index.css'
