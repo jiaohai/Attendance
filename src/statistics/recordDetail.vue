@@ -1,78 +1,54 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
   <div style="height: 100%;width: 100%">
     <template v-if="showNext">
-      <el-page-header @back="goBack" content="上下班明细" title="">
-      </el-page-header>
-      <el-row :gutter="20">
-        <el-col :span="9" :offset="2">
-          <el-button type="text" @click="changeDepart">部门
+      <van-nav-bar :title="this.title" left-text="" left-arrow @click-left="onClickLeft">
+        <template #right>
+          <van-icon name="down" @click="exportData"/>
+        </template>
+      </van-nav-bar>
+      <van-row gutter="20">
+        <van-col span="10" offset="2">
+          <van-button @click="changeDepart">部门
             <i :class="class_dep"></i>
-          </el-button>
-        </el-col>
-        <el-col :span="9" :offset="2">
-          <el-button type="text" @click="selectStatus">状态
+          </van-button>
+        </van-col>
+        <van-col span="10" ffset="2">
+          <van-button @click="selectStatus">状态
             <i :class="class_status"></i>
-          </el-button>
-        </el-col>
-      </el-row>
-      <!--状态抽屉-->
-      <el-drawer
-        :visible.sync="drawer"
-        :direction="direction"
-        :before-close="handleClose">
-        <el-row :gutter="20" :class="myRow">
-          <el-col :span="4" :offset="2">
-            <el-button type="text" @click="closeDrawer"><span>取消</span>
-            </el-button>
-          </el-col>
-          <el-col :span="9" :offset="9">
-            <el-button type="text" @click="submit"><span>确认</span>
-            </el-button>
-          </el-col>
-        </el-row>
-        <el-table
-          ref="multipleTable"
-          :data="gridData"
-          @row-click="selectRow"
-          @selection-change="handleSelection">
-          <el-table-column property="status"></el-table-column>
-          <el-table-column property="value" v-if="false"></el-table-column>
-          <el-table-column
-            type="selection"
-            width="55">
-          </el-table-column>
-        </el-table>
-      </el-drawer>
+          </van-button>
+        </van-col>
+      </van-row>
+      <!--动作面板-->
+      <template>
+        <van-action-sheet v-model="drawer" title="选择" cancel-text="确认" @cancel="confirm">
+          <van-checkbox-group v-model="selected">
+            <van-cell-group>
+              <van-cell
+                v-for="(item, index) in gridData"
+                clickable
+                border
+                :key="item.value"
+                :title="item.status"
+                @click="toggle(index)"
+              >
+                <template #right-icon>
+                  <van-checkbox :name="item" ref="checkboxes" />
+                </template>
+              </van-cell>
+            </van-cell-group>
+          </van-checkbox-group>
+        </van-action-sheet>
+      </template>
       <!--数据-->
-      <el-table
-        ref="singleTable"
-        :data="tableData"
-        highlight-current-row
-        @current-change="handleCurrentChange"
-        @row-click="openDetail"
-        style="width: 100%">
-        <el-table-column
-          property="avatar"
-          width="50">
-          <template slot-scope="scope">
-            <el-avatar :src="scope.row.avatar" ></el-avatar>
+      <van-cell-group border
+      >
+        <van-cell v-for="item in tableData" :key="item.employeeId" :title="item.name" clickable @click="openDetail">
+          <template #icon>
+            <img :src="item.avatar" style="height: 10%;width: 10%">
           </template>
-        </el-table-column>
-        <el-table-column
-          property="name"
-          label=""
-          width="550">
-        </el-table-column>
-        <el-table-column
-          property="status"
-          label="">
-        </el-table-column>
-        <el-table-column
-          property="employeeId"
-          label=""
-          v-if="false">
-        </el-table-column>
-      </el-table>
+          <h v-html="item.status"></h>
+        </van-cell>
+      </van-cell-group>
     </template>
     <template>
       <!--部门-->
@@ -98,6 +74,9 @@ export default {
 
   data () {
     return {
+      ifShow: false,
+      title: '上下班明细',
+      day: '',
       showNext: true,
       showCheckRecord: false,
       showSearch: false,
@@ -105,22 +84,22 @@ export default {
       tableData: [{
         employeeId:'liyuanyuan',
         name: '李元元',
-        status: '迟到,早退',
+        status: '<h style="color: #F56C6C">迟到,早退</h>',
         avatar: 'http://wework.qpic.cn/bizmail/ibVp64SEPsDZXiakEkJTdlVrnbl9dpjCURT40mDQUmicjHYs5xe0hl3Jw/0'
       }, {
         employeeId:'lyy',
         name: 'lyy',
-        status: '正常',
+        status: '<h style="color: #a5a5a5">正常</h>',
         avatar: 'http://wework.qpic.cn/bizmail/ibVp64SEPsDZXiakEkJTdlVrnbl9dpjCURT40mDQUmicjHYs5xe0hl3Jw/0'
       }, {
         employeeId:'wangxiaohu',
         name: '王小虎',
-        status: '早退',
+        status: '<h style="color: #F56C6C">早退</h>',
         avatar: 'http://wework.qpic.cn/bizmail/ibVp64SEPsDZXiakEkJTdlVrnbl9dpjCURT40mDQUmicjHYs5xe0hl3Jw/0'
       }, {
         employeeId:'wangdahu',
         name: '王大虎',
-        status: '迟到',
+        status: '<h style="color: #F56C6C">迟到</h>',
         avatar: 'http://wework.qpic.cn/bizmail/ibVp64SEPsDZXiakEkJTdlVrnbl9dpjCURT40mDQUmicjHYs5xe0hl3Jw/0'
       }],
       currentRow: {
@@ -163,7 +142,7 @@ export default {
   props : {
     status:{
       type: String,
-      default: ''
+      default: '0'
     },
     checkDate: {
       type: Date,
@@ -179,12 +158,23 @@ export default {
     searchModal
   },
   mounted () {
-    console.log(11111)
     this.class_dep = this.class_down
     this.class_status = this.class_down
   },
 
   methods: {
+    confirm () {
+      this.$message.info('选取状态')
+    },
+    toggle (index) {
+      this.$refs.checkboxes[index].toggle()
+    },
+    onClickLeft () {
+      this.$message.info('返回')
+    },
+    exportData () {
+      this.$message.info('导出')
+    },
     closeCheckRecord () {
       this.showCheckRecord = false
       this.showNext = true
@@ -246,6 +236,14 @@ export default {
     },
     goBack () {
       window.history.go(-1)
+    },
+    inArray (array, search) {
+      for (let i in array) {
+        if (array[i] === search) {
+          return true
+        }
+      }
+      return false
     }
   }
 }
@@ -323,5 +321,12 @@ export default {
     display: none;
     margin-bottom: 32px;
     padding: 20px 20px 0;
+  }
+  /deep/ .van-cell__title, .van-cell__value {
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    flex: 1;
+    text-align: left;
+    padding-left: 20px;
   }
 </style>

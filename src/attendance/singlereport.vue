@@ -15,28 +15,26 @@
       <div class="statisticspiece">
         <span class="stcspan">上下班统计</span>
         <div class="cotentinfo">
-          <el-row>
+          <van-row>
             <div class="vol-data">
               <div id="myChart" :style="{width:'100%',height:'200px'}">
               </div>
             </div>
-          </el-row>
-          <el-row :gutter="20">
-            <el-col :span="6" :offset="2">
+          </van-row>
+          <van-row gutter="20">
+            <van-col span="6" offset="2">
               <div class="grid-content bg-purple"></div>
-              迟到: <span style="color: #F56C6C;font-weight: 700">{{ ifLate }}</span></el-col>
-            <el-col :span="6" :offset="2">
+              迟到: <span style="color: #F56C6C;font-weight: 700">{{ ifLate }}</span></van-col>
+            <van-col span="6" offset="2">
               <div class="grid-content bg-purple"></div>
-              缺卡: <span style="color: #F56C6C;font-weight: 700">{{ ifAbsent }}</span></el-col>
-            <el-col :span="6" :offset="2">
+              缺卡: <span style="color: #F56C6C;font-weight: 700">{{ ifAbsent }}</span></van-col>
+            <van-col span="6" offset="2">
               <div class="grid-content bg-purple"></div>
-              早退: <span style="color: #F56C6C;font-weight: 700">{{ ifLeaveEarly }}</span></el-col>
-            <!--            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>正常: <span style="color: #67C23A;font-weight: 700">{{normal}}</span></el-col>-->
-            <!--          <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>异常: <span style="color: #F56C6C;font-weight: 700">{{error}}</span></el-col>-->
-            <el-col :span="6" :offset="2">
+              早退: <span style="color: #F56C6C;font-weight: 700">{{ ifLeaveEarly }}</span></van-col>
+            <van-col span="6" offset="2">
               <div class="grid-content bg-purple"></div>
-              旷工: <span style="color: #E6A23C;font-weight: 700">{{ absence }}</span></el-col>
-          </el-row>
+              旷工: <span style="color: #E6A23C;font-weight: 700">{{ absence }}</span></van-col>
+          </van-row>
         </div>
       </div>
       <div class="statisticspiece" v-if="false">

@@ -14,19 +14,17 @@
       <div class="statisticspiece">
         <span class="stcspan">上下班统计</span>
         <div class="cotentinfo">
-          <el-row>
+          <van-row>
             <div class="vol-data">
               <div id="myChart" :style="{width:'100%',height:'200px'}">
               </div>
             </div>
-          </el-row>
-          <el-row :gutter="20">
-            <el-col :span="6" :offset = "2"><div class="grid-content bg-purple"></div>迟到:<span style="color: #F56C6C;font-weight: 700">{{late}}</span></el-col>
-            <el-col :span="6" :offset = "2"><div class="grid-content bg-purple"></div>早退:<span style="color: #E6A23C;font-weight: 700">{{leaveEarly}}</span></el-col>
-            <!--<el-col :span="6" :offset = "2" @click=""><div class="grid-content bg-purple"></div>正常:<span style="color: #67C23A;font-weight: 700">{{normal}}</span></el-col>
-            <el-col :span="6" :offset = "2" @click=""><div class="grid-content bg-purple"></div>异常:<span style="color: #F56C6C;font-weight: 700">{{error}}</span></el-col>-->
-            <el-col :span="6" :offset = "2"><div class="grid-content bg-purple"></div>缺卡:<span style="color: #E6A23C;font-weight: 700">{{absence}}</span></el-col>
-          </el-row>
+          </van-row>
+          <van-row gutter="20">
+            <van-col span="6" offset = "2"><div class="grid-content bg-purple"></div>迟到:<span style="color: #F56C6C;font-weight: 700">{{late}}</span></van-col>
+            <van-col span="6" offset = "2"><div class="grid-content bg-purple"></div>早退:<span style="color: #E6A23C;font-weight: 700">{{leaveEarly}}</span></van-col>
+            <van-col span="6" offset = "2"><div class="grid-content bg-purple"></div>缺卡:<span style="color: #E6A23C;font-weight: 700">{{absence}}</span></van-col>
+          </van-row>
         </div>
       </div>
       <div class="statisticspiece" v-if="false">
@@ -34,7 +32,7 @@
         <div class="cotentinfo">
           <template>
             <el-row :gutter="40">
-              <el-col :span="4" :offset = "2" v-for="item in recordOutList" :key="item.name">
+              <el-col :span="4" :offset="2" v-for="item in recordOutList" :key="item.name">
                 <div class="grid-content">
                   <div style="text-align: center">
                     <el-avatar :src=item.avatar></el-avatar>

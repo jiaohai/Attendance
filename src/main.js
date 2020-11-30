@@ -12,18 +12,14 @@ import '../static/styles/basic.css'
 // import '../static/mobile-detect/mobile-detect.js'
 // import '../static/qywx/jweixin-1.2.0.js'
 
-import ElementUI from 'element-ui'
+import element from '../src/element/index'
 import echarts from 'echarts'
 import 'element-ui/lib/theme-chalk/index.css'
-import Vant from 'vant'
+import vant from '../src/vant/index'
 import 'vant/lib/index.css'
 
-Vue.use(Vant)
-
-// import { Calendar } from 'vant'
-// Vue.use(Calendar)
-
-Vue.use(ElementUI)
+Vue.use(vant)
+Vue.use(element)
 Vue.prototype.$echarts = echarts
 
 Vue.config.productionTip = false

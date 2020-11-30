@@ -20,14 +20,6 @@
               </div>
             </div>
           </van-row>
-<!--          <el-row :gutter="20">-->
-<!--            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>迟到: <span style="color: #F56C6C;font-weight: 700" @click="openDetail('1')">{{ifLate}}</span></el-col>-->
-<!--            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>缺卡: <span style="color: #F56C6C;font-weight: 700" @click="openDetail('2')">{{ifAbsent}}</span></el-col>-->
-<!--            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>早退: <span style="color: #F56C6C;font-weight: 700" @click="openDetail('3')">{{ifLeaveEarly}}</span></el-col>-->
-<!--            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>正常: <span style="color: #67C23A;font-weight: 700" @click="openDetail('0')">{{normal}}</span></el-col>-->
-<!--  &lt;!&ndash;          <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>异常: <span style="color: #F56C6C;font-weight: 700">{{error}}</span></el-col>&ndash;&gt;-->
-<!--            <el-col :span="6" :offset="2"><div class="grid-content bg-purple"></div>缺勤: <span style="color: #E6A23C;font-weight: 700" @click="openDetail('4')">{{absence}}</span></el-col>-->
-<!--          </el-row>-->
           <van-row>
             <van-col span="6" offset="2">迟到: <span style="color: #F56C6C;font-weight: 700" @click="openDetail('1')">{{ifLate}}</span></van-col>
             <van-col span="6" offset="2">缺卡: <span style="color: #F56C6C;font-weight: 700" @click="openDetail('2')">{{ifAbsent}}</span></van-col>

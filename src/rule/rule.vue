@@ -33,8 +33,8 @@
           <span class="contentspan secondspan" v-if="item.places.length === 0">位置 未设置</span>
           <span class="contentspan secondspan" v-if="item.places.length > 0">位置 {{ item.places[0].name }}</span>
         </div>
+        <i class="fa fa-angle-right" />
         <div class="rightside">
-          <i class="fa fa-angle-right" />
         </div>
       </div>
     </div>

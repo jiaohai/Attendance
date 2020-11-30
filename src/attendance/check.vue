@@ -68,7 +68,7 @@
           <div class="checkbutton">
             <div class="buttonline">
               <button class="workbutton" @click="checkOutRecord">
-                <el-row><span>外出打卡</span></el-row>
+                <van-row><span>外出打卡</span></van-row>
                 <span>第{{outCount}}次外出</span>
               </button>
             </div>
@@ -80,12 +80,12 @@
             <img src="../img/success.png" style="width: 30%;height: 30%">
             <p style="color: #67C23A;font-weight: bolder">外出打卡成功</p>
           </div>
-          <el-divider></el-divider>
+          <van-divider />
           <div class="massege">
-            <el-row>
-              <el-col :span="9" :offset="2"><span>时间</span></el-col>
-              <el-col :span="9" :offset="2"><span>{{time}}</span></el-col>
-            </el-row>
+            <van-row>
+              <van-col span="9" offset="2"><span>时间</span></van-col>
+              <van-col span="9" offset="2"><span>{{time}}</span></van-col>
+            </van-row>
           </div>
         </div>
       </div>
@@ -111,7 +111,6 @@
   </div>
 </template>
 <script>
-
 import moment from 'moment'
 import { getRecordOutByTime } from '../api/record/record'
 
